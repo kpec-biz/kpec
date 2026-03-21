@@ -2,46 +2,30 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { r2 } from "@/lib/r2-images";
-import { getNewsPosts } from "@/data/posts";
+import Skeleton from "@/components/Skeleton";
 
-interface BizInfoItem {
-  pblancNm: string;
-  pblancUrl: string;
-  jrsdInsttNm: string;
-  reqstBeginEndDe: string;
-  creatPnttm: string;
-  pldirSportRealmLclasCodeNm: string;
-  bsnsSumryCn: string;
-}
-
-const newsData = getNewsPosts().slice(0, 3);
-
-function formatDate(dateStr: string) {
-  if (!dateStr) return "";
-  return dateStr.slice(0, 10).replace(/-/g, ".");
-}
-
-function getTag(category: string) {
-  if (category.includes("기술")) return "기술";
-  if (category.includes("인력") || category.includes("고용")) return "인력";
-  if (category.includes("경영")) return "경영";
-  if (category.includes("금융")) return "금융";
-  return "공고";
+interface NoticeItem {
+  pblancId: string;
+  title: string;
+  category: string;
+  source: string;
+  publishDate: string;
+  summary: string;
 }
 
 export default function NoticeBoard() {
-  const [notices, setNotices] = useState<BizInfoItem[]>([]);
+  const [notices, setNotices] = useState<NoticeItem[]>([]);
+  const [news, setNews] = useState<NoticeItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/bizinfo?size=5&page=1")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.jsonArray) {
-          setNotices(data.jsonArray.slice(0, 5));
-        }
+    Promise.all([
+      fetch("/api/notices?exclude=뉴스,분석&limit=5").then((r) => r.json()),
+      fetch("/api/notices?category=뉴스&limit=3").then((r) => r.json()),
+    ])
+      .then(([noticeRes, newsRes]) => {
+        setNotices(noticeRes.records || []);
+        setNews(newsRes.records || []);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -60,7 +44,7 @@ export default function NoticeBoard() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-5">
-          {/* 왼쪽: 정책자금 공고 (기업마당 API 연동) */}
+          {/* 왼쪽: 정책자금 공고 (Airtable 리라이팅 데이터) */}
           <div className="bg-white border border-gray-10 rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 border-b-2 border-primary-60">
               <h3 className="text-sm font-bold text-gray-90 flex items-center gap-1.5">
@@ -88,8 +72,14 @@ export default function NoticeBoard() {
             </div>
 
             {loading ? (
-              <div className="p-8 text-center text-sm text-gray-40">
-                불러오는 중...
+              <div className="p-4 space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Skeleton className="h-5 w-12 shrink-0" />
+                    <Skeleton className="h-4 flex-1" />
+                    <Skeleton className="h-3 w-16 shrink-0" />
+                  </div>
+                ))}
               </div>
             ) : notices.length === 0 ? (
               <div className="p-8 text-center text-sm text-gray-40">
@@ -98,7 +88,7 @@ export default function NoticeBoard() {
             ) : (
               notices.map((item, i) => (
                 <Link
-                  key={i}
+                  key={item.pblancId}
                   href="/notice"
                   className="flex items-center justify-between px-5 py-3 border-b border-gray-10 last:border-b-0 hover:bg-gray-5 transition-colors text-sm"
                 >
@@ -106,23 +96,21 @@ export default function NoticeBoard() {
                     <span
                       className={`flex-shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${i === 0 ? "bg-red-50 text-point-50" : "bg-primary-5 text-primary-60"}`}
                     >
-                      {i === 0
-                        ? "신규"
-                        : getTag(item.pldirSportRealmLclasCodeNm)}
+                      {i === 0 ? "신규" : item.category}
                     </span>
                     <span className="text-gray-80 font-medium truncate">
-                      {item.pblancNm}
+                      {item.title}
                     </span>
                   </div>
                   <span className="text-xs text-gray-40 flex-shrink-0 ml-3">
-                    {formatDate(item.creatPnttm)}
+                    {item.publishDate}
                   </span>
                 </Link>
               ))
             )}
           </div>
 
-          {/* 오른쪽: 정책자금 뉴스 (썸네일형) */}
+          {/* 오른쪽: 정책자금 뉴스 */}
           <div className="bg-white border border-gray-10 rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 border-b-2 border-primary-60">
               <h3 className="text-sm font-bold text-gray-90 flex items-center gap-1.5">
@@ -149,33 +137,31 @@ export default function NoticeBoard() {
               </Link>
             </div>
             <div className="p-3">
-              {newsData.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/notice/${item.id}`}
-                  className="flex gap-3 p-2 rounded-lg hover:bg-gray-5 transition-colors"
-                >
-                  <div className="w-[100px] h-[68px] rounded-md overflow-hidden flex-shrink-0 bg-gray-10 relative">
-                    <Image
-                      src={r2(item.image)}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <span className="text-[10px] font-semibold text-primary-60 mb-0.5">
-                      {item.tag}
-                    </span>
-                    <span className="text-[13px] font-medium text-gray-90 line-clamp-2 leading-snug">
-                      {item.title}
-                    </span>
-                    <span className="text-[11px] text-gray-40 mt-1">
-                      {item.date}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+              {news.length === 0 ? (
+                <div className="p-5 text-center text-sm text-gray-40">
+                  {loading ? "불러오는 중..." : "뉴스가 없습니다"}
+                </div>
+              ) : (
+                news.map((item) => (
+                  <Link
+                    key={item.pblancId}
+                    href="/notice"
+                    className="flex gap-3 p-2 rounded-lg hover:bg-gray-5 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <span className="text-[10px] font-semibold text-primary-60 mb-0.5">
+                        {item.category}
+                      </span>
+                      <span className="text-[13px] font-medium text-gray-90 line-clamp-2 leading-snug">
+                        {item.title}
+                      </span>
+                      <span className="text-[11px] text-gray-40 mt-1">
+                        {item.source} · {item.publishDate}
+                      </span>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>

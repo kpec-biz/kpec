@@ -88,6 +88,7 @@ const config: Config = {
         shimmer: "shimmer 1.5s ease-in-out infinite",
         "fade-in": "fadeIn 0.5s ease-out forwards",
         "slide-up": "slideUp 0.5s ease-out forwards",
+        "scan-beam": "scanBeam 2s ease-in-out infinite",
       },
       keyframes: {
         shimmer: {
@@ -101,6 +102,12 @@ const config: Config = {
         slideUp: {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
+        },
+        scanBeam: {
+          "0%": { top: "0", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { top: "100%", opacity: "0" },
         },
       },
     },

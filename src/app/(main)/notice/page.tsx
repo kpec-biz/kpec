@@ -65,18 +65,12 @@ export default function NoticePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/notices?limit=30").then((r) => r.json()),
+      fetch("/api/notices?exclude=뉴스,분석&limit=30").then((r) => r.json()),
       fetch("/api/notices?category=뉴스&limit=10").then((r) => r.json()),
       fetch("/api/notices?category=분석&limit=10").then((r) => r.json()),
     ])
       .then(([noticeRes, newsRes, analysisRes]) => {
-        // 공고 탭: 뉴스/분석 제외한 공고만
-        const allNotices = noticeRes.records || [];
-        setNotices(
-          allNotices.filter(
-            (r: NoticeItem) => r.category !== "뉴스" && r.category !== "분석",
-          ),
-        );
+        setNotices(noticeRes.records || []);
         setNewsData(newsRes.records || []);
         setAnalysisData(analysisRes.records || []);
       })
@@ -157,25 +151,27 @@ export default function NoticePage() {
 
             {/* 탭 2: 정책자금 뉴스 */}
             {activeTab === 1 && (
-              <motion.div
-                key="tab-1"
-                {...tabMotion}
-                className="bg-white rounded-xl border border-gray-10"
-              >
+              <motion.div key="tab-1" {...tabMotion}>
                 {newsData.length === 0 ? (
-                  <div className="p-5 space-y-3">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="flex items-center gap-4 py-2">
-                        <Skeleton className="h-6 w-14 shrink-0" />
-                        <Skeleton className="h-5 flex-1" />
-                        <Skeleton className="h-4 w-20 shrink-0" />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {[1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                      >
+                        <Skeleton className="h-44 w-full rounded-none" />
+                        <div className="p-5 space-y-3">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-3 w-full" />
+                          <Skeleton className="h-3 w-2/3" />
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-10">
-                    {newsData.map((item, i) => (
-                      <NoticeRow key={item.pblancId} item={item} index={i} />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {newsData.map((item) => (
+                      <ContentCard key={item.pblancId} item={item} />
                     ))}
                   </div>
                 )}
@@ -184,25 +180,27 @@ export default function NoticePage() {
 
             {/* 탭 3: 정책자금 분석 */}
             {activeTab === 2 && (
-              <motion.div
-                key="tab-2"
-                {...tabMotion}
-                className="bg-white rounded-xl border border-gray-10"
-              >
+              <motion.div key="tab-2" {...tabMotion}>
                 {analysisData.length === 0 ? (
-                  <div className="p-5 space-y-3">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="flex items-center gap-4 py-2">
-                        <Skeleton className="h-6 w-14 shrink-0" />
-                        <Skeleton className="h-5 flex-1" />
-                        <Skeleton className="h-4 w-20 shrink-0" />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {[1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                      >
+                        <Skeleton className="h-44 w-full rounded-none" />
+                        <div className="p-5 space-y-3">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-3 w-full" />
+                          <Skeleton className="h-3 w-2/3" />
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-10">
-                    {analysisData.map((item, i) => (
-                      <NoticeRow key={item.pblancId} item={item} index={i} />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {analysisData.map((item) => (
+                      <ContentCard key={item.pblancId} item={item} />
                     ))}
                   </div>
                 )}
@@ -224,6 +222,51 @@ export default function NoticePage() {
       {/* 인스타 배너 그리드 */}
       <InstaBannerGrid />
     </>
+  );
+}
+
+// 뉴스/분석 카드 — 썸네일 + 제목 + 요약
+function ContentCard({ item }: { item: NoticeItem }) {
+  const hasThumbnail = item.originalUrl?.includes("r2.dev/thumbnails");
+
+  return (
+    <Link
+      href={`/notice/${item.pblancId}`}
+      className="group bg-white rounded-xl border border-gray-10 overflow-hidden hover:border-primary-50 hover:shadow-md transition-all"
+    >
+      {hasThumbnail && (
+        <div className="relative aspect-[16/9] overflow-hidden bg-gray-10">
+          <img
+            src={item.originalUrl}
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          <span className="absolute bottom-1.5 right-2 text-[9px] text-white/40">
+            AI 생성 이미지
+          </span>
+        </div>
+      )}
+      <div className="p-5">
+        <span
+          className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2 ${
+            item.category === "분석"
+              ? "bg-point-50/10 text-point-50"
+              : "bg-success/10 text-success"
+          }`}
+        >
+          {item.category === "분석" ? "정부정책자금 분석" : "정책자금 뉴스"}
+        </span>
+        <h3 className="text-sm font-bold text-gray-90 mb-2 line-clamp-2 leading-snug group-hover:text-primary-60 transition-colors">
+          {item.title}
+        </h3>
+        <p className="text-xs text-gray-50 line-clamp-2 leading-relaxed mb-3">
+          {item.summary}
+        </p>
+        <div className="text-[11px] text-gray-40">
+          {item.source} · {item.publishDate}
+        </div>
+      </div>
+    </Link>
   );
 }
 

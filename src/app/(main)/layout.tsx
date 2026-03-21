@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingMenu from "@/components/FloatingMenu";
+import PopupBanner from "@/components/PopupBanner";
 
 export default function MainLayout({
   children,
@@ -13,6 +14,7 @@ export default function MainLayout({
       <main>{children}</main>
       <Footer />
       <FloatingMenu />
+      <PopupBanner />
     </>
   );
 }

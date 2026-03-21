@@ -16,21 +16,36 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status") || "리라이팅완료";
     const limit = searchParams.get("limit") || "20";
-    const id = searchParams.get("id"); // 단일 조회
+    const id = searchParams.get("id"); // pblancId 단일 조회
+    const category = searchParams.get("category"); // 분석, 뉴스
+    const exclude = searchParams.get("exclude"); // 뉴스,분석
+    const popup = searchParams.get("popup"); // 팝업 배너 조회
 
     let url = `${AIRTABLE_API}/${baseId}/${TABLE_ID}`;
     const params = new URLSearchParams();
 
-    if (id) {
-      // pblancId로 단일 조회
+    if (popup === "true") {
+      // 팝업 전용: status="팝업" 레코드만 반환
+      params.set("filterByFormula", `{status}="팝업"`);
+      params.set("maxRecords", "1");
+      params.set("sort[0][field]", "publishDate");
+      params.set("sort[0][direction]", "desc");
+    } else if (id) {
       params.set("filterByFormula", `{pblancId}="${id}"`);
       params.set("maxRecords", "1");
     } else {
+      const filters = [`OR({status}="리라이팅완료",{status}="게시중")`];
+      if (category) {
+        filters.push(`{category}="${category}"`);
+      }
+      if (exclude) {
+        const cats = exclude.split(",").map((c) => c.trim());
+        cats.forEach((c) => filters.push(`{category}!="${c}"`));
+      }
       params.set(
         "filterByFormula",
-        `OR({status}="${status}",{status}="게시중")`,
+        filters.length > 1 ? `AND(${filters.join(",")})` : filters[0],
       );
       params.set("maxRecords", limit);
       params.set("sort[0][field]", "publishDate");
