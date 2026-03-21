@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { r2 } from "@/lib/r2-images";
+import { getNewsPosts } from "@/data/posts";
 
 interface BizInfoItem {
   pblancNm: string;
@@ -15,27 +16,7 @@ interface BizInfoItem {
   bsnsSumryCn: string;
 }
 
-// 하드코딩 뉴스 (정책자금 뉴스 칼럼)
-const newsData = [
-  {
-    image: "/images/headers/services.png",
-    category: "정책 분석",
-    title: "2026년 정책자금 4.4조원, 달라진 점과 활용 전략",
-    date: "2026.01.15",
-  },
-  {
-    image: "/images/headers/process.png",
-    category: "자금 가이드",
-    title: "AI 기업을 위한 AX 스프린트 우대트랙 완전 정리",
-    date: "2026.01.20",
-  },
-  {
-    image: "/images/headers/cases.png",
-    category: "인증 안내",
-    title: "벤처기업 인증, 정책자금 신청 전에 받아야 하는 이유",
-    date: "2026.02.05",
-  },
-];
+const newsData = getNewsPosts().slice(0, 3);
 
 function formatDate(dateStr: string) {
   if (!dateStr) return "";
@@ -116,11 +97,9 @@ export default function NoticeBoard() {
               </div>
             ) : (
               notices.map((item, i) => (
-                <a
+                <Link
                   key={i}
-                  href={item.pblancUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/notice"
                   className="flex items-center justify-between px-5 py-3 border-b border-gray-10 last:border-b-0 hover:bg-gray-5 transition-colors text-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -138,7 +117,7 @@ export default function NoticeBoard() {
                   <span className="text-xs text-gray-40 flex-shrink-0 ml-3">
                     {formatDate(item.creatPnttm)}
                   </span>
-                </a>
+                </Link>
               ))
             )}
           </div>
@@ -170,29 +149,29 @@ export default function NoticeBoard() {
               </Link>
             </div>
             <div className="p-3">
-              {newsData.map((news, i) => (
+              {newsData.map((item) => (
                 <Link
-                  key={i}
-                  href="/notice"
+                  key={item.id}
+                  href={`/notice/${item.id}`}
                   className="flex gap-3 p-2 rounded-lg hover:bg-gray-5 transition-colors"
                 >
                   <div className="w-[100px] h-[68px] rounded-md overflow-hidden flex-shrink-0 bg-gray-10 relative">
                     <Image
-                      src={r2(news.image)}
-                      alt={news.title}
+                      src={r2(item.image)}
+                      alt={item.title}
                       fill
                       className="object-cover"
                     />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <span className="text-[10px] font-semibold text-primary-60 mb-0.5">
-                      {news.category}
+                      {item.tag}
                     </span>
                     <span className="text-[13px] font-medium text-gray-90 line-clamp-2 leading-snug">
-                      {news.title}
+                      {item.title}
                     </span>
                     <span className="text-[11px] text-gray-40 mt-1">
-                      {news.date}
+                      {item.date}
                     </span>
                   </div>
                 </Link>

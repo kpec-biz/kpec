@@ -1,86 +1,30 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  getPostById,
+  getAdjacentPosts,
+  getRecentPosts,
+  posts,
+} from "@/data/posts";
 
-const samplePost = {
-  id: 1,
-  tag: "정책자금",
-  title: "2026년 중소기업 정책자금 융자계획 공고",
-  date: "2025.12.23",
-  views: 1842,
-  author: "KPEC 정책자금팀",
-  content: [
-    {
-      type: "h2",
-      text: "2026년 정책자금 주요 변경사항",
-    },
-    {
-      type: "p",
-      text: "중소벤처기업부는 2025년 12월 23일 2026년도 중소기업 정책자금 융자계획을 공고하였습니다. 2026년 총 공급 규모는 4조 4,313억원으로 2025년 대비 소폭 확대되었습니다.",
-    },
-    {
-      type: "info-box",
-      text: "2026년 정책자금 총 공급규모: 4조 4,313억원 (융자 4조 643억원 + 이차보전 3,670억원)",
-    },
-    {
-      type: "h2",
-      text: "6대 주요 변경사항",
-    },
-    {
-      type: "ul",
-      items: [
-        "AI 기업 우대 (AX 스프린트): 한도 60억 → 100억원, 금리 -0.1%p",
-        "DX·ESG 우대: 디지털전환·탄소중립 기업 금리 인하 집중",
-        "투융자 결합: 투자조건부 융자 도입으로 부채비율 개선 지원",
-        "내수→수출 전환 지원: 운전자금 한도 5억 → 10억원 확대",
-        "지역·신산업 가점: 지방 주력산업, 뿌리기술(SW 포함) 우대",
-        "미래 유망기술 강화: AI, 로봇, 글로벌 진출 기업 대폭 혜택",
-      ],
-    },
-    {
-      type: "h3",
-      text: "신청 일정",
-    },
-    {
-      type: "p",
-      text: "서울·지방 소재 기업은 2026년 1월 5~6일, 경기·인천 소재 기업은 1월 7~8일에 신청 접수를 시작합니다. 이후 매월 첫째 주 4일간 접수하며, 예산 소진 시까지 운영됩니다.",
-    },
-    {
-      type: "warn-box",
-      text: "신청 전 중소기업 확인서, 사업자등록증, 재무제표(최근 2년) 등 서류를 반드시 준비하시기 바랍니다.",
-    },
-    {
-      type: "h3",
-      text: "신청 방법",
-    },
-    {
-      type: "p",
-      text: "중진공 누리집(kosmes.or.kr) 또는 소진공 누리집(semas.or.kr)에서 온라인 신청·접수하실 수 있습니다. 서류 준비가 어려운 경우 KPEC 전문 컨설턴트의 도움을 받으시기 바랍니다.",
-    },
-  ],
-  tags: ["정책자금", "중진공", "2026년", "운전자금", "시설자금"],
-  prev: { id: null, title: null },
-  next: { id: 2, title: "2026년 1분기 소상공인 정책자금 신청 일정 안내" },
-};
+export function generateStaticParams() {
+  return posts.map((p) => ({ id: String(p.id) }));
+}
 
-const recentPosts = [
-  {
-    id: 2,
-    title: "2026년 1분기 소상공인 정책자금 신청 일정 안내",
-    date: "2026.01.02",
-  },
-  {
-    id: 3,
-    title: "AX 스프린트 우대트랙 선정 기업 추가 모집",
-    date: "2026.01.15",
-  },
-  { id: 4, title: "비수도권 기업 정책자금 우대 확대 시행", date: "2026.02.01" },
-];
-
-export default function NoticeDetailPage({
-  params: _params,
+export default async function NoticeDetailPage({
+  params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const post = samplePost;
+  const { id } = await params;
+  const post = getPostById(Number(id));
+
+  if (!post) {
+    notFound();
+  }
+
+  const { prev, next } = getAdjacentPosts(post.id);
+  const recentPosts = getRecentPosts(post.id, 3);
 
   return (
     <>
@@ -229,16 +173,16 @@ export default function NoticeDetailPage({
 
               {/* 이전/다음 글 */}
               <div className="border-t border-gray-10">
-                {post.next.id && (
+                {next && (
                   <Link
-                    href={`/notice/${post.next.id}`}
+                    href={`/notice/${next.id}`}
                     className="flex items-center gap-3 px-8 py-4 hover:bg-gray-5 transition-colors border-b border-gray-10"
                   >
                     <span className="text-xs font-semibold text-gray-40 w-12">
                       다음글
                     </span>
                     <span className="text-sm text-gray-70 flex-1">
-                      {post.next.title}
+                      {next.title}
                     </span>
                     <svg
                       className="w-4 h-4 text-gray-40"
@@ -255,16 +199,16 @@ export default function NoticeDetailPage({
                     </svg>
                   </Link>
                 )}
-                {post.prev.id && (
+                {prev && (
                   <Link
-                    href={`/notice/${post.prev.id}`}
+                    href={`/notice/${prev.id}`}
                     className="flex items-center gap-3 px-8 py-4 hover:bg-gray-5 transition-colors"
                   >
                     <span className="text-xs font-semibold text-gray-40 w-12">
                       이전글
                     </span>
                     <span className="text-sm text-gray-70 flex-1">
-                      {post.prev.title}
+                      {prev.title}
                     </span>
                     <svg
                       className="w-4 h-4 text-gray-40"

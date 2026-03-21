@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
+import { getNewsPosts, getAnalysisPosts } from "@/data/posts";
 
 // 기업마당 API 공고 타입
 interface BizInfoItem {
@@ -10,13 +12,11 @@ interface BizInfoItem {
   pblancUrl: string;
   creatPnttm: string;
   pldirSportRealmLclasCodeNm: string;
+  bsnsSumryCn: string;
 }
 
-// 뉴스/분석 데이터 (추후 에어테이블 연동)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const newsData: any[] = [];
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const analysisData: any[] = [];
+const newsData = getNewsPosts();
+const analysisData = getAnalysisPosts();
 
 const faqs = [
   {
@@ -43,12 +43,6 @@ const faqs = [
 
 const tabs = ["정책자금 공고", "정책자금 뉴스", "정책자금 분석", "FAQ"];
 
-const tagColors: Record<string, string> = {
-  공고: "bg-primary-5 text-primary-60",
-  뉴스: "bg-success/10 text-success",
-  분석: "bg-point-50/10 text-point-50",
-};
-
 function formatDate(dateStr: string) {
   if (!dateStr) return "";
   return dateStr.slice(0, 10).replace(/-/g, ".");
@@ -61,6 +55,13 @@ function getTag(category: string) {
   if (category.includes("금융")) return "금융";
   return "공고";
 }
+
+const tabMotion = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 } as const,
+  transition: { duration: 0.25, ease: [0, 0, 0.2, 1] as const },
+};
 
 export default function NoticePage() {
   const [activeTab, setActiveTab] = useState(0);
@@ -101,69 +102,54 @@ export default function NoticePage() {
               >
                 {tab}
                 {activeTab === i && (
-                  <span className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-primary-60" />
+                  <motion.span
+                    layoutId="tab-indicator"
+                    className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-primary-60"
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                  />
                 )}
               </button>
             ))}
           </div>
 
-          {/* 탭 1: 정책자금 공고 (기업마당 API) */}
-          {activeTab === 0 && (
-            <div className="bg-white rounded-xl border border-gray-10">
-              {loading ? (
-                <div className="p-12 text-center text-gray-40">
-                  불러오는 중...
+          <AnimatePresence mode="wait">
+            {/* 탭 1: 정책자금 공고 (기업마당 API → 내부 링크) */}
+            {activeTab === 0 && (
+              <motion.div
+                key="tab-0"
+                {...tabMotion}
+                className="bg-white rounded-xl border border-gray-10"
+              >
+                {loading ? (
+                  <div className="p-12 text-center text-gray-40">
+                    불러오는 중...
+                  </div>
+                ) : bizInfoItems.length === 0 ? (
+                  <div className="p-12 text-center text-gray-40">
+                    공고를 불러오지 못했습니다
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-10">
+                    {bizInfoItems.map((item, i) => (
+                      <BizInfoRow key={i} item={item} index={i} />
+                    ))}
+                  </div>
+                )}
+                <div className="px-5 py-3 border-t border-gray-10 text-right">
+                  <span className="text-xs text-gray-40">
+                    출처: 기업마당(bizinfo.go.kr) · 매일 09시 업데이트
+                  </span>
                 </div>
-              ) : bizInfoItems.length === 0 ? (
-                <div className="p-12 text-center text-gray-40">
-                  공고를 불러오지 못했습니다
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-10">
-                  {bizInfoItems.map((item, i) => (
-                    <a
-                      key={i}
-                      href={item.pblancUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors"
-                    >
-                      <span
-                        className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${i === 0 ? "bg-red-50 text-point-50" : "bg-primary-5 text-primary-60"}`}
-                      >
-                        {i === 0
-                          ? "신규"
-                          : getTag(item.pldirSportRealmLclasCodeNm)}
-                      </span>
-                      <span className="flex-1 text-gray-80 font-medium truncate">
-                        {item.pblancNm}
-                      </span>
-                      <span className="flex-shrink-0 text-sm text-gray-40">
-                        {formatDate(item.creatPnttm)}
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              )}
-              <div className="px-5 py-3 border-t border-gray-10 text-right">
-                <span className="text-xs text-gray-40">
-                  출처: 기업마당(bizinfo.go.kr) · 매일 09시 업데이트
-                </span>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
 
-          {/* 탭 2: 정책자금 뉴스 */}
-          {activeTab === 1 && (
-            <div className="bg-white rounded-xl border border-gray-10">
-              {newsData.length === 0 ? (
-                <div className="p-16 text-center">
-                  <p className="text-gray-40 mb-1">등록된 뉴스가 없습니다</p>
-                  <p className="text-xs text-gray-30">
-                    콘텐츠 파이프라인 연동 후 자동 업데이트됩니다
-                  </p>
-                </div>
-              ) : (
+            {/* 탭 2: 정책자금 뉴스 */}
+            {activeTab === 1 && (
+              <motion.div
+                key="tab-1"
+                {...tabMotion}
+                className="bg-white rounded-xl border border-gray-10"
+              >
                 <div className="divide-y divide-gray-10">
                   {newsData.map((item) => (
                     <Link
@@ -171,12 +157,10 @@ export default function NoticePage() {
                       href={`/notice/${item.id}`}
                       className="flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors"
                     >
-                      <span
-                        className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${tagColors[item.tag]}`}
-                      >
+                      <span className="flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full bg-success/10 text-success">
                         {item.tag}
                       </span>
-                      <span className="flex-1 text-gray-80 font-medium">
+                      <span className="flex-1 text-gray-80 font-medium truncate">
                         {item.title}
                       </span>
                       <span className="flex-shrink-0 text-sm text-gray-40">
@@ -185,23 +169,16 @@ export default function NoticePage() {
                     </Link>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
+              </motion.div>
+            )}
 
-          {/* 탭 3: 정책자금 분석 */}
-          {activeTab === 2 && (
-            <div className="bg-white rounded-xl border border-gray-10">
-              {analysisData.length === 0 ? (
-                <div className="p-16 text-center">
-                  <p className="text-gray-40 mb-1">
-                    등록된 분석 리포트가 없습니다
-                  </p>
-                  <p className="text-xs text-gray-30">
-                    콘텐츠 파이프라인 연동 후 자동 업데이트됩니다
-                  </p>
-                </div>
-              ) : (
+            {/* 탭 3: 정책자금 분석 */}
+            {activeTab === 2 && (
+              <motion.div
+                key="tab-2"
+                {...tabMotion}
+                className="bg-white rounded-xl border border-gray-10"
+              >
                 <div className="divide-y divide-gray-10">
                   {analysisData.map((item) => (
                     <Link
@@ -209,12 +186,10 @@ export default function NoticePage() {
                       href={`/notice/${item.id}`}
                       className="flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors"
                     >
-                      <span
-                        className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${tagColors[item.tag]}`}
-                      >
+                      <span className="flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full bg-point-50/10 text-point-50">
                         {item.tag}
                       </span>
-                      <span className="flex-1 text-gray-80 font-medium">
+                      <span className="flex-1 text-gray-80 font-medium truncate">
                         {item.title}
                       </span>
                       <span className="flex-shrink-0 text-sm text-gray-40">
@@ -223,21 +198,91 @@ export default function NoticePage() {
                     </Link>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
+              </motion.div>
+            )}
 
-          {/* 탭 4: FAQ */}
-          {activeTab === 3 && (
-            <div className="space-y-3">
-              {faqs.map((item, i) => (
-                <FaqItem key={i} q={item.q} a={item.a} />
-              ))}
-            </div>
-          )}
+            {/* 탭 4: FAQ */}
+            {activeTab === 3 && (
+              <motion.div key="tab-3" {...tabMotion} className="space-y-3">
+                {faqs.map((item, i) => (
+                  <FaqItem key={i} q={item.q} a={item.a} />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
     </>
+  );
+}
+
+// 기업마당 공고 행 — 클릭 시 내부에서 요약 펼침 (외부 링크 X)
+function BizInfoRow({ item, index }: { item: BizInfoItem; index: number }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors text-left"
+      >
+        <span
+          className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${index === 0 ? "bg-red-50 text-point-50" : "bg-primary-5 text-primary-60"}`}
+        >
+          {index === 0 ? "신규" : getTag(item.pldirSportRealmLclasCodeNm)}
+        </span>
+        <span className="flex-1 text-gray-80 font-medium truncate">
+          {item.pblancNm}
+        </span>
+        <span className="flex-shrink-0 text-sm text-gray-40">
+          {formatDate(item.creatPnttm)}
+        </span>
+        <svg
+          className={`w-4 h-4 text-gray-40 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-4 pt-1">
+              <p className="text-sm text-gray-60 leading-relaxed mb-3">
+                {item.bsnsSumryCn || item.pblancNm}
+              </p>
+              <div className="flex gap-2">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-60 text-white text-xs font-semibold rounded-lg hover:bg-primary-70 transition-colors"
+                >
+                  이 공고로 상담신청
+                </Link>
+                <Link
+                  href="/diagnosis"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-20 text-gray-60 text-xs font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
+                >
+                  자금적격 진단
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -264,11 +309,21 @@ function FaqItem({ q, a }: { q: string; a: string }) {
           />
         </svg>
       </button>
-      {open && (
-        <div className="px-6 py-4 bg-gray-5 text-gray-70 leading-relaxed border-t border-gray-10">
-          {a}
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 py-4 bg-gray-5 text-gray-70 leading-relaxed border-t border-gray-10">
+              {a}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
