@@ -108,7 +108,7 @@ export default function AdminLayout({
   const pageTitle = pageTitleMap[pathname] || "관리자";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-white flex">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 lg:ml-[260px] flex flex-col min-h-screen">

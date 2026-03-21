@@ -18,25 +18,29 @@ export default function StatsCard({
   iconColor,
 }: StatsCardProps) {
   const changeColors = {
-    positive: "text-green-600",
+    positive: "text-emerald-600",
     negative: "text-red-500",
-    neutral: "text-gray-400",
+    neutral: "text-[#1A56A8]",
   };
 
   return (
-    <div className="bg-white rounded-xl p-5 border border-gray-100 hover:-translate-y-0.5 hover:shadow-md hover:border-[#1A56A8] transition-all cursor-default">
-      <div className="flex items-start gap-4">
+    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:border-[#1A56A8]/30 transition-all cursor-default">
+      <div className="flex items-start gap-3">
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+          className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
           style={{ backgroundColor: iconBg, color: iconColor }}
         >
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-sm text-gray-500">{label}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+            {label}
+          </p>
+          <p className="text-xl font-bold text-gray-900 mt-0.5">{value}</p>
           {change && (
-            <p className={`text-xs mt-1 ${changeColors[changeType]}`}>
+            <p
+              className={`text-[11px] mt-0.5 font-medium ${changeColors[changeType]}`}
+            >
               {change}
             </p>
           )}

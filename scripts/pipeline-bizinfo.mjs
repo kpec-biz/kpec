@@ -9,7 +9,7 @@ config();
 
 const BIZINFO_API = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do";
 const AIRTABLE_API = "https://api.airtable.com/v0";
-const TABLE_ID = "tblWouy3TNdywzkpw"; // 정책자금공고
+const TABLE_ID = "tblqm10vZyVADXMKQ"; // notices
 
 const env = {
   BIZINFO_API_KEY: process.env.BIZINFO_API_KEY,
@@ -165,10 +165,11 @@ async function uploadToAirtable(records) {
 
 // ── 6. Categorize ──
 function getCategory(code) {
-  if (code?.includes("기술")) return "기술";
-  if (code?.includes("인력") || code?.includes("고용")) return "인력";
-  if (code?.includes("경영")) return "경영";
-  if (code?.includes("금융")) return "금융";
+  const c = (code || "").replace(/"/g, "").trim();
+  if (c.includes("기술")) return "기술";
+  if (c.includes("인력") || c.includes("고용")) return "인력";
+  if (c.includes("경영")) return "경영";
+  if (c.includes("금융")) return "금융";
   return "공고";
 }
 
@@ -230,7 +231,7 @@ async function main() {
         title: rewritten.title,
         originalTitle: item.pblancNm,
         summary: rewritten.summary,
-        content: contentUrl,
+        contentUrl: contentUrl,
         category: getCategory(item.pldirSportRealmLclasCodeNm),
         source: item.jrsdInsttNm,
         applyPeriod: item.reqstBeginEndDe,
