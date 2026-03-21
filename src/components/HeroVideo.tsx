@@ -20,8 +20,8 @@ export default function HeroVideo() {
         muted
         loop
         playsInline
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
-        onCanPlayThrough={() => setVideoLoaded(true)}
+        preload="auto"
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
         onLoadedData={() => setVideoLoaded(true)}
       >
         <source src={HERO_VIDEO} type="video/mp4" />

@@ -11,15 +11,19 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
-  // 로그인 페이지는 레이아웃 없이 렌더링
   const isLoginPage = pathname === "/admin/login" || pathname === "/login";
 
   // 인증 체크
   useEffect(() => {
-    if (isLoginPage) return;
+    if (isLoginPage) {
+      setAuthChecked(true);
+      return;
+    }
 
     const token = localStorage.getItem("kpec_admin_token");
     if (!token) {
@@ -32,20 +36,62 @@ export default function AdminLayout({
       if (payload.exp && payload.exp < Date.now()) {
         localStorage.removeItem("kpec_admin_token");
         router.replace(adminHref("/admin/login"));
+        return;
       }
+      setIsAuthenticated(true);
     } catch {
       localStorage.removeItem("kpec_admin_token");
       router.replace(adminHref("/admin/login"));
+      return;
     }
+
+    setAuthChecked(true);
   }, [pathname, isLoginPage, router]);
 
+  // 로그인 페이지는 레이아웃 없이 렌더링
   if (isLoginPage) {
     return <>{children}</>;
   }
 
+  // 인증 확인 전에는 로딩 화면만 표시 (보안: 대시보드 미노출)
+  if (!authChecked || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center gap-1 mb-4">
+            <span className="text-3xl font-black text-[#ED2939]">K</span>
+            <span className="text-3xl font-light text-[#1A56A8]">PEC</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-400">
+            <svg
+              className="animate-spin h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
+            <span className="text-sm">인증 확인 중...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleLogout = () => {
     localStorage.removeItem("kpec_admin_token");
-    router.replace("/admin/login");
+    router.replace(adminHref("/admin/login"));
   };
 
   const pageTitleMap: Record<string, string> = {
@@ -59,7 +105,6 @@ export default function AdminLayout({
     "/admin/analytics": "방문통계",
     "/admin/settings": "설정",
   };
-  // 서브도메인에서는 pathname에 /admin 없으므로 양쪽 모두 체크
   const pageTitle =
     pageTitleMap[pathname] || pageTitleMap[`/admin${pathname}`] || "관리자";
 
@@ -67,12 +112,9 @@ export default function AdminLayout({
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main content */}
       <div className="flex-1 lg:ml-[260px] flex flex-col min-h-screen">
-        {/* Header */}
         <header className="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
             <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
@@ -90,11 +132,8 @@ export default function AdminLayout({
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">{pageTitle}</h1>
-            </div>
+            <h1 className="text-lg font-bold text-gray-900">{pageTitle}</h1>
           </div>
-
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-500 hidden sm:block">
               관리자
@@ -108,11 +147,9 @@ export default function AdminLayout({
           </div>
         </header>
 
-        {/* Page content */}
         <main className="flex-1 p-6">{children}</main>
       </div>
 
-      {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex lg:hidden z-30 safe-area-bottom">
         {[
           {

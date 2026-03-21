@@ -31,6 +31,7 @@ for (const png of pngs) {
       Key: key,
       Body: body,
       ContentType: "image/webp",
+      CacheControl: "public, max-age=31536000, immutable",
     })
   );
   console.log("OK:", key, `(${(body.length / 1024).toFixed(1)}KB)`);
