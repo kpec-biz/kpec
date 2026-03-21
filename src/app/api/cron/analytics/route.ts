@@ -143,15 +143,122 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // 기존 오늘 데이터 삭제 (중복 방지)
     const today = new Date().toISOString().split("T")[0];
-    const existing = await fetch(
-      `${AIRTABLE_API}/${baseId}/${TABLE_ID}?filterByFormula={date}="${today}"`,
+
+    // === 일별 영속 스냅샷 (어제 하루치, 삭제 안 함) ===
+    const yesterday = new Date(Date.now() - 86400000)
+      .toISOString()
+      .split("T")[0];
+    const existingDaily = await fetch(
+      `${AIRTABLE_API}/${baseId}/${TABLE_ID}?filterByFormula=AND({date}="${yesterday}",{period}="daily")&maxRecords=1`,
       { headers: { Authorization: `Bearer ${pat}` } },
     ).then((r) => r.json());
 
-    if (existing.records?.length) {
-      const ids = existing.records.map((r: { id: string }) => r.id);
+    if (!existingDaily.records?.length) {
+      // 어제 하루치 데이터 조회
+      const [dailyReport] = await client.runReport({
+        property,
+        dateRanges: [{ startDate: yesterday, endDate: yesterday }],
+        metrics: [
+          { name: "activeUsers" },
+          { name: "screenPageViews" },
+          { name: "averageSessionDuration" },
+          { name: "bounceRate" },
+        ],
+      });
+      const dmv = dailyReport.rows?.[0]?.metricValues || [];
+
+      const [dailyPages] = await client.runReport({
+        property,
+        dateRanges: [{ startDate: yesterday, endDate: yesterday }],
+        dimensions: [{ name: "pagePath" }],
+        metrics: [{ name: "screenPageViews" }],
+        orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
+        limit: 10,
+      });
+
+      const [dailySrc] = await client.runReport({
+        property,
+        dateRanges: [{ startDate: yesterday, endDate: yesterday }],
+        dimensions: [{ name: "sessionDefaultChannelGroup" }],
+        metrics: [{ name: "sessions" }],
+        orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+        limit: 10,
+      });
+
+      const [dailyDev] = await client.runReport({
+        property,
+        dateRanges: [{ startDate: yesterday, endDate: yesterday }],
+        dimensions: [{ name: "deviceCategory" }],
+        metrics: [{ name: "activeUsers" }],
+        orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+      });
+
+      const [dailyRef] = await client.runReport({
+        property,
+        dateRanges: [{ startDate: yesterday, endDate: yesterday }],
+        dimensions: [{ name: "sessionSource" }],
+        metrics: [{ name: "sessions" }],
+        orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+        limit: 10,
+      });
+
+      await fetch(`${AIRTABLE_API}/${baseId}/${TABLE_ID}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${pat}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          records: [
+            {
+              fields: {
+                date: yesterday,
+                period: "daily",
+                activeUsers: Number(dmv[0]?.value || 0),
+                pageViews: Number(dmv[1]?.value || 0),
+                avgDuration: Number(Number(dmv[2]?.value || 0).toFixed(1)),
+                bounceRate: Number(Number(dmv[3]?.value || 0).toFixed(4)),
+                topPages: JSON.stringify(
+                  (dailyPages.rows || []).map((r) => ({
+                    path: r.dimensionValues?.[0]?.value,
+                    views: Number(r.metricValues?.[0]?.value),
+                  })),
+                ),
+                trafficSources: JSON.stringify(
+                  (dailySrc.rows || []).map((r) => ({
+                    name: r.dimensionValues?.[0]?.value,
+                    sessions: Number(r.metricValues?.[0]?.value),
+                  })),
+                ),
+                devices: JSON.stringify(
+                  (dailyDev.rows || []).map((r) => ({
+                    name: r.dimensionValues?.[0]?.value,
+                    users: Number(r.metricValues?.[0]?.value),
+                  })),
+                ),
+                referrers: JSON.stringify(
+                  (dailyRef.rows || []).map((r) => ({
+                    name: r.dimensionValues?.[0]?.value,
+                    sessions: Number(r.metricValues?.[0]?.value),
+                  })),
+                ),
+                dailyTrend: "[]",
+              },
+            },
+          ],
+        }),
+      });
+    }
+
+    // === 기간별 스냅샷 (대시보드용, 오늘 데이터 덮어쓰기) ===
+    const existingPeriods = await fetch(
+      `${AIRTABLE_API}/${baseId}/${TABLE_ID}?filterByFormula=AND({date}="${today}",{period}!="daily")`,
+      { headers: { Authorization: `Bearer ${pat}` } },
+    ).then((r) => r.json());
+
+    if (existingPeriods.records?.length) {
+      const ids = existingPeriods.records.map((r: { id: string }) => r.id);
       for (let i = 0; i < ids.length; i += 10) {
         const batch = ids.slice(i, i + 10);
         const params = batch.map((id: string) => `records[]=${id}`).join("&");
@@ -162,7 +269,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 새 데이터 삽입
+    // 기간별 데이터 삽입
     for (let i = 0; i < results.length; i += 10) {
       const batch = results.slice(i, i + 10);
       await fetch(`${AIRTABLE_API}/${baseId}/${TABLE_ID}`, {
@@ -178,6 +285,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       date: today,
+      dailySnapshot: yesterday,
       periods: results.map((r) => ({
         period: r.fields.period,
         users: r.fields.activeUsers,
