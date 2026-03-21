@@ -43,24 +43,31 @@ export function middleware(req: NextRequest) {
 
   // === admin 서브도메인 접근 ===
   if (subdomain === "admin") {
-    // admin 서브도메인에서는 /admin prefix 없이 접근
-    // admin.example.com/inquiries → 내부적으로 /admin/inquiries 로 rewrite
     if (!pathname.startsWith("/admin")) {
       const url = req.nextUrl.clone();
       url.pathname = `/admin${pathname}`;
-      return NextResponse.rewrite(url);
+      const res = NextResponse.rewrite(url);
+      res.headers.set("x-is-admin", "1");
+      return res;
     }
-    // 이미 /admin으로 시작하면 그대로 통과
-    return NextResponse.next();
+    const res = NextResponse.next();
+    res.headers.set("x-is-admin", "1");
+    return res;
+  }
+
+  // 메인 도메인에서 /admin 직접 접근 (로컬 개발)
+  if (pathname.startsWith("/admin")) {
+    const res = NextResponse.next();
+    res.headers.set("x-is-admin", "1");
+    return res;
   }
 
   // === 메인 도메인에서 /admin 접근 시 서브도메인으로 redirect ===
   if (ROOT_DOMAIN && subdomain === null && pathname.startsWith("/admin")) {
-    // 로컬 개발 환경이면 redirect하지 않음
     if (host.startsWith("localhost") || /^\d+\.\d+\.\d+\.\d+/.test(host)) {
+      // 로컬 개발은 위에서 이미 처리
       return NextResponse.next();
     }
-
     const protocol = req.nextUrl.protocol;
     const adminPath = pathname.replace(/^\/admin/, "") || "/";
     const redirectUrl = `${protocol}//admin.${ROOT_DOMAIN}${adminPath}${req.nextUrl.search}`;
