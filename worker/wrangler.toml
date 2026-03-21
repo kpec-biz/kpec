@@ -1,4 +1,4 @@
-name = "kpec-worker"
+name = "kpec"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
