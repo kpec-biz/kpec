@@ -48,3 +48,6 @@ NEXT_SESSION*.md
 *.key
 *.secret
 credentials.json
+
+# wrangler local state
+.wrangler/
