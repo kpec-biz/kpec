@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
-import LayoutShell from "@/components/LayoutShell";
 
 export const metadata: Metadata = {
   title: "KPEC 기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
@@ -25,14 +23,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersList = headers();
-  const isAdmin = headersList.get("x-is-admin") === "1";
-
   return (
     <html lang="ko">
-      <body className="font-sans antialiased">
-        <LayoutShell isAdmin={isAdmin}>{children}</LayoutShell>
-      </body>
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }
