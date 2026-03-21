@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import FloatingMenu from "@/components/FloatingMenu";
+import LayoutShell from "@/components/LayoutShell";
 
 export const metadata: Metadata = {
   title: "KPEC 기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
@@ -29,10 +27,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="font-sans antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
-        <FloatingMenu />
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );
