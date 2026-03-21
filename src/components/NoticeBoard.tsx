@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { r2 } from "@/lib/r2-images";
 
 interface BizInfoItem {
   pblancNm: string;
@@ -177,7 +178,7 @@ export default function NoticeBoard() {
                 >
                   <div className="w-[100px] h-[68px] rounded-md overflow-hidden flex-shrink-0 bg-gray-10 relative">
                     <Image
-                      src={news.image}
+                      src={r2(news.image)}
                       alt={news.title}
                       fill
                       className="object-cover"

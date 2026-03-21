@@ -1,19 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
 const HERO_VIDEO = "/videos/hero/hero-6.mp4";
 
 export default function HeroVideo() {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
   return (
     <section className="relative z-[5] w-full min-h-[620px] flex items-center overflow-hidden pt-20 pb-16">
+      {/* Skeleton while video loads */}
+      {!videoLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 bg-[length:200%_100%] animate-shimmer z-[1]" />
+      )}
       {/* MP4 Background Video */}
       <video
         autoPlay
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover"
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
+        onCanPlayThrough={() => setVideoLoaded(true)}
+        onLoadedData={() => setVideoLoaded(true)}
       >
         <source src={HERO_VIDEO} type="video/mp4" />
       </video>

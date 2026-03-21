@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { r2 } from "@/lib/r2-images";
 
 const news = [
   {
@@ -43,7 +46,7 @@ export default function GovNewsBanner() {
         >
           <div className="w-full aspect-[4/3] overflow-hidden bg-gray-10">
             <Image
-              src={item.image}
+              src={r2(item.image)}
               alt={item.title}
               width={400}
               height={300}

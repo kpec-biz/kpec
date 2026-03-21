@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import PageHeader from "@/components/PageHeader";
+import { r2 } from "@/lib/r2-images";
 
 const faqData = [
   {
@@ -71,7 +72,7 @@ export default function ServicesPage() {
       <section
         className="py-16 relative"
         style={{
-          backgroundImage: "url(/images/services/operating-fund-bg.png)",
+          backgroundImage: `url(${r2("/images/services/operating-fund-bg.png")})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -168,7 +169,7 @@ export default function ServicesPage() {
       <section
         className="py-16 relative"
         style={{
-          backgroundImage: "url(/images/services/facility-fund-bg.png)",
+          backgroundImage: `url(${r2("/images/services/facility-fund-bg.png")})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -228,7 +229,7 @@ export default function ServicesPage() {
       <section
         className="py-16 relative"
         style={{
-          backgroundImage: "url(/images/services/certification-bg.png)",
+          backgroundImage: `url(${r2("/images/services/certification-bg.png")})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

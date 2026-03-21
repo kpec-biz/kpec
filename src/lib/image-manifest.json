@@ -1,0 +1,92 @@
+{
+  "/images/banners/consultant-portrait.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/banners/consultant-portrait.webp",
+    "width": 896,
+    "height": 1200
+  },
+  "/images/banners/cta-consultation.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/banners/cta-consultation.webp",
+    "width": 1408,
+    "height": 768
+  },
+  "/images/banners/fund-diagnosis.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/banners/fund-diagnosis.webp",
+    "width": 1408,
+    "height": 768
+  },
+  "/images/headers/cases.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/headers/cases.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/headers/contact.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/headers/contact.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/headers/notice.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/headers/notice.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/headers/process.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/headers/process.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/headers/services.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/headers/services.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/instagram/insta-01-export.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/instagram/insta-01-export.webp",
+    "width": 540,
+    "height": 540
+  },
+  "/images/instagram/insta-02-document.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/instagram/insta-02-document.webp",
+    "width": 540,
+    "height": 540
+  },
+  "/images/instagram/insta-03-newfund.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/instagram/insta-03-newfund.webp",
+    "width": 540,
+    "height": 540
+  },
+  "/images/services/certification-bg.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/services/certification-bg.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/services/certification.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/services/certification.webp",
+    "width": 1408,
+    "height": 768
+  },
+  "/images/services/facility-fund-bg.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/services/facility-fund-bg.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/services/facility-fund.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/services/facility-fund.webp",
+    "width": 1408,
+    "height": 768
+  },
+  "/images/services/operating-fund-bg.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/services/operating-fund-bg.webp",
+    "width": 1584,
+    "height": 672
+  },
+  "/images/services/operating-fund.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/services/operating-fund.webp",
+    "width": 1408,
+    "height": 768
+  },
+  "/images/social/fb-cover.png": {
+    "webp": "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/social/fb-cover.webp",
+    "width": 820,
+    "height": 312
+  }
+}

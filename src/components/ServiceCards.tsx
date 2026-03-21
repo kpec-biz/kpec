@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { r2 } from "@/lib/r2-images";
 
 const services = [
   {
@@ -43,6 +47,25 @@ const services = [
   },
 ];
 
+function ServiceImage({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="relative w-full h-[180px] bg-gray-10">
+      {!loaded && (
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-shimmer" />
+      )}
+      <Image
+        src={r2(src)}
+        alt={alt}
+        fill
+        className={`object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+        sizes="(max-width: 768px) 100vw, 33vw"
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
 export default function ServiceCards() {
   return (
     <section className="py-14 px-6 bg-gray-5">
@@ -70,15 +93,7 @@ export default function ServiceCards() {
             >
               {/* Image */}
               <div className="relative">
-                <div className="relative w-full h-[180px] bg-gray-10">
-                  <Image
-                    src={svc.image}
-                    alt={svc.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                </div>
+                <ServiceImage src={svc.image} alt={svc.title} />
                 {/* AI caption */}
                 <span
                   className="absolute bottom-1.5 right-2 text-[9px] px-1.5 py-0.5 rounded"

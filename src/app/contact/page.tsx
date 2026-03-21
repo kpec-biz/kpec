@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import PageHeader from "@/components/PageHeader";
+import { r2 } from "@/lib/r2-images";
 
 type StepKey = 1 | 2 | 3 | 4;
 
@@ -161,7 +162,7 @@ export default function ContactPage() {
               <div className="bg-white rounded-xl border border-gray-10 overflow-hidden mb-4">
                 <div className="relative aspect-[3/4] bg-primary-5">
                   <Image
-                    src="/images/banners/consultant-portrait.png"
+                    src={r2("/images/banners/consultant-portrait.png")}
                     alt="전문 컨설턴트"
                     fill
                     className="object-cover object-top"

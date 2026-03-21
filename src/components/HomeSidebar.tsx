@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { r2 } from "@/lib/r2-images";
 
 const miniStats = [
   { value: "4.4조", label: "총 예산" },
@@ -261,7 +262,7 @@ function InstagramFeed() {
       {/* 이미지 */}
       <div className="aspect-square relative overflow-hidden">
         <img
-          src={post.image}
+          src={r2(post.image)}
           alt={post.caption}
           className="w-full h-full object-cover transition-opacity duration-500"
         />
