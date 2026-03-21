@@ -1,0 +1,1687 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPEC 기업정책자금센터 - 최종 와이어프레임</title>
+    <link
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --p5: #ecf2fe;
+        --p10: #d8e5fd;
+        --p20: #b1cefb;
+        --p30: #86aff9;
+        --p40: #4c87f6;
+        --p50: #256ef4;
+        --p60: #0b50d0;
+        --p70: #083891;
+        --p80: #052561;
+        --p90: #03163a;
+        --pt50: #d63d4a;
+        --pt60: #ab2b36;
+        --g0: #fff;
+        --g5: #f4f5f6;
+        --g10: #e6e8ea;
+        --g20: #cdd1d5;
+        --g30: #b1b8be;
+        --g40: #8a949e;
+        --g50: #6d7882;
+        --g60: #58616a;
+        --g70: #464c53;
+        --g80: #33363d;
+        --g90: #1e2124;
+        --r8: 8px;
+        --r12: 12px;
+        --r16: 16px;
+        --rfull: 100px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          "Pretendard",
+          -apple-system,
+          system-ui,
+          sans-serif;
+        background: #fff;
+        color: var(--g90);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .max-w {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* ==================== HEADER ==================== */
+      .header {
+        background: var(--g0);
+        border-bottom: 1px solid var(--g10);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        padding: 0 32px;
+      }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      .logo .k {
+        font-size: 26px;
+        font-weight: 900;
+        color: var(--pt50);
+      }
+      .logo .pec {
+        font-size: 26px;
+        font-weight: 300;
+        color: var(--p60);
+      }
+      .logo .sep {
+        width: 1px;
+        height: 16px;
+        background: var(--g20);
+        margin: 0 6px;
+      }
+      .logo .name {
+        font-size: 12px;
+        color: var(--g50);
+        font-weight: 500;
+      }
+      .gnb {
+        display: flex;
+        align-items: center;
+        gap: 0;
+      }
+      .gnb a {
+        color: var(--g80);
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 20px 18px;
+        position: relative;
+        transition: color 0.2s;
+      }
+      .gnb a:hover,
+      .gnb a.on {
+        color: var(--p60);
+        font-weight: 600;
+      }
+      .gnb a.on::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 18px;
+        right: 18px;
+        height: 3px;
+        background: var(--p60);
+        border-radius: 2px 2px 0 0;
+      }
+      .gnb .cta {
+        background: var(--p60);
+        color: #fff !important;
+        padding: 9px 20px;
+        border-radius: var(--r8);
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 8px;
+      }
+      .gnb .cta:hover {
+        background: var(--p70);
+      }
+
+      /* ==================== HERO ==================== */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          var(--p90) 0%,
+          var(--p80) 30%,
+          var(--p70) 60%,
+          var(--p60) 100%
+        );
+        padding: 88px 32px 72px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -80px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.04) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        left: -40px;
+        bottom: -40px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(37, 110, 244, 0.15) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .hero-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 48px;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-text {
+        flex: 1;
+      }
+      .hero .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--rfull);
+        padding: 6px 14px;
+        margin-bottom: 24px;
+      }
+      .hero .badge .dot {
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .hero .badge span {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+      }
+      .hero h1 {
+        font-size: 42px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.3;
+        margin-bottom: 16px;
+      }
+      .hero .sub {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.65);
+        line-height: 1.7;
+        margin-bottom: 32px;
+        max-width: 480px;
+      }
+      .hero .btns {
+        display: flex;
+        gap: 12px;
+      }
+      .hero .btn-w {
+        background: #fff;
+        color: var(--p60);
+        padding: 14px 28px;
+        border-radius: var(--r8);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+      .hero .btn-w:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      }
+      .hero .btn-o {
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 14px 28px;
+        border-radius: var(--r8);
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: border-color 0.2s;
+      }
+      .hero .btn-o:hover {
+        border-color: rgba(255, 255, 255, 0.6);
+      }
+      .hero-stats {
+        display: flex;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+      .hero-stat {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--r12);
+        padding: 20px 28px;
+        text-align: center;
+        min-width: 120px;
+      }
+      .hero-stat .n {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .hero-stat .l {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.55);
+        margin-top: 4px;
+      }
+      /* Lottie placeholder */
+      .hero .motion-note {
+        position: absolute;
+        bottom: 16px;
+        right: 32px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.3);
+        font-style: italic;
+      }
+
+      /* ==================== QUICK SERVICE ==================== */
+      .quick {
+        padding: 0 32px;
+        margin-top: -36px;
+        position: relative;
+        z-index: 2;
+      }
+      .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .quick-card {
+        background: var(--g0);
+        border: 1px solid var(--g10);
+        border-radius: var(--r12);
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+      .quick-card:hover {
+        border-color: var(--p50);
+        box-shadow: 0 4px 16px rgba(11, 80, 208, 0.1);
+        transform: translateY(-2px);
+      }
+      .quick-card .ic {
+        width: 44px;
+        height: 44px;
+        background: var(--p5);
+        border-radius: var(--r8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--p60);
+        flex-shrink: 0;
+      }
+      .quick-card .ic svg {
+        width: 22px;
+        height: 22px;
+      }
+      .quick-card .tx .t {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--g90);
+      }
+      .quick-card .tx .d {
+        font-size: 12px;
+        color: var(--g40);
+        margin-top: 2px;
+      }
+
+      /* ==================== SECTION COMMON ==================== */
+      .section {
+        padding: 72px 32px;
+      }
+      .section.alt {
+        background: var(--g5);
+      }
+      .sh {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .sh .pill {
+        display: inline-block;
+        background: var(--p5);
+        color: var(--p60);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 5px 14px;
+        border-radius: var(--rfull);
+        margin-bottom: 10px;
+      }
+      .sh h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--g90);
+        margin-bottom: 8px;
+      }
+      .sh p {
+        font-size: 15px;
+        color: var(--g50);
+      }
+
+      /* ==================== FUND DIAGNOSIS CTA ==================== */
+      .diagnosis {
+        background: linear-gradient(135deg, var(--p70), var(--p60));
+        padding: 56px 32px;
+        text-align: center;
+      }
+      .diagnosis h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+      .diagnosis p {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 15px;
+        margin-bottom: 28px;
+      }
+      .diagnosis .steps {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        margin-bottom: 28px;
+      }
+      .diagnosis .step {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+      }
+      .diagnosis .step .num {
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .diagnosis .btn {
+        display: inline-block;
+        background: #fff;
+        color: var(--p60);
+        padding: 14px 36px;
+        border-radius: var(--r8);
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      /* ==================== SERVICES ==================== */
+      .svc-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .svc {
+        background: var(--g0);
+        border: 1px solid var(--g10);
+        border-radius: var(--r12);
+        padding: 28px;
+        transition: all 0.25s;
+      }
+      .svc:hover {
+        border-color: var(--p50);
+        box-shadow: 0 4px 20px rgba(11, 80, 208, 0.08);
+      }
+      .svc .ic {
+        width: 44px;
+        height: 44px;
+        background: var(--p5);
+        border-radius: var(--r8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        color: var(--p60);
+      }
+      .svc .ic svg {
+        width: 24px;
+        height: 24px;
+      }
+      .svc h3 {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--g90);
+        margin-bottom: 8px;
+      }
+      .svc p {
+        font-size: 14px;
+        color: var(--g50);
+        line-height: 1.6;
+        margin-bottom: 14px;
+      }
+      .svc ul {
+        list-style: none;
+        padding: 0;
+      }
+      .svc li {
+        font-size: 13px;
+        color: var(--g50);
+        padding: 3px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .svc li::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        background: var(--p50);
+        border-radius: 50%;
+      }
+
+      /* ==================== STATS ==================== */
+      .stats {
+        background: var(--p70);
+        padding: 48px 32px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .stats .n {
+        font-size: 36px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .stats .l {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 4px;
+      }
+
+      /* ==================== NOTICE BOARD (TAB) ==================== */
+      .board {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .board-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid var(--g10);
+        margin-bottom: 0;
+      }
+      .board-tab {
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--g50);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s;
+      }
+      .board-tab.on {
+        color: var(--p60);
+        border-bottom-color: var(--p60);
+      }
+      .board-list {
+        border: 1px solid var(--g10);
+        border-top: none;
+        border-radius: 0 0 var(--r8) var(--r8);
+      }
+      .board-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--g10);
+        font-size: 14px;
+        transition: background 0.15s;
+      }
+      .board-item:last-child {
+        border-bottom: none;
+      }
+      .board-item:hover {
+        background: var(--g5);
+      }
+      .board-item .tag {
+        display: inline-block;
+        background: var(--p5);
+        color: var(--p60);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-right: 10px;
+      }
+      .board-item .tag.red {
+        background: #fef2f2;
+        color: var(--pt50);
+      }
+      .board-item .title {
+        color: var(--g80);
+        font-weight: 500;
+      }
+      .board-item .date {
+        color: var(--g40);
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+      .board-more {
+        text-align: right;
+        margin-top: 12px;
+      }
+      .board-more a {
+        font-size: 13px;
+        color: var(--p60);
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* ==================== SUCCESS CASES (CONDITIONAL) ==================== */
+      .cases-section {
+        position: relative;
+      }
+      .cases-empty-note {
+        position: absolute;
+        top: 12px;
+        right: 24px;
+        font-size: 11px;
+        color: var(--g40);
+        background: var(--g5);
+        padding: 4px 10px;
+        border-radius: 4px;
+        border: 1px dashed var(--g20);
+      }
+      .cases-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .case-card {
+        background: var(--g0);
+        border: 1px solid var(--g10);
+        border-radius: var(--r12);
+        padding: 24px;
+        transition: all 0.2s;
+      }
+      .case-card:hover {
+        border-color: var(--p50);
+        box-shadow: 0 4px 16px rgba(11, 80, 208, 0.06);
+      }
+      .case-card .tags {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .case-card .tags span {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 4px;
+      }
+      .case-card .tags .t1 {
+        background: var(--p5);
+        color: var(--p60);
+      }
+      .case-card .tags .t2 {
+        background: #fef7ed;
+        color: #b45309;
+      }
+      .case-card h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--g90);
+        margin-bottom: 6px;
+      }
+      .case-card p {
+        font-size: 13px;
+        color: var(--g50);
+        line-height: 1.5;
+      }
+
+      /* ==================== PROCESS ==================== */
+      .proc-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .proc {
+        background: var(--g0);
+        border: 1px solid var(--g10);
+        border-radius: var(--r12);
+        padding: 20px;
+        text-align: center;
+        transition: all 0.2s;
+        position: relative;
+      }
+      .proc:hover {
+        border-color: var(--p50);
+      }
+      .proc .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--p5);
+        color: var(--p60);
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 50%;
+        margin-bottom: 8px;
+      }
+      .proc .t {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--g90);
+        margin-bottom: 4px;
+      }
+      .proc .d {
+        font-size: 12px;
+        color: var(--g40);
+      }
+      .proc-arrow {
+        position: absolute;
+        top: 50%;
+        right: -12px;
+        color: var(--g20);
+        font-size: 14px;
+        transform: translateY(-50%);
+      }
+
+      /* ==================== CONTACT CTA ==================== */
+      .contact-cta {
+        background: var(--p5);
+        padding: 64px 32px;
+        text-align: center;
+        border-top: 3px solid var(--p60);
+      }
+      .contact-cta h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--g90);
+        margin-bottom: 8px;
+      }
+      .contact-cta > p {
+        color: var(--g50);
+        font-size: 15px;
+        margin-bottom: 28px;
+      }
+      .contact-checks {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        max-width: 800px;
+        margin: 0 auto 28px;
+      }
+      .contact-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--g0);
+        border: 1px solid var(--g10);
+        border-radius: var(--r8);
+        padding: 12px 14px;
+        font-size: 14px;
+        color: var(--g70);
+      }
+      .contact-check svg {
+        width: 16px;
+        height: 16px;
+        color: var(--p60);
+        flex-shrink: 0;
+      }
+      .contact-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .btn-primary {
+        display: inline-block;
+        background: var(--p60);
+        color: #fff;
+        padding: 14px 36px;
+        border-radius: var(--r8);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .btn-primary:hover {
+        background: var(--p70);
+      }
+      .btn-point {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--pt50);
+        color: #fff;
+        padding: 14px 36px;
+        border-radius: var(--r8);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .btn-point:hover {
+        background: var(--pt60);
+      }
+
+      /* ==================== FLOATING QUICK MENU ==================== */
+      .floating {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 99;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .floating a {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+        transition: transform 0.2s;
+      }
+      .floating a:hover {
+        transform: scale(1.1);
+      }
+      .floating .f-phone {
+        background: var(--p60);
+        color: #fff;
+      }
+      .floating .f-kakao {
+        background: #fee500;
+        color: #3c1e1e;
+      }
+      .floating .f-top {
+        background: var(--g0);
+        color: var(--g60);
+        border: 1px solid var(--g10);
+      }
+      .floating a svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      /* ==================== FOOTER ==================== */
+      .footer {
+        background: var(--p80);
+        padding: 40px 32px;
+      }
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .footer .f-logo .k {
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--pt50);
+      }
+      .footer .f-logo .pec {
+        font-size: 22px;
+        font-weight: 300;
+        color: #fff;
+      }
+      .footer .f-info {
+        margin-top: 10px;
+      }
+      .footer .f-info p {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.65);
+        line-height: 1.8;
+      }
+      .footer .f-links h4 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .footer .f-links a {
+        display: block;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        line-height: 2;
+      }
+      .footer .f-links a:hover {
+        color: #fff;
+      }
+      .footer .f-call {
+        text-align: right;
+      }
+      .footer .f-call p {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+      }
+      .footer .f-call a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--p60);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: var(--r8);
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .footer-copy {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 28px;
+        padding-top: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .footer-copy a {
+        color: rgba(255, 255, 255, 0.55);
+        text-decoration: underline;
+      }
+      .footer-copy a:hover {
+        color: #fff;
+      }
+
+      /* ==================== WIREFRAME NOTES ==================== */
+      .wf-note {
+        background: #fffde7;
+        border: 1px dashed #e0d860;
+        border-radius: 6px;
+        padding: 8px 14px;
+        font-size: 12px;
+        color: #7c6f00;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .wf-note svg {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+      }
+
+      /* ==================== RESPONSIVE ==================== */
+      @media (max-width: 768px) {
+        .hero-inner {
+          flex-direction: column;
+        }
+        .hero-stats {
+          width: 100%;
+          justify-content: center;
+        }
+        .quick-grid,
+        .svc-grid,
+        .cases-grid,
+        .proc-grid {
+          grid-template-columns: 1fr;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .contact-checks {
+          grid-template-columns: 1fr;
+        }
+        .diagnosis .steps {
+          flex-direction: column;
+          align-items: center;
+        }
+        .gnb {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ HEADER ============ -->
+    <div class="header">
+      <div class="header-inner">
+        <a href="#" class="logo">
+          <span class="k">K</span><span class="pec">PEC</span>
+          <span class="sep"></span>
+          <span class="name">기업정책자금센터</span>
+        </a>
+        <nav class="gnb">
+          <a href="#" class="on">정책자금</a>
+          <a href="#">성공사례</a>
+          <a href="#">진행절차</a>
+          <a href="#">알림·자료</a>
+          <a href="#">상담신청</a>
+          <a href="#" class="cta">무료상담</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <div class="badge">
+            <div class="dot"></div>
+            <span>후불제 성공보수 · 무료상담</span>
+          </div>
+          <h1>중소기업 정책자금,<br />전문가와 함께 시작하세요</h1>
+          <p class="sub">
+            KPEC 기업정책자금센터는 체계적인 분석과 맞춤형 컨설팅으로 귀사의
+            자금 조달을 지원합니다.
+          </p>
+          <div class="btns">
+            <a href="#" class="btn-w">무료상담 신청</a>
+            <a href="tel:01020205312" class="btn-o">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                />
+              </svg>
+              전화상담
+            </a>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="n">2,850+</div>
+            <div class="l">성공사례</div>
+          </div>
+          <div class="hero-stat">
+            <div class="n">94%</div>
+            <div class="l">성공률</div>
+          </div>
+          <div class="hero-stat">
+            <div class="n">15년+</div>
+            <div class="l">컨설팅 경력</div>
+          </div>
+        </div>
+      </div>
+      <div class="motion-note">
+        * Lottie 배경 모션 영역 (비즈니스/자금 관련 루프 애니메이션)
+      </div>
+    </div>
+
+    <!-- ============ QUICK SERVICE 4 CARDS ============ -->
+    <div class="quick">
+      <div class="quick-grid">
+        <div class="quick-card">
+          <div class="ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+              />
+            </svg>
+          </div>
+          <div class="tx">
+            <div class="t">자금진단</div>
+            <div class="d">3가지 질문으로 맞춤 자금 찾기</div>
+          </div>
+        </div>
+        <div class="quick-card">
+          <div class="ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v4l3 2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="tx">
+            <div class="t">운전자금</div>
+            <div class="d">단기 운영자금 저금리 조달</div>
+          </div>
+        </div>
+        <div class="quick-card">
+          <div class="ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                d="M3 21h18M5 21V7l7-4 7 4v14"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9 21v-6h6v6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div class="tx">
+            <div class="t">시설자금</div>
+            <div class="d">설비·공장 장기 저금리</div>
+          </div>
+        </div>
+        <div class="quick-card">
+          <div class="ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <rect x="4" y="4" width="16" height="16" rx="3" />
+              <path
+                d="M8 12l3 3 5-5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <div class="tx">
+            <div class="t">기업인증</div>
+            <div class="d">벤처·이노비즈·ISO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ FUND DIAGNOSIS CTA ============ -->
+    <div class="diagnosis">
+      <h2>우리 기업도 정책자금을 받을 수 있을까?</h2>
+      <p>3가지 질문에 답하면 맞춤 정책자금을 추천해드립니다</p>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          업종 선택
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          기업 규모
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          자금 용도
+        </div>
+      </div>
+      <a href="#" class="btn">자금진단 시작하기</a>
+    </div>
+
+    <!-- ============ SERVICES ============ -->
+    <div class="section">
+      <div class="sh">
+        <div class="pill">서비스 안내</div>
+        <h2>맞춤형 정책자금 솔루션</h2>
+        <p>기업의 상황과 필요에 맞는 최적의 정책자금을 분석하고 지원합니다</p>
+      </div>
+      <div class="svc-grid">
+        <div class="svc">
+          <div class="ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v4l3 2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <h3>중소기업 운전자금</h3>
+          <p>
+            원자재 구입, 인건비, 운영비 등 일상적 운영에 필요한 단기 자금을
+            저금리에 조달합니다.
+          </p>
+          <ul>
+            <li>저금리 자금 조달</li>
+            <li>빠른 심사 프로세스</li>
+            <li>맞춤형 자금 설계</li>
+          </ul>
+        </div>
+        <div class="svc">
+          <div class="ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                d="M3 21h18M5 21V7l7-4 7 4v14"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9 21v-6h6v6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <h3>중소기업 시설자금</h3>
+          <p>
+            공장 신축, 설비 도입, 사업장 확장 등 고정자산 투자에 필요한 장기
+            저금리 자금입니다.
+          </p>
+          <ul>
+            <li>장기 저금리 대출</li>
+            <li>설비투자 지원</li>
+            <li>사업장 확장 자금</li>
+          </ul>
+        </div>
+        <div class="svc">
+          <div class="ic">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <rect x="4" y="4" width="16" height="16" rx="3" />
+              <path
+                d="M8 12l3 3 5-5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <h3>기업인증 컨설팅</h3>
+          <p>
+            벤처인증, 이노비즈, 메인비즈, ISO 등 정부 지원 자격 취득을 위한 전문
+            컨설팅입니다.
+          </p>
+          <ul>
+            <li>벤처기업 인증</li>
+            <li>이노비즈/메인비즈</li>
+            <li>각종 ISO 인증</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ STATS ============ -->
+    <div class="stats">
+      <div class="stats-grid">
+        <div>
+          <div class="n">2,850건+</div>
+          <div class="l">정책자금 성공사례</div>
+        </div>
+        <div>
+          <div class="n">94%</div>
+          <div class="l">평균 성공률</div>
+        </div>
+        <div>
+          <div class="n">87%</div>
+          <div class="l">추가자금 조달 성공률</div>
+        </div>
+        <div>
+          <div class="n">15년+</div>
+          <div class="l">컨설팅 경력</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ NOTICE BOARD (TAB) ============ -->
+    <div class="section alt">
+      <div class="sh">
+        <div class="pill">알림·자료</div>
+        <h2>정책자금 소식</h2>
+        <p>최신 정책자금 공고와 뉴스를 확인하세요</p>
+      </div>
+      <div class="board">
+        <div class="board-tabs">
+          <div class="board-tab on">정책자금 공고</div>
+          <div class="board-tab">공지사항</div>
+          <div class="board-tab">뉴스·칼럼</div>
+        </div>
+        <div class="board-list">
+          <div class="board-item">
+            <div>
+              <span class="tag red">신규</span
+              ><span class="title"
+                >2026년 상반기 중소기업 정책자금 신규 공고 안내</span
+              >
+            </div>
+            <div class="date">2026.03.20</div>
+          </div>
+          <div class="board-item">
+            <div>
+              <span class="tag">공고</span
+              ><span class="title"
+                >소상공인 운전자금 특별 지원 프로그램 모집</span
+              >
+            </div>
+            <div class="date">2026.03.18</div>
+          </div>
+          <div class="board-item">
+            <div>
+              <span class="tag">공고</span
+              ><span class="title">벤처기업 시설자금 저금리 융자 안내</span>
+            </div>
+            <div class="date">2026.03.15</div>
+          </div>
+          <div class="board-item">
+            <div>
+              <span class="tag">안내</span
+              ><span class="title"
+                >기업인증 컨설팅 무료 상담 기간 연장 안내</span
+              >
+            </div>
+            <div class="date">2026.03.12</div>
+          </div>
+          <div class="board-item">
+            <div>
+              <span class="tag">공고</span
+              ><span class="title">2026년 이노비즈 인증 신청 접수 일정</span>
+            </div>
+            <div class="date">2026.03.10</div>
+          </div>
+        </div>
+        <div class="board-more">
+          <a href="#"
+            >더보기
+            <svg
+              width="12"
+              height="12"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              /></svg
+          ></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SUCCESS CASES (CONDITIONAL) ============ -->
+    <div class="section cases-section">
+      <div class="cases-empty-note">
+        * 등록된 사례가 0건이면 이 섹션 전체 숨김 처리
+      </div>
+      <div class="sh">
+        <div class="pill">성공사례</div>
+        <h2>고객사의 성공이 우리의 성과입니다</h2>
+        <p>다양한 업종의 기업들이 KPEC와 함께 성장하고 있습니다</p>
+      </div>
+      <div class="cases-grid">
+        <div class="case-card">
+          <div class="tags">
+            <span class="t1">운전자금</span><span class="t2">5억원</span>
+          </div>
+          <h4>자동차부품 제조 - 금리 2.3% 절감</h4>
+          <p>
+            고금리 시중은행 대출을 정책자금으로 전환하여 연간 약 1,150만원의
+            이자 비용을 절감했습니다.
+          </p>
+        </div>
+        <div class="case-card">
+          <div class="tags">
+            <span class="t1">시설자금</span><span class="t2">8억원</span>
+          </div>
+          <h4>식품가공 유통 - 생산량 200% 증가</h4>
+          <p>
+            HACCP 인증 생산시설 확장을 위한 시설자금을 확보하여 생산 능력을 크게
+            향상시켰습니다.
+          </p>
+        </div>
+        <div class="case-card">
+          <div class="tags">
+            <span class="t1">창업자금</span><span class="t2">3억원</span>
+          </div>
+          <h4>AI 스타트업 - 벤처인증+R&D 동시 확보</h4>
+          <p>
+            벤처기업 인증과 함께 기술개발 자금을 동시에 확보하여 제품 출시
+            일정을 앞당겼습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PROCESS ============ -->
+    <div class="section alt">
+      <div class="sh">
+        <div class="pill">진행절차</div>
+        <h2>체계적인 8단계 프로세스</h2>
+        <p>상담부터 사후관리까지 전 과정을 책임집니다</p>
+      </div>
+      <div class="proc-grid">
+        <div class="proc">
+          <div class="num">01</div>
+          <div class="t">무료상담</div>
+          <div class="d">온라인/전화 상담 접수</div>
+          <span class="proc-arrow">›</span>
+        </div>
+        <div class="proc">
+          <div class="num">02</div>
+          <div class="t">전화상담</div>
+          <div class="d">전문 컨설턴트 1:1 상담</div>
+          <span class="proc-arrow">›</span>
+        </div>
+        <div class="proc">
+          <div class="num">03</div>
+          <div class="t">맞춤제안</div>
+          <div class="d">기업 분석 후 최적안 제시</div>
+          <span class="proc-arrow">›</span>
+        </div>
+        <div class="proc">
+          <div class="num">04</div>
+          <div class="t">계약체결</div>
+          <div class="d">후불 성공보수제 계약</div>
+        </div>
+        <div class="proc">
+          <div class="num">05</div>
+          <div class="t">담당자 배정</div>
+          <div class="d">전담 컨설턴트 배정</div>
+          <span class="proc-arrow">›</span>
+        </div>
+        <div class="proc">
+          <div class="num">06</div>
+          <div class="t">서류진행</div>
+          <div class="d">신청서류 준비 및 접수</div>
+          <span class="proc-arrow">›</span>
+        </div>
+        <div class="proc">
+          <div class="num">07</div>
+          <div class="t">승인완료</div>
+          <div class="d">정책자금 승인 및 실행</div>
+          <span class="proc-arrow">›</span>
+        </div>
+        <div class="proc">
+          <div class="num">08</div>
+          <div class="t">사후관리</div>
+          <div class="d">지속적 자금 관리 지원</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CONTACT CTA ============ -->
+    <div class="contact-cta">
+      <h2>사업자라면 누구나 상담 가능합니다</h2>
+      <p>아래 조건에 해당하시면 지금 바로 무료상담을 신청하세요</p>
+      <div class="contact-checks">
+        <div class="contact-check">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            /></svg
+          >개인/법인 사업자
+        </div>
+        <div class="contact-check">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            /></svg
+          >업력 1년 이상
+        </div>
+        <div class="contact-check">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            /></svg
+          >창업 3년 이내 (창업자금)
+        </div>
+        <div class="contact-check">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            /></svg
+          >제조·서비스·IT 등 전 업종
+        </div>
+        <div class="contact-check">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            /></svg
+          >매출 발생 기업 우대
+        </div>
+        <div class="contact-check">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            /></svg
+          >기술력 보유 기업 우대
+        </div>
+      </div>
+      <div class="contact-btns">
+        <a href="#" class="btn-primary">무료상담 신청하기</a>
+        <a href="tel:01020205312" class="btn-point">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+            />
+          </svg>
+          전화상담
+        </a>
+      </div>
+    </div>
+
+    <!-- ============ FLOATING QUICK MENU ============ -->
+    <div class="floating">
+      <a href="tel:01020205312" class="f-phone" title="전화상담">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+          />
+        </svg>
+      </a>
+      <a href="#" class="f-kakao" title="카카오톡 상담">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.22 4.66 6.6-.15.54-.96 3.47-.99 3.7 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.13 1.72.13 5.52 0 10-3.58 10-7.95C22 6.58 17.52 3 12 3z"
+          />
+        </svg>
+      </a>
+      <a
+        href="#"
+        class="f-top"
+        title="맨 위로"
+        onclick="
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return false;
+        "
+      >
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 15l7-7 7 7"
+          />
+        </svg>
+      </a>
+    </div>
+
+    <!-- ============ FOOTER ============ -->
+    <div class="footer">
+      <div class="footer-inner">
+        <div>
+          <div class="f-logo">
+            <span class="k">K</span><span class="pec">PEC</span>
+          </div>
+          <div class="f-info">
+            <p>상호: 기업정책자금센터<br />연락처: 010-2020-5312</p>
+          </div>
+        </div>
+        <div class="f-links">
+          <h4>서비스</h4>
+          <a href="#">운전자금</a><a href="#">시설자금</a
+          ><a href="#">기업인증</a><a href="#">자금진단</a>
+        </div>
+        <div class="f-links">
+          <h4>바로가기</h4>
+          <a href="#">성공사례</a><a href="#">진행절차</a
+          ><a href="#">알림·자료</a><a href="#">FAQ</a>
+        </div>
+        <div class="f-call">
+          <p>지금 바로 상담받으세요</p>
+          <a href="tel:01020205312">
+            <svg
+              width="14"
+              height="14"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+              />
+            </svg>
+            전화상담
+          </a>
+        </div>
+      </div>
+      <div class="footer-copy">
+        &copy; 2026 KPEC 기업정책자금센터. All rights reserved. &middot; made by
+        <a href="https://polarad.co.kr" target="_blank" rel="noopener">pola</a>
+      </div>
+    </div>
+  </body>
+</html>

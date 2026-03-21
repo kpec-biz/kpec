@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KPEC 인스타그램 배너 추가 3장 (표준 레이아웃)</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #f0f2f5;
+        font-family: "Noto Sans KR", sans-serif;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 30px;
+      }
+      .banner-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      .banner-label {
+        font-size: 13px;
+        color: #999;
+      }
+      .banner {
+        width: 1080px;
+        height: 1080px;
+        position: relative;
+        overflow: hidden;
+        transform: scale(0.5);
+        transform-origin: top center;
+        margin-bottom: -540px;
+      }
+      .banner .bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+      }
+      .banner .bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+      }
+      .banner .overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      /* 표준 레이아웃: flex-start + padding-top 340px 고정 */
+      .banner .content {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 340px 80px 0 80px;
+        text-align: center;
+        z-index: 2;
+      }
+      .banner .tag {
+        display: inline-block;
+        padding: 12px 32px;
+        border-radius: 50px;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 0;
+      }
+      .accent-line {
+        width: 80px;
+        height: 4px;
+        border-radius: 2px;
+        margin: 32px 0;
+      }
+      .banner .main-text {
+        font-size: 68px;
+        font-weight: 900;
+        line-height: 1.3;
+        margin-bottom: 24px;
+        word-break: keep-all;
+        color: #fff;
+      }
+      .banner .sub-text {
+        font-size: 32px;
+        line-height: 1.6;
+        word-break: keep-all;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .banner .logo {
+        position: absolute;
+        bottom: 50px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        z-index: 2;
+      }
+      .banner .logo-k {
+        font-family: "Inter", sans-serif;
+        font-weight: 900;
+        font-size: 42px;
+        color: #ed2939;
+      }
+      .banner .logo-pec {
+        font-family: "Inter", sans-serif;
+        font-weight: 300;
+        font-size: 42px;
+        color: #fff;
+      }
+      .banner .logo-name {
+        font-size: 22px;
+        color: #fff;
+        margin-left: 10px;
+        font-weight: 700;
+      }
+      .btn {
+        padding: 10px 24px;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #fff;
+        background: #1a56a8;
+        transition: background 0.2s;
+      }
+      .btn:hover {
+        background: #134a8a;
+      }
+      .download-all {
+        margin-top: 20px;
+        padding: 14px 40px;
+        font-size: 15px;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        color: #fff;
+        background: #ed2939;
+        transition: background 0.2s;
+      }
+      .download-all:hover {
+        background: #c41f2e;
+      }
+      .caption-box {
+        width: 540px;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 16px;
+        position: relative;
+        margin-top: -4px;
+      }
+      .caption-box pre {
+        white-space: pre-wrap;
+        word-break: keep-all;
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 13px;
+        line-height: 1.8;
+        color: #333;
+        margin: 0;
+        padding-right: 60px;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #555;
+        background: #f9f9f9;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover {
+        background: #1a56a8;
+        color: #fff;
+        border-color: #1a56a8;
+      }
+      .copy-btn.copied {
+        background: #10b981;
+        color: #fff;
+        border-color: #10b981;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>KPEC 인스타그램 배너 추가 3장 (표준 레이아웃)</h1>
+    <p class="subtitle">
+      뱃지 고정 위치 · 타이틀 2줄 · 서브텍스트 2줄 규칙 적용
+    </p>
+    <button class="download-all" onclick="downloadAll()">
+      전체 다운로드 (3장)
+    </button>
+
+    <!-- 배너 13: 수출기업 우대 -->
+    <div class="banner-wrap">
+      <span class="banner-label">13 — 수출기업 우대 지원</span>
+      <div class="banner" id="b13">
+        <div
+          class="bg"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1494412574643-ff11b0a5eb19?w=1200&q=80&quot;);
+          "
+        ></div>
+        <div class="content">
+          <div class="tag" style="background: #ed2939; color: #fff">
+            POINT 13
+          </div>
+          <div class="accent-line" style="background: #ed2939"></div>
+          <div class="main-text">
+            수출기업이라면<br /><span style="color: #ed2939; font-size: 88px"
+              >금리 추가 우대</span
+            >
+          </div>
+          <div class="sub-text">
+            수출 실적 보유 기업 전용 정책자금<br />일반 기업 대비 최대 0.5%p
+            추가 우대
+          </div>
+        </div>
+        <div class="logo">
+          <span class="logo-k">K</span><span class="logo-pec">PEC</span
+          ><span class="logo-name">기업정책자금센터</span>
+        </div>
+      </div>
+      <button class="btn" onclick="dl('b13', 'KPEC_insta_13_수출기업.png')">
+        PNG 다운로드
+      </button>
+      <div class="caption-box">
+        <button class="copy-btn" onclick="copyCaption(this)">복사</button>
+        <pre>
+🌏 수출기업이라면 금리 추가 우대!
+
+수출 실적이 있는 기업은
+정책자금 금리를 추가로 우대받을 수 있습니다.
+
+✅ 수출기업 전용 정책자금
+✅ 일반 대비 최대 0.5%p 추가 우대
+
+👉 수출기업 자격 확인
+📞 010-2020-5312
+
+#수출기업 #금리우대 #정책자금 #무역기업 #KPEC #기업정책자금센터 #수출지원 #중소기업수출</pre
+        >
+      </div>
+    </div>
+
+    <!-- 배너 14: 서류 간소화 -->
+    <div class="banner-wrap">
+      <span class="banner-label">14 — 서류 간소화</span>
+      <div class="banner" id="b14">
+        <div
+          class="bg"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1200&q=80&quot;);
+          "
+        ></div>
+        <div class="content">
+          <div
+            class="tag"
+            style="background: #4fc3f7; color: #0e2a5c; font-weight: 900"
+          >
+            POINT 14
+          </div>
+          <div class="accent-line" style="background: #4fc3f7"></div>
+          <div class="main-text">
+            복잡한 서류?<br /><span style="color: #4fc3f7">전문가가 대신</span>
+            합니다
+          </div>
+          <div class="sub-text">
+            사업계획서 · 재무제표 · 신청서 작성<br />컨설턴트가 원스톱으로
+            처리해드립니다
+          </div>
+        </div>
+        <div class="logo">
+          <span class="logo-k">K</span><span class="logo-pec">PEC</span
+          ><span class="logo-name">기업정책자금센터</span>
+        </div>
+      </div>
+      <button class="btn" onclick="dl('b14', 'KPEC_insta_14_서류간소화.png')">
+        PNG 다운로드
+      </button>
+      <div class="caption-box">
+        <button class="copy-btn" onclick="copyCaption(this)">복사</button>
+        <pre>
+📝 복잡한 서류? 전문가가 대신 합니다
+
+사업계획서, 재무제표, 신청서...
+어려운 서류는 컨설턴트가 원스톱으로 처리합니다.
+
+✅ 사업계획서 작성 대행
+✅ 재무제표·신청서 정리
+
+👉 무료 서류 상담 신청
+📞 010-2020-5312
+
+#서류대행 #정책자금신청 #사업계획서 #원스톱 #KPEC #기업정책자금센터 #컨설팅 #간편신청</pre
+        >
+      </div>
+    </div>
+
+    <!-- 배너 15: 2025 신규 정책자금 -->
+    <div class="banner-wrap">
+      <span class="banner-label">15 — 2025 신규 정책자금</span>
+      <div class="banner" id="b15">
+        <div
+          class="bg"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80&quot;);
+          "
+        ></div>
+        <div class="content">
+          <div
+            class="tag"
+            style="background: #ffd54f; color: #1a1a1a; font-weight: 900"
+          >
+            NEW 2025
+          </div>
+          <div class="accent-line" style="background: #ffd54f"></div>
+          <div class="main-text">
+            올해 <span style="color: #ffd54f">신규 정책자금</span><br />지금
+            확인하세요
+          </div>
+          <div class="sub-text">
+            2025년 새롭게 신설된 지원 사업<br />선착순 마감 — 서두르세요
+          </div>
+        </div>
+        <div class="logo">
+          <span class="logo-k">K</span><span class="logo-pec">PEC</span
+          ><span class="logo-name">기업정책자금센터</span>
+        </div>
+      </div>
+      <button class="btn" onclick="dl('b15', 'KPEC_insta_15_2025신규.png')">
+        PNG 다운로드
+      </button>
+      <div class="caption-box">
+        <button class="copy-btn" onclick="copyCaption(this)">복사</button>
+        <pre>
+🆕 2025년 신규 정책자금, 지금 확인하세요!
+
+올해 새롭게 신설된 지원 사업이 있습니다.
+선착순 마감이니 서두르세요.
+
+✅ 2025년 신규 정책자금 안내
+✅ 선착순 접수 — 빠를수록 유리
+
+👉 신규 자금 자격 확인
+📞 010-2020-5312
+
+#2025정책자금 #신규지원사업 #정부지원 #선착순 #KPEC #기업정책자금센터 #중소기업 #올해자금</pre
+        >
+      </div>
+    </div>
+
+    <div style="height: 40px"></div>
+
+    <script>
+      async function dl(id, filename) {
+        const el = document.getElementById(id);
+        el.style.transform = "scale(1)";
+        el.style.marginBottom = "0";
+        const canvas = await html2canvas(el, {
+          scale: 1,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#000",
+          width: 1080,
+          height: 1080,
+        });
+        el.style.transform = "scale(0.5)";
+        el.style.marginBottom = "-540px";
+        const link = document.createElement("a");
+        link.download = filename;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }
+      async function downloadAll() {
+        const list = [
+          ["b13", "KPEC_insta_13_수출기업.png"],
+          ["b14", "KPEC_insta_14_서류간소화.png"],
+          ["b15", "KPEC_insta_15_2025신규.png"],
+        ];
+        for (const [id, name] of list) {
+          await dl(id, name);
+          await new Promise((r) => setTimeout(r, 500));
+        }
+      }
+      function copyCaption(btn) {
+        const pre = btn.parentElement.querySelector("pre");
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          btn.textContent = "복사됨!";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "복사";
+            btn.classList.remove("copied");
+          }, 2000);
+        });
+      }
+    </script>
+  </body>
+</html>

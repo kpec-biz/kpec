@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPEC 생성 이미지 리뷰</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Pretendard", system-ui, sans-serif;
+        background: #f4f5f6;
+        padding: 32px;
+      }
+      h1 {
+        text-align: center;
+        font-size: 24px;
+        color: #1e2124;
+        margin-bottom: 8px;
+      }
+      .sub {
+        text-align: center;
+        color: #6d7882;
+        font-size: 14px;
+        margin-bottom: 40px;
+      }
+      .group {
+        margin-bottom: 48px;
+      }
+      .group h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0b50d0;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #0b50d0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e6e8ea;
+      }
+      .card img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .card .info {
+        padding: 12px 16px;
+      }
+      .card .info .name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e2124;
+      }
+      .card .info .path {
+        font-size: 11px;
+        color: #8a949e;
+        font-family: monospace;
+        margin-top: 2px;
+      }
+      .card .info .use {
+        font-size: 12px;
+        color: #6d7882;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>KPEC 생성 이미지 리뷰</h1>
+    <p class="sub">
+      Nano Banana 2 (gemini-3.1-flash-image-preview) 생성 결과 · 총 10종
+    </p>
+
+    <div class="group">
+      <h2>서비스 카드 일러스트 (3종)</h2>
+      <div class="grid">
+        <div class="card">
+          <img src="public/images/services/operating-fund.png" alt="운전자금" />
+          <div class="info">
+            <div class="name">운전자금 일러스트</div>
+            <div class="path">services/operating-fund.png</div>
+            <div class="use">홈 서비스 섹션 · 정책자금 상세 페이지</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="public/images/services/facility-fund.png" alt="시설자금" />
+          <div class="info">
+            <div class="name">시설자금 일러스트</div>
+            <div class="path">services/facility-fund.png</div>
+            <div class="use">홈 서비스 섹션 · 정책자금 상세 페이지</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="public/images/services/certification.png" alt="기업인증" />
+          <div class="info">
+            <div class="name">기업인증 일러스트</div>
+            <div class="path">services/certification.png</div>
+            <div class="use">홈 서비스 섹션 · 정책자금 상세 페이지</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>서브페이지 헤더 배경 (5종)</h2>
+      <div class="grid">
+        <div class="card">
+          <img src="public/images/headers/services.png" alt="정책자금 헤더" />
+          <div class="info">
+            <div class="name">정책자금 페이지 헤더</div>
+            <div class="path">headers/services.png</div>
+            <div class="use">/services 페이지 상단 배경</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="public/images/headers/cases.png" alt="성공사례 헤더" />
+          <div class="info">
+            <div class="name">성공사례 페이지 헤더</div>
+            <div class="path">headers/cases.png</div>
+            <div class="use">/cases 페이지 상단 배경</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="public/images/headers/process.png" alt="진행절차 헤더" />
+          <div class="info">
+            <div class="name">진행절차 페이지 헤더</div>
+            <div class="path">headers/process.png</div>
+            <div class="use">/process 페이지 상단 배경</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="public/images/headers/notice.png" alt="알림자료 헤더" />
+          <div class="info">
+            <div class="name">알림·자료 페이지 헤더</div>
+            <div class="path">headers/notice.png</div>
+            <div class="use">/notice 페이지 상단 배경</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="public/images/headers/contact.png" alt="상담신청 헤더" />
+          <div class="info">
+            <div class="name">상담신청 페이지 헤더</div>
+            <div class="path">headers/contact.png</div>
+            <div class="use">/contact 페이지 상단 배경</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>배너 이미지 (2종)</h2>
+      <div class="grid">
+        <div class="card">
+          <img
+            src="public/images/banners/cta-consultation.png"
+            alt="상담 CTA"
+          />
+          <div class="info">
+            <div class="name">상담 CTA 배경</div>
+            <div class="path">banners/cta-consultation.png</div>
+            <div class="use">홈 하단 상담 CTA 섹션 배경</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="public/images/banners/fund-diagnosis.png" alt="자금진단" />
+          <div class="info">
+            <div class="name">자금진단 배너</div>
+            <div class="path">banners/fund-diagnosis.png</div>
+            <div class="use">자금진단 CTA 섹션 배경</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1392 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPEC 기업정책자금센터 - KRDS 정부표준 디자인</title>
+    <link
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* ==========================================
+   KRDS Design Tokens
+   ========================================== */
+      :root {
+        /* Primary (정부 청색) */
+        --primary-5: #ecf2fe;
+        --primary-10: #d8e5fd;
+        --primary-20: #b1cefb;
+        --primary-30: #86aff9;
+        --primary-40: #4c87f6;
+        --primary-50: #256ef4;
+        --primary-60: #0b50d0;
+        --primary-70: #083891;
+        --primary-80: #052561;
+        --primary-90: #03163a;
+
+        /* Secondary (보조 청색) */
+        --secondary-50: #346fb2;
+        --secondary-60: #1c589c;
+        --secondary-70: #063a74;
+
+        /* Gray (무채색) */
+        --gray-0: #ffffff;
+        --gray-5: #f4f5f6;
+        --gray-10: #e6e8ea;
+        --gray-20: #cdd1d5;
+        --gray-30: #b1b8be;
+        --gray-40: #8a949e;
+        --gray-50: #6d7882;
+        --gray-60: #58616a;
+        --gray-70: #464c53;
+        --gray-80: #33363d;
+        --gray-90: #1e2124;
+        --gray-100: #000000;
+
+        /* Point (정부 적색) */
+        --point-50: #d63d4a;
+        --point-60: #ab2b36;
+        --point-70: #7a1f26;
+
+        /* Danger */
+        --danger-50: #de3412;
+
+        /* Radius - KRDS */
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+
+        /* Font - KRDS uses Pretendard */
+        --font-family: "Pretendard", -apple-system, system-ui, sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: var(--font-family);
+        background: var(--gray-5);
+        color: var(--gray-90);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      /* ==========================================
+   Part 1: 기획 문서
+   ========================================== */
+      .doc {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      .doc h1 {
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+        color: var(--primary-60);
+        margin-bottom: 4px;
+      }
+      .doc .sub {
+        text-align: center;
+        color: var(--gray-50);
+        font-size: 14px;
+        margin-bottom: 40px;
+      }
+      .card {
+        background: var(--gray-0);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        margin-bottom: 20px;
+        border: 1px solid var(--gray-10);
+      }
+      .card h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--gray-90);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card h2 .tag {
+        background: var(--primary-60);
+        color: #fff;
+        font-size: 11px;
+        padding: 2px 10px;
+        border-radius: 100px;
+        font-weight: 600;
+      }
+      .card h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--gray-60);
+        margin: 14px 0 6px;
+      }
+      .card p,
+      .card li {
+        font-size: 14px;
+        color: var(--gray-60);
+        line-height: 1.7;
+      }
+      .card ul {
+        padding-left: 18px;
+      }
+      .card li {
+        margin-bottom: 3px;
+      }
+      .colors {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .swatch {
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid var(--gray-10);
+      }
+      .swatch .prev {
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .swatch .info {
+        padding: 6px 8px;
+        background: var(--gray-0);
+      }
+      .swatch .info .n {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--gray-80);
+      }
+      .swatch .info .h {
+        font-size: 10px;
+        color: var(--gray-40);
+        font-family: monospace;
+      }
+      .divider {
+        height: 1px;
+        background: var(--gray-10);
+        margin: 40px 0;
+      }
+      .divider-label {
+        text-align: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--primary-60);
+        letter-spacing: 2px;
+        margin-bottom: 24px;
+      }
+
+      /* ==========================================
+   Part 2: 와이어프레임 (KRDS 기반)
+   ========================================== */
+      .wf {
+        max-width: 1440px;
+        margin: 0 auto;
+        background: var(--gray-0);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      /* Top Bar (정부 사이트 표준) */
+      .wf-topbar {
+        background: var(--gray-5);
+        border-bottom: 1px solid var(--gray-10);
+        padding: 0 32px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 16px;
+      }
+      .wf-topbar span {
+        font-size: 12px;
+        color: var(--gray-50);
+        cursor: pointer;
+      }
+      .wf-topbar span:hover {
+        color: var(--primary-60);
+      }
+
+      /* Header */
+      .wf-header {
+        background: var(--gray-0);
+        border-bottom: 1px solid var(--gray-10);
+        padding: 0 32px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .wf-logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .wf-logo .k {
+        font-size: 26px;
+        font-weight: 900;
+        color: var(--point-50);
+      }
+      .wf-logo .pec {
+        font-size: 26px;
+        font-weight: 300;
+        color: var(--primary-60);
+      }
+      .wf-logo .name {
+        font-size: 12px;
+        color: var(--gray-50);
+        margin-left: 8px;
+        border-left: 1px solid var(--gray-20);
+        padding-left: 8px;
+      }
+      .wf-nav {
+        display: flex;
+        align-items: center;
+        gap: 0;
+      }
+      .wf-nav a {
+        color: var(--gray-80);
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 20px 20px;
+        position: relative;
+      }
+      .wf-nav a:hover {
+        color: var(--primary-60);
+      }
+      .wf-nav a.active {
+        color: var(--primary-60);
+        font-weight: 600;
+      }
+      .wf-nav a.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 20px;
+        right: 20px;
+        height: 3px;
+        background: var(--primary-60);
+        border-radius: 2px 2px 0 0;
+      }
+      .wf-nav .cta {
+        background: var(--primary-60);
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 8px;
+      }
+      .wf-nav .cta:hover {
+        background: var(--primary-70);
+      }
+
+      /* Hero */
+      .wf-hero {
+        background: linear-gradient(
+          135deg,
+          var(--primary-80) 0%,
+          var(--primary-70) 40%,
+          var(--primary-60) 100%
+        );
+        padding: 80px 40px 72px;
+        position: relative;
+      }
+      .wf-hero .inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 40px;
+      }
+      .wf-hero .text {
+        flex: 1;
+      }
+      .wf-hero .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 100px;
+        padding: 6px 14px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .wf-hero .badge .dot {
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+        animation: p 2s infinite;
+      }
+      @keyframes p {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .wf-hero h1 {
+        font-size: 40px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.35;
+        margin-bottom: 16px;
+      }
+      .wf-hero .sub {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.7;
+        margin-bottom: 32px;
+      }
+      .wf-hero .btns {
+        display: flex;
+        gap: 12px;
+      }
+      .wf-hero .btn-w {
+        background: #fff;
+        color: var(--primary-60);
+        padding: 14px 28px;
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .wf-hero .btn-o {
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+        color: #fff;
+        padding: 14px 28px;
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .wf-hero .stat-cards {
+        display: flex;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+      .wf-hero .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-lg);
+        padding: 20px 24px;
+        text-align: center;
+        min-width: 130px;
+      }
+      .wf-hero .stat-card .num {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .wf-hero .stat-card .label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 4px;
+      }
+
+      /* Quick Links Bar */
+      .wf-quick {
+        background: var(--gray-0);
+        border-bottom: 1px solid var(--gray-10);
+        padding: 16px 40px;
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+      }
+      .wf-quick a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: var(--gray-70);
+        font-weight: 500;
+        text-decoration: none;
+      }
+      .wf-quick a svg {
+        width: 18px;
+        height: 18px;
+        color: var(--primary-60);
+      }
+      .wf-quick a:hover {
+        color: var(--primary-60);
+      }
+
+      /* Section */
+      .wf-section {
+        padding: 64px 40px;
+      }
+      .wf-section.alt {
+        background: var(--gray-5);
+      }
+      .wf-section-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .wf-section-header .pill {
+        display: inline-block;
+        background: var(--primary-5);
+        color: var(--primary-60);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 5px 14px;
+        border-radius: 100px;
+        margin-bottom: 10px;
+      }
+      .wf-section-header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--gray-90);
+        margin-bottom: 8px;
+      }
+      .wf-section-header p {
+        font-size: 15px;
+        color: var(--gray-50);
+      }
+
+      /* Service Cards */
+      .svc-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .svc-card {
+        background: var(--gray-0);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        border: 1px solid var(--gray-10);
+        transition: all 0.2s;
+      }
+      .svc-card:hover {
+        border-color: var(--primary-50);
+        box-shadow: 0 4px 16px rgba(11, 80, 208, 0.08);
+      }
+      .svc-card .icon {
+        width: 44px;
+        height: 44px;
+        background: var(--primary-5);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        color: var(--primary-60);
+      }
+      .svc-card .icon svg {
+        width: 24px;
+        height: 24px;
+      }
+      .svc-card h3 {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--gray-90);
+        margin-bottom: 8px;
+      }
+      .svc-card p {
+        font-size: 14px;
+        color: var(--gray-50);
+        line-height: 1.6;
+        margin-bottom: 14px;
+      }
+      .svc-card ul {
+        list-style: none;
+        padding: 0;
+      }
+      .svc-card li {
+        font-size: 13px;
+        color: var(--gray-50);
+        padding: 3px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .svc-card li::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        background: var(--primary-50);
+        border-radius: 50%;
+      }
+
+      /* Stats */
+      .wf-stats {
+        background: var(--primary-70);
+        padding: 48px 40px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .stat .num {
+        font-size: 36px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .stat .label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.65);
+        margin-top: 4px;
+      }
+
+      /* Process */
+      .proc-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .proc-step {
+        background: var(--gray-0);
+        border: 1px solid var(--gray-10);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        text-align: center;
+        transition: all 0.2s;
+      }
+      .proc-step:hover {
+        border-color: var(--primary-50);
+      }
+      .proc-step .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--primary-5);
+        color: var(--primary-60);
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 50%;
+        margin-bottom: 8px;
+      }
+      .proc-step .title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--gray-90);
+        margin-bottom: 4px;
+      }
+      .proc-step .desc {
+        font-size: 12px;
+        color: var(--gray-40);
+      }
+
+      /* CTA */
+      .wf-cta {
+        background: var(--primary-5);
+        padding: 64px 40px;
+        text-align: center;
+        border-top: 3px solid var(--primary-60);
+      }
+      .wf-cta h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--gray-90);
+        margin-bottom: 8px;
+      }
+      .wf-cta > p {
+        color: var(--gray-50);
+        font-size: 15px;
+        margin-bottom: 28px;
+      }
+      .cta-checks {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        max-width: 800px;
+        margin: 0 auto 28px;
+      }
+      .cta-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--gray-0);
+        border: 1px solid var(--gray-10);
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+        font-size: 14px;
+        color: var(--gray-70);
+      }
+      .cta-check svg {
+        width: 16px;
+        height: 16px;
+        color: var(--primary-60);
+        flex-shrink: 0;
+      }
+      .btn-primary {
+        display: inline-block;
+        background: var(--primary-60);
+        color: #fff;
+        padding: 14px 36px;
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .btn-primary:hover {
+        background: var(--primary-70);
+      }
+      .btn-point {
+        display: inline-block;
+        background: var(--point-50);
+        color: #fff;
+        padding: 14px 36px;
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 8px;
+      }
+
+      /* Footer */
+      .wf-footer {
+        background: var(--primary-80);
+        padding: 40px;
+      }
+      .wf-footer-inner {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .wf-footer .logo .k {
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--point-50);
+      }
+      .wf-footer .logo .pec {
+        font-size: 22px;
+        font-weight: 300;
+        color: #fff;
+      }
+      .wf-footer .info {
+        margin-top: 10px;
+      }
+      .wf-footer .info p {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.65);
+        line-height: 1.8;
+      }
+      .wf-footer .links h4 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .wf-footer .links a {
+        display: block;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.65);
+        text-decoration: none;
+        line-height: 2;
+      }
+      .wf-footer .links a:hover {
+        color: #fff;
+      }
+      .wf-footer .call {
+        text-align: right;
+      }
+      .wf-footer .call p {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.65);
+        margin-bottom: 8px;
+      }
+      .wf-footer .call a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--primary-60);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .wf-footer-copy {
+        border-top: 1px solid var(--primary-70);
+        margin-top: 28px;
+        padding-top: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.45);
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .wf-footer-copy a {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .wf-footer-copy a:hover {
+        color: #fff;
+      }
+
+      @media (max-width: 768px) {
+        .wf-hero .inner {
+          flex-direction: column;
+        }
+        .wf-hero .stat-cards {
+          width: 100%;
+          justify-content: center;
+        }
+        .svc-grid,
+        .proc-grid {
+          grid-template-columns: 1fr;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .cta-checks {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 기획 문서 -->
+    <div class="doc">
+      <h1>KPEC 기업정책자금센터</h1>
+      <p class="sub">KRDS(정부 디자인 시스템) 기반 v3.0</p>
+
+      <div class="card">
+        <h2>컬러 시스템 <span class="tag">KRDS Standard</span></h2>
+        <p>대한민국 정부 디자인 시스템(KRDS) 공식 컬러 팔레트 적용</p>
+
+        <h3>Primary (정부 청색)</h3>
+        <div class="colors">
+          <div class="swatch">
+            <div class="prev" style="background: #ecf2fe; color: #0b50d0">
+              Aa
+            </div>
+            <div class="info">
+              <div class="n">P-5 배경</div>
+              <div class="h">#ECF2FE</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #d8e5fd; color: #0b50d0">
+              Aa
+            </div>
+            <div class="info">
+              <div class="n">P-10</div>
+              <div class="h">#D8E5FD</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #4c87f6; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">P-40 호버</div>
+              <div class="h">#4C87F6</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #256ef4; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">P-50 베이스</div>
+              <div class="h">#256EF4</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #0b50d0; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">P-60 텍스트</div>
+              <div class="h">#0B50D0</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #083891; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">P-70 히어로</div>
+              <div class="h">#083891</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #052561; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">P-80</div>
+              <div class="h">#052561</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Point (정부 적색)</h3>
+        <div class="colors">
+          <div class="swatch">
+            <div class="prev" style="background: #d63d4a; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">Pt-50 CTA</div>
+              <div class="h">#D63D4A</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #ab2b36; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">Pt-60 호버</div>
+              <div class="h">#AB2B36</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #7a1f26; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">Pt-70</div>
+              <div class="h">#7A1F26</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Gray (무채색)</h3>
+        <div class="colors">
+          <div class="swatch">
+            <div
+              class="prev"
+              style="background: #fff; color: #333; border: 1px solid #e6e8ea"
+            >
+              Aa
+            </div>
+            <div class="info">
+              <div class="n">G-0 흰</div>
+              <div class="h">#FFFFFF</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #f4f5f6; color: #333">Aa</div>
+            <div class="info">
+              <div class="n">G-5 배경</div>
+              <div class="h">#F4F5F6</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #e6e8ea; color: #333">Aa</div>
+            <div class="info">
+              <div class="n">G-10 구분선</div>
+              <div class="h">#E6E8EA</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #8a949e; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">G-40 보조텍스트</div>
+              <div class="h">#8A949E</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #6d7882; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">G-50</div>
+              <div class="h">#6D7882</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="prev" style="background: #1e2124; color: #fff">Aa</div>
+            <div class="info">
+              <div class="n">G-90 푸터</div>
+              <div class="h">#1E2124</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>적용 규칙 (KRDS 준수)</h3>
+        <ul>
+          <li><strong>폰트:</strong> Pretendard (정부 표준 서체)</li>
+          <li><strong>헤더:</strong> 흰색 배경 + 하단 구분선 (관공서 표준)</li>
+          <li>
+            <strong>CTA 버튼:</strong> Primary-60(#0B50D0) 또는
+            Point-50(#D63D4A)
+          </li>
+          <li><strong>카드/입력:</strong> radius 8px (KRDS radius-medium)</li>
+          <li>
+            <strong>텍스트:</strong> 제목 Gray-90, 본문 Gray-50, 링크 Primary-60
+          </li>
+          <li>
+            <strong>히어로:</strong> Primary-70~80 그라데이션 + 흰색 텍스트
+          </li>
+          <li>
+            <strong>배경 교차:</strong> White(#FFF) / Gray-5(#F4F5F6) 번갈아
+            사용
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="divider"></div>
+      <div class="divider-label">KRDS 기반 와이어프레임</div>
+    </div>
+
+    <!-- 와이어프레임 -->
+    <div class="wf">
+      <!-- Header -->
+      <div class="wf-header">
+        <div class="wf-logo">
+          <span class="k">K</span><span class="pec">PEC</span>
+          <span class="name">기업정책자금센터</span>
+        </div>
+        <div class="wf-nav">
+          <a href="#" class="active">정책자금</a>
+          <a href="#">성공사례</a>
+          <a href="#">진행절차</a>
+          <a href="#">무료상담</a>
+          <a href="#" class="cta">상담신청</a>
+        </div>
+      </div>
+
+      <!-- Hero -->
+      <div class="wf-hero">
+        <div class="inner">
+          <div class="text">
+            <div class="badge">
+              <div class="dot"></div>
+              후불제 성공보수 &middot; 무료상담
+            </div>
+            <h1>중소기업 정책자금,<br />전문가와 함께 시작하세요</h1>
+            <p class="sub">
+              KPEC 기업정책자금센터는 체계적인 분석과 맞춤형 컨설팅으로<br />귀사의
+              자금 조달을 지원합니다.
+            </p>
+            <div class="btns">
+              <a href="#" class="btn-w">무료상담 신청</a>
+              <a href="tel:01020205312" class="btn-o">
+                <svg
+                  width="16"
+                  height="16"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                  />
+                </svg>
+                전화상담
+              </a>
+            </div>
+          </div>
+          <div class="stat-cards">
+            <div class="stat-card">
+              <div class="num">2,850+</div>
+              <div class="label">성공사례</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">94%</div>
+              <div class="label">성공률</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">15년+</div>
+              <div class="label">컨설팅 경력</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="wf-quick">
+        <a href="#">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 1v8m0 0v1"
+            />
+          </svg>
+          운전자금
+        </a>
+        <a href="#">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"
+            />
+          </svg>
+          시설자금
+        </a>
+        <a href="#">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          기업인증
+        </a>
+        <a href="#">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+          무료상담
+        </a>
+      </div>
+
+      <!-- Services -->
+      <div class="wf-section">
+        <div class="wf-section-header">
+          <div class="pill">서비스 안내</div>
+          <h2>맞춤형 정책자금 솔루션</h2>
+          <p>기업의 상황과 필요에 맞는 최적의 정책자금을 분석하고 지원합니다</p>
+        </div>
+        <div class="svc-grid">
+          <div class="svc-card">
+            <div class="icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v4l3 2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <h3>중소기업 운전자금</h3>
+            <p>
+              원자재 구입, 인건비, 운영비 등 기업의 일상적 운영에 필요한 단기
+              자금을 정책자금으로 저금리에 조달합니다.
+            </p>
+            <ul>
+              <li>저금리 자금 조달</li>
+              <li>빠른 심사 프로세스</li>
+              <li>맞춤형 자금 설계</li>
+            </ul>
+          </div>
+          <div class="svc-card">
+            <div class="icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <path
+                  d="M3 21h18M5 21V7l7-4 7 4v14"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9 21v-6h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <h3>중소기업 시설자금</h3>
+            <p>
+              공장 신축, 설비 도입, 사업장 확장 등 고정자산 투자에 필요한 장기
+              저금리 정책자금을 지원합니다.
+            </p>
+            <ul>
+              <li>장기 저금리 대출</li>
+              <li>설비투자 지원</li>
+              <li>사업장 확장 자금</li>
+            </ul>
+          </div>
+          <div class="svc-card">
+            <div class="icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <rect x="4" y="4" width="16" height="16" rx="3" />
+                <path
+                  d="M8 12l3 3 5-5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <h3>기업인증 컨설팅</h3>
+            <p>
+              벤처인증, 이노비즈, 메인비즈, ISO 등 정부 지원 자격 취득을 위한
+              전문 컨설팅을 제공합니다.
+            </p>
+            <ul>
+              <li>벤처기업 인증</li>
+              <li>이노비즈/메인비즈</li>
+              <li>각종 ISO 인증</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="wf-stats">
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="num">2,850건+</div>
+            <div class="label">정책자금 성공사례</div>
+          </div>
+          <div class="stat">
+            <div class="num">94%</div>
+            <div class="label">평균 성공률</div>
+          </div>
+          <div class="stat">
+            <div class="num">87%</div>
+            <div class="label">추가자금 조달 성공률</div>
+          </div>
+          <div class="stat">
+            <div class="num">15년+</div>
+            <div class="label">컨설팅 경력</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Process -->
+      <div class="wf-section alt">
+        <div class="wf-section-header">
+          <div class="pill">진행절차</div>
+          <h2>체계적인 8단계 프로세스</h2>
+          <p>상담부터 사후관리까지 전 과정을 책임집니다</p>
+        </div>
+        <div class="proc-grid">
+          <div class="proc-step">
+            <div class="num">01</div>
+            <div class="title">무료상담</div>
+            <div class="desc">온라인/전화 상담 접수</div>
+          </div>
+          <div class="proc-step">
+            <div class="num">02</div>
+            <div class="title">전화상담</div>
+            <div class="desc">전문 컨설턴트 1:1 상담</div>
+          </div>
+          <div class="proc-step">
+            <div class="num">03</div>
+            <div class="title">맞춤제안</div>
+            <div class="desc">기업 분석 후 최적안 제시</div>
+          </div>
+          <div class="proc-step">
+            <div class="num">04</div>
+            <div class="title">계약체결</div>
+            <div class="desc">후불 성공보수제 계약</div>
+          </div>
+          <div class="proc-step">
+            <div class="num">05</div>
+            <div class="title">담당자 배정</div>
+            <div class="desc">전담 컨설턴트 배정</div>
+          </div>
+          <div class="proc-step">
+            <div class="num">06</div>
+            <div class="title">서류진행</div>
+            <div class="desc">신청서류 준비 및 접수</div>
+          </div>
+          <div class="proc-step">
+            <div class="num">07</div>
+            <div class="title">승인완료</div>
+            <div class="desc">정책자금 승인 및 실행</div>
+          </div>
+          <div class="proc-step">
+            <div class="num">08</div>
+            <div class="title">사후관리</div>
+            <div class="desc">지속적 자금 관리 지원</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="wf-cta">
+        <h2>사업자라면 누구나 상담 가능합니다</h2>
+        <p>아래 조건에 해당하시면 지금 바로 무료상담을 신청하세요</p>
+        <div class="cta-checks">
+          <div class="cta-check">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              /></svg
+            >개인사업자 및 법인사업자
+          </div>
+          <div class="cta-check">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              /></svg
+            >업력 1년 이상 기업
+          </div>
+          <div class="cta-check">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              /></svg
+            >창업 3년 이내 (창업자금)
+          </div>
+          <div class="cta-check">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              /></svg
+            >제조업, 서비스업, IT업 등
+          </div>
+          <div class="cta-check">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              /></svg
+            >매출 발생 기업 우대
+          </div>
+          <div class="cta-check">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              /></svg
+            >기술력 보유 기업 우대
+          </div>
+        </div>
+        <a href="#" class="btn-primary">무료상담 신청하기</a>
+        <a href="tel:01020205312" class="btn-point">전화상담</a>
+      </div>
+
+      <!-- Footer -->
+      <div class="wf-footer">
+        <div class="wf-footer-inner">
+          <div>
+            <div class="logo">
+              <span class="k">K</span><span class="pec">PEC</span>
+            </div>
+            <div class="info">
+              <p>상호: 기업정책자금센터<br />연락처: 010-2020-5312</p>
+            </div>
+          </div>
+          <div class="links">
+            <h4>서비스</h4>
+            <a href="#">운전자금</a><a href="#">시설자금</a
+            ><a href="#">기업인증</a>
+          </div>
+          <div class="links">
+            <h4>바로가기</h4>
+            <a href="#">성공사례</a><a href="#">진행절차</a
+            ><a href="#">무료상담</a>
+          </div>
+          <div class="call">
+            <p>지금 바로 상담받으세요</p>
+            <a href="#">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                />
+              </svg>
+              전화상담
+            </a>
+          </div>
+        </div>
+        <div class="wf-footer-copy">
+          &copy; 2026 KPEC 기업정책자금센터. All rights reserved.
+          &nbsp;&middot;&nbsp; made by
+          <a
+            href="https://polarad.co.kr"
+            target="_blank"
+            rel="noopener"
+            style="color: var(--primary-30); text-decoration: underline"
+            >pola</a
+          >
+        </div>
+      </div>
+    </div>
+    <div style="height: 40px"></div>
+  </body>
+</html>

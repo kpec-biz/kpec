@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KPEC Logo</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        font-family: "Inter", sans-serif;
+      }
+      .logo-box {
+        width: 1200px;
+        height: 400px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-k {
+        font-family: "Inter", sans-serif;
+        font-size: 200px;
+        font-weight: 900;
+        color: #ed2939;
+        line-height: 1;
+      }
+      .logo-pec {
+        font-family: "Inter", sans-serif;
+        font-size: 200px;
+        font-weight: 300;
+        color: #1a56a8;
+        line-height: 1;
+      }
+      .controls {
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+      }
+      .btn {
+        padding: 12px 28px;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #fff;
+        background: #1a56a8;
+        transition: background 0.2s;
+      }
+      .btn:hover {
+        background: #134a8a;
+      }
+      .btn.red {
+        background: #ed2939;
+      }
+      .btn.red:hover {
+        background: #c41f2e;
+      }
+      .label {
+        margin-top: 40px;
+        font-size: 14px;
+        color: #999;
+        margin-bottom: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="label">White Background (1200 x 400)</div>
+    <div class="logo-box" id="logo-white">
+      <span class="logo-k">K</span><span class="logo-pec">PEC</span>
+    </div>
+
+    <div class="controls">
+      <button
+        class="btn"
+        onclick="download('logo-white', 'KPEC_logo_white.png')"
+      >
+        PNG 다운로드 (White)
+      </button>
+    </div>
+
+    <div style="height: 40px"></div>
+
+    <div class="label">Dark Background (1200 x 400)</div>
+    <div class="logo-box" id="logo-dark" style="background: #111827">
+      <span class="logo-k">K</span
+      ><span class="logo-pec" style="color: #ffffff">PEC</span>
+    </div>
+
+    <div class="controls">
+      <button
+        class="btn red"
+        onclick="download('logo-dark', 'KPEC_logo_dark.png')"
+      >
+        PNG 다운로드 (Dark)
+      </button>
+    </div>
+
+    <div style="height: 40px"></div>
+
+    <div class="label">Transparent Background (1200 x 400)</div>
+    <div
+      class="logo-box"
+      id="logo-trans"
+      style="
+        background: repeating-conic-gradient(#e0e0e0 0% 25%, #fff 0% 50%) 0
+          0/20px 20px;
+      "
+    >
+      <span class="logo-k">K</span><span class="logo-pec">PEC</span>
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="downloadTransparent()">
+        PNG 다운로드 (Transparent)
+      </button>
+    </div>
+
+    <div
+      style="
+        margin-top: 40px;
+        font-size: 12px;
+        color: #bbb;
+        text-align: center;
+        line-height: 1.8;
+      "
+    >
+      #13 Split Weight — K(Bold 900, #ED2939) + PEC(Light 300, #1A56A8) | Inter
+      | 1200 x 400px
+    </div>
+
+    <script>
+      function download(id, filename) {
+        const el = document.getElementById(id);
+        html2canvas(el, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null,
+        }).then((canvas) => {
+          const ctx = canvas.getContext("2d");
+          const link = document.createElement("a");
+          link.download = filename;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      }
+
+      function downloadTransparent() {
+        const el = document.getElementById("logo-trans");
+        const origBg = el.style.background;
+        el.style.background = "transparent";
+        html2canvas(el, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null,
+        }).then((canvas) => {
+          el.style.background = origBg;
+          const link = document.createElement("a");
+          link.download = "KPEC_logo_transparent.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      }
+    </script>
+  </body>
+</html>

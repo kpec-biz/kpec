@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPEC 모션그래픽 스토리보드 (25초)</title>
+    <link
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --p50: #256ef4;
+        --p60: #0b50d0;
+        --p70: #083891;
+        --g0: #fff;
+        --g5: #f4f5f6;
+        --g10: #e6e8ea;
+        --g50: #6d7882;
+        --g80: #33363d;
+        --g90: #1e2124;
+        --pt50: #d63d4a;
+        --green: #22c55e;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Pretendard", system-ui, sans-serif;
+        background: #0a0f1a;
+        color: #fff;
+        line-height: 1.6;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+      h1 {
+        font-size: 28px;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .sub-title {
+        text-align: center;
+        color: #8a949e;
+        font-size: 15px;
+        margin-bottom: 48px;
+      }
+
+      /* 개요 */
+      .overview {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 48px;
+      }
+      .overview h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--p50);
+      }
+      .overview table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .overview td {
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 14px;
+        vertical-align: top;
+      }
+      .overview td:first-child {
+        color: #8a949e;
+        width: 120px;
+        font-weight: 600;
+      }
+
+      /* 금리 비교 박스 */
+      .rate-compare {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 48px;
+      }
+      .rate-compare h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: #fff;
+      }
+      .rate-compare .source {
+        font-size: 12px;
+        color: #6d7882;
+        margin-bottom: 24px;
+      }
+      .rate-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 20px;
+        align-items: stretch;
+        margin-bottom: 28px;
+      }
+      .rate-card {
+        border-radius: 14px;
+        padding: 24px;
+        text-align: center;
+      }
+      .rate-card.bank {
+        background: rgba(214, 61, 74, 0.1);
+        border: 1px solid rgba(214, 61, 74, 0.25);
+      }
+      .rate-card.policy {
+        background: rgba(37, 110, 244, 0.1);
+        border: 1px solid rgba(37, 110, 244, 0.25);
+      }
+      .rate-card .label {
+        font-size: 13px;
+        color: #8a949e;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+      .rate-card .rate {
+        font-size: 42px;
+        font-weight: 900;
+        line-height: 1;
+      }
+      .rate-card.bank .rate {
+        color: var(--pt50);
+      }
+      .rate-card.policy .rate {
+        color: #fff;
+      }
+      .rate-card .rate-sub {
+        font-size: 13px;
+        color: #8a949e;
+        margin-top: 6px;
+      }
+      .rate-vs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #464c53;
+        font-weight: 900;
+      }
+
+      .calc-box {
+        background: #111827;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .calc-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #8a949e;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .calc-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .calc-row:last-child {
+        border-bottom: none;
+      }
+      .calc-row .item {
+        font-size: 14px;
+        color: #cdd1d5;
+      }
+      .calc-row .val {
+        font-size: 16px;
+        font-weight: 800;
+      }
+      .calc-row .val.red {
+        color: var(--pt50);
+      }
+      .calc-row .val.blue {
+        color: #60a5fa;
+      }
+      .calc-row .val.green {
+        color: var(--green);
+      }
+
+      .diff-highlight {
+        background: linear-gradient(
+          135deg,
+          rgba(34, 197, 94, 0.12),
+          rgba(34, 197, 94, 0.04)
+        );
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .diff-highlight .big {
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--green);
+      }
+      .diff-highlight .desc {
+        font-size: 14px;
+        color: #86efac;
+        margin-top: 4px;
+      }
+
+      .closure-box {
+        background: rgba(214, 61, 74, 0.06);
+        border: 1px solid rgba(214, 61, 74, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+      }
+      .closure-box h3 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--pt50);
+        margin-bottom: 12px;
+      }
+      .closure-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .closure-item {
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .closure-item.bad {
+        background: rgba(214, 61, 74, 0.08);
+        border: 1px solid rgba(214, 61, 74, 0.15);
+      }
+      .closure-item.good {
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.15);
+      }
+      .closure-item .tag {
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-bottom: 6px;
+      }
+      .closure-item.bad .tag {
+        background: rgba(214, 61, 74, 0.2);
+        color: var(--pt50);
+      }
+      .closure-item.good .tag {
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--green);
+      }
+      .closure-item strong {
+        display: block;
+        font-size: 14px;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+      .closure-item p {
+        color: #b1b8be;
+        margin: 0;
+      }
+
+      /* 씬 */
+      .scene {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        margin-bottom: 32px;
+        overflow: hidden;
+      }
+      .scene-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .scene-num {
+        background: var(--p50);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .scene-meta {
+        flex: 1;
+      }
+      .scene-meta .title {
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .scene-meta .time {
+        font-size: 13px;
+        color: var(--p50);
+        margin-top: 2px;
+      }
+      .scene-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+      .scene-visual {
+        padding: 24px;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .scene-detail {
+        padding: 24px;
+      }
+      .scene-visual h4,
+      .scene-detail h4 {
+        font-size: 12px;
+        font-weight: 700;
+        color: #8a949e;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+      }
+      .visual-box {
+        background: rgba(37, 110, 244, 0.08);
+        border: 1px dashed rgba(37, 110, 244, 0.3);
+        border-radius: 12px;
+        padding: 20px;
+        min-height: 120px;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      .visual-box .main-text {
+        font-size: 22px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+        line-height: 1.3;
+      }
+      .visual-box .sub-text {
+        font-size: 14px;
+        color: #b1b8be;
+      }
+      .detail-list {
+        list-style: none;
+        font-size: 14px;
+      }
+      .detail-list li {
+        padding: 6px 0;
+        padding-left: 20px;
+        position: relative;
+        color: #cdd1d5;
+      }
+      .detail-list li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--p50);
+      }
+      .motion-tag {
+        display: inline-block;
+        background: rgba(214, 61, 74, 0.15);
+        color: var(--pt50);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-top: 4px;
+      }
+      .narration {
+        background: rgba(37, 110, 244, 0.06);
+        border-left: 3px solid var(--p50);
+        padding: 12px 16px;
+        margin-top: 12px;
+        border-radius: 0 8px 8px 0;
+        font-size: 14px;
+        color: #b1cefb;
+        font-style: italic;
+      }
+
+      /* 타임라인 */
+      .timeline {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 48px;
+        padding: 0 4px;
+      }
+      .tl-seg {
+        flex: 1;
+        text-align: center;
+        padding: 12px 4px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .tl-seg .sec {
+        font-size: 16px;
+        font-weight: 800;
+        display: block;
+        margin-bottom: 2px;
+      }
+      .tl-1 {
+        background: rgba(37, 110, 244, 0.15);
+        color: var(--p50);
+      }
+      .tl-2 {
+        background: rgba(214, 61, 74, 0.12);
+        color: var(--pt50);
+      }
+      .tl-3 {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--green);
+      }
+      .tl-4 {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+      }
+      .tl-5 {
+        background: rgba(214, 61, 74, 0.08);
+        color: #f87171;
+      }
+      .tl-6 {
+        background: rgba(37, 110, 244, 0.15);
+        color: var(--p50);
+      }
+      .tl-7 {
+        background: rgba(37, 110, 244, 0.25);
+        color: #fff;
+      }
+
+      /* 프롬프트 */
+      .prompt-section {
+        margin-top: 48px;
+      }
+      .prompt-section h2 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: var(--p50);
+      }
+      .prompt-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .prompt-card h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .prompt-card .for {
+        font-size: 12px;
+        color: var(--p50);
+        margin-bottom: 12px;
+      }
+      .prompt-box {
+        background: #000;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 16px;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #e6e8ea;
+        font-family: "Pretendard", monospace;
+        white-space: pre-wrap;
+      }
+      .copy-btn {
+        margin-top: 8px;
+        background: var(--p50);
+        color: #fff;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .copy-btn:hover {
+        background: var(--p60);
+      }
+      .note {
+        background: rgba(255, 193, 7, 0.08);
+        border: 1px solid rgba(255, 193, 7, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 32px;
+        font-size: 14px;
+        color: #ffc107;
+      }
+      .note strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>KPEC 모션그래픽 스토리보드</h1>
+      <p class="sub-title">정책자금을 받아야 하는 이유 — 25초 릴스/숏폼</p>
+
+      <!-- 개요 -->
+      <div class="overview">
+        <h2>제작 개요</h2>
+        <table>
+          <tr>
+            <td>포맷</td>
+            <td>인스타 릴스 / 숏폼 (9:16 세로형, 1080x1920)</td>
+          </tr>
+          <tr>
+            <td>길이</td>
+            <td>25초</td>
+          </tr>
+          <tr>
+            <td>컨셉</td>
+            <td>
+              1억원 대출 시 시중은행 vs 정책자금 실제 금액 비교 + 폐업 리스크
+            </td>
+          </tr>
+          <tr>
+            <td>톤</td>
+            <td>숫자 중심 인포그래픽, 어두운 배경 + 흰색/빨강/초록 강조</td>
+          </tr>
+          <tr>
+            <td>BGM</td>
+            <td>차분한 코퍼레이트 / 미니멀 일렉트로닉 (무료 라이선스)</td>
+          </tr>
+          <tr>
+            <td>나레이션</td>
+            <td>없음 (자막만, 사운드 off에서도 전달 가능하게)</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 금리 비교 데이터 -->
+      <div class="rate-compare">
+        <h2>1억원 대출 기준 실제 비교 (2026년 3월 기준)</h2>
+        <div class="source">
+          출처: 한국은행 기준금리 2.75% / 중진공 정책자금 기준금리 /
+          전국은행연합회 중소기업대출금리
+        </div>
+
+        <div class="rate-grid">
+          <div class="rate-card bank">
+            <div class="label">시중은행 중소기업 대출</div>
+            <div class="rate">5.5%</div>
+            <div class="rate-sub">신용대출 평균 (4.5~6.5%)</div>
+          </div>
+          <div class="rate-vs">VS</div>
+          <div class="rate-card policy">
+            <div class="label">정부 정책자금</div>
+            <div class="rate">2.5%</div>
+            <div class="rate-sub">고정금리 (청년창업 기준)</div>
+          </div>
+        </div>
+
+        <div class="calc-box">
+          <div class="calc-title">1억원 / 5년 상환 기준 이자 비교</div>
+          <div class="calc-row">
+            <div class="item">시중은행 총 이자 (5.5%, 5년)</div>
+            <div class="val red">약 1,448만원</div>
+          </div>
+          <div class="calc-row">
+            <div class="item">정책자금 총 이자 (2.5%, 5년)</div>
+            <div class="val blue">약 645만원</div>
+          </div>
+          <div class="calc-row">
+            <div class="item">연간 이자 차이</div>
+            <div class="val green">연 300만원 절감</div>
+          </div>
+        </div>
+
+        <div class="diff-highlight">
+          <div class="big">803만원 절감</div>
+          <div class="desc">같은 1억원, 같은 5년. 금리 하나로 803만원 차이</div>
+        </div>
+
+        <div class="closure-box">
+          <h3>폐업 시 상환 조건 비교</h3>
+          <div class="closure-grid">
+            <div class="closure-item bad">
+              <span class="tag">시중은행</span>
+              <strong>잔액 일시상환 요구</strong>
+              <p>
+                폐업 = 기한이익 상실. 남은 대출금 전액 즉시 상환 요구. 못 갚으면
+                신용불량 + 법적 추심
+              </p>
+            </div>
+            <div class="closure-item good">
+              <span class="tag">정책자금</span>
+              <strong>기존 조건 유지, 분할 상환 가능</strong>
+              <p>
+                폐업해도 약정 상환 스케줄 유지. 꾸준히 갚으면 문제 없음. 재창업
+                시 추가 지원도 가능
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 타임라인 -->
+      <div class="timeline">
+        <div class="tl-seg tl-1"><span class="sec">0-3s</span>훅</div>
+        <div class="tl-seg tl-2"><span class="sec">3-7s</span>은행 금리</div>
+        <div class="tl-seg tl-3"><span class="sec">7-12s</span>정책 금리</div>
+        <div class="tl-seg tl-4"><span class="sec">12-16s</span>금액 비교</div>
+        <div class="tl-seg tl-5">
+          <span class="sec">16-20s</span>폐업 리스크
+        </div>
+        <div class="tl-seg tl-6">
+          <span class="sec">20-23s</span>정책 안전망
+        </div>
+        <div class="tl-seg tl-7"><span class="sec">23-25s</span>CTA</div>
+      </div>
+
+      <!-- SCENE 1 -->
+      <div class="scene">
+        <div class="scene-header">
+          <div class="scene-num">1</div>
+          <div class="scene-meta">
+            <div class="title">훅 — "1억 빌리면 이자가 얼마?"</div>
+            <div class="time">0:00 ~ 0:03 (3초)</div>
+          </div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-visual">
+            <h4>화면 구성</h4>
+            <div class="visual-box">
+              <div class="main-text" style="font-size: 20px">
+                1억 대출받으면<br />이자 얼마나 낼까?
+              </div>
+              <div class="sub-text" style="margin-top: 8px">
+                검은 배경, 흰색 텍스트만<br />중앙에서 한 줄씩 등장
+              </div>
+            </div>
+          </div>
+          <div class="scene-detail">
+            <h4>모션 & 연출</h4>
+            <ul class="detail-list">
+              <li>검정 배경, 텍스트만 중앙 등장</li>
+              <li>"1억" 숫자에 노란 하이라이트</li>
+              <li>"이자 얼마나" 에서 0.3초 멈춤</li>
+              <li>물음표 바운스 효과</li>
+            </ul>
+            <span class="motion-tag">Fade In + Highlight</span>
+          </div>
+        </div>
+        <div class="narration">💬 자막: "1억 대출받으면 이자 얼마나 낼까?"</div>
+      </div>
+
+      <!-- SCENE 2 -->
+      <div class="scene">
+        <div class="scene-header">
+          <div class="scene-num">2</div>
+          <div class="scene-meta">
+            <div class="title">시중은행 — "연 5.5%, 이자만 1,448만원"</div>
+            <div class="time">0:03 ~ 0:07 (4초)</div>
+          </div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-visual">
+            <h4>화면 구성</h4>
+            <div
+              class="visual-box"
+              style="
+                background: rgba(214, 61, 74, 0.1);
+                border-color: rgba(214, 61, 74, 0.3);
+              "
+            >
+              <div
+                style="
+                  font-size: 13px;
+                  color: #f87171;
+                  font-weight: 700;
+                  margin-bottom: 8px;
+                "
+              >
+                시중은행 중소기업 대출
+              </div>
+              <div
+                style="
+                  font-size: 48px;
+                  font-weight: 900;
+                  color: var(--pt50);
+                  line-height: 1;
+                "
+              >
+                5.5%
+              </div>
+              <div style="font-size: 13px; color: #8a949e; margin-top: 4px">
+                2026년 3월 평균 신용대출 금리
+              </div>
+              <div
+                style="
+                  margin-top: 16px;
+                  padding: 12px;
+                  background: rgba(0, 0, 0, 0.3);
+                  border-radius: 8px;
+                "
+              >
+                <div style="font-size: 14px; color: #f87171; font-weight: 700">
+                  5년간 총 이자
+                </div>
+                <div style="font-size: 28px; font-weight: 900; color: #fff">
+                  1,448만원
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scene-detail">
+            <h4>모션 & 연출</h4>
+            <ul class="detail-list">
+              <li>빨간 톤 배경으로 전환</li>
+              <li>"5.5%" 숫자 카운트업 (0→5.5)</li>
+              <li>하단에 "1,448만원" 숫자 강조 팝업</li>
+              <li>금액이 올라갈 때 막대그래프 상승</li>
+              <li>빨간 그래프 라인이 우상향</li>
+            </ul>
+            <span class="motion-tag">Count Up + Bar Rise + Red Tone</span>
+          </div>
+        </div>
+        <div class="narration">
+          💬 자막: "시중은행? 연 5.5%. 5년이면 이자만 1,448만원"
+        </div>
+      </div>
+
+      <!-- SCENE 3 -->
+      <div class="scene">
+        <div class="scene-header">
+          <div class="scene-num">3</div>
+          <div class="scene-meta">
+            <div class="title">정책자금 — "연 2.5%, 이자 645만원"</div>
+            <div class="time">0:07 ~ 0:12 (5초)</div>
+          </div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-visual">
+            <h4>화면 구성</h4>
+            <div
+              class="visual-box"
+              style="
+                background: rgba(34, 197, 94, 0.06);
+                border-color: rgba(34, 197, 94, 0.3);
+              "
+            >
+              <div
+                style="
+                  font-size: 13px;
+                  color: var(--green);
+                  font-weight: 700;
+                  margin-bottom: 8px;
+                "
+              >
+                정부 정책자금
+              </div>
+              <div
+                style="
+                  font-size: 48px;
+                  font-weight: 900;
+                  color: #fff;
+                  line-height: 1;
+                "
+              >
+                2.5%
+              </div>
+              <div style="font-size: 13px; color: #8a949e; margin-top: 4px">
+                2026년 고정금리 (중진공)
+              </div>
+              <div
+                style="
+                  margin-top: 16px;
+                  padding: 12px;
+                  background: rgba(0, 0, 0, 0.3);
+                  border-radius: 8px;
+                "
+              >
+                <div style="font-size: 14px; color: #86efac; font-weight: 700">
+                  5년간 총 이자
+                </div>
+                <div style="font-size: 28px; font-weight: 900; color: #fff">
+                  645만원
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scene-detail">
+            <h4>모션 & 연출</h4>
+            <ul class="detail-list">
+              <li>배경 빨간톤 → 짙은 남색으로 전환</li>
+              <li>"2.5%" 숫자 카운트다운 (5.5→2.5)</li>
+              <li>"645만원" 깔끔하게 등장</li>
+              <li>초록 계열 안정감 있는 톤</li>
+              <li>이전 씬 "1,448만원" 잔상이 페이드아웃</li>
+            </ul>
+            <span class="motion-tag">Color Shift + Count Down + Calm Tone</span>
+          </div>
+        </div>
+        <div class="narration">
+          💬 자막: "정책자금? 연 2.5% 고정. 5년 이자 645만원"
+        </div>
+      </div>
+
+      <!-- SCENE 4 -->
+      <div class="scene">
+        <div class="scene-header">
+          <div class="scene-num">4</div>
+          <div class="scene-meta">
+            <div class="title">금액 차이 강조 — "803만원 절감"</div>
+            <div class="time">0:12 ~ 0:16 (4초)</div>
+          </div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-visual">
+            <h4>화면 구성</h4>
+            <div class="visual-box">
+              <div style="text-align: center">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    gap: 32px;
+                    align-items: baseline;
+                    margin-bottom: 16px;
+                  "
+                >
+                  <div>
+                    <div
+                      style="
+                        font-size: 12px;
+                        color: var(--pt50);
+                        font-weight: 600;
+                      "
+                    >
+                      시중은행
+                    </div>
+                    <div
+                      style="
+                        font-size: 24px;
+                        font-weight: 900;
+                        color: var(--pt50);
+                        text-decoration: line-through;
+                      "
+                    >
+                      1,448만원
+                    </div>
+                  </div>
+                  <div style="font-size: 20px; color: #464c53">→</div>
+                  <div>
+                    <div
+                      style="
+                        font-size: 12px;
+                        color: var(--green);
+                        font-weight: 600;
+                      "
+                    >
+                      정책자금
+                    </div>
+                    <div style="font-size: 24px; font-weight: 900; color: #fff">
+                      645만원
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    padding: 14px;
+                    background: rgba(34, 197, 94, 0.15);
+                    border: 1px solid rgba(34, 197, 94, 0.3);
+                    border-radius: 10px;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 36px;
+                      font-weight: 900;
+                      color: var(--green);
+                    "
+                  >
+                    -803만원
+                  </div>
+                  <div style="font-size: 14px; color: #86efac; margin-top: 2px">
+                    같은 1억, 같은 5년. 금리 하나의 차이
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scene-detail">
+            <h4>모션 & 연출</h4>
+            <ul class="detail-list">
+              <li>좌: 1,448만원(빨강, 취소선) / 우: 645만원(흰색)</li>
+              <li>가운데 화살표 모핑</li>
+              <li>"-803만원" 대형 숫자 펀치인 등장</li>
+              <li>초록 배경 하이라이트 펄스</li>
+              <li>금액이 가장 크고 눈에 띄게</li>
+            </ul>
+            <span class="motion-tag">Punch In + Pulse + Strike Through</span>
+          </div>
+        </div>
+        <div class="narration">💬 자막: "803만원 차이. 같은 1억인데."</div>
+      </div>
+
+      <!-- SCENE 5 -->
+      <div class="scene">
+        <div class="scene-header">
+          <div class="scene-num">5</div>
+          <div class="scene-meta">
+            <div class="title">폐업 리스크 — "은행은 즉시 전액 회수"</div>
+            <div class="time">0:16 ~ 0:20 (4초)</div>
+          </div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-visual">
+            <h4>화면 구성</h4>
+            <div
+              class="visual-box"
+              style="
+                background: rgba(214, 61, 74, 0.1);
+                border-color: rgba(214, 61, 74, 0.3);
+              "
+            >
+              <div
+                style="
+                  font-size: 14px;
+                  color: #f87171;
+                  font-weight: 700;
+                  margin-bottom: 8px;
+                "
+              >
+                만약 사업이 어려워지면?
+              </div>
+              <div
+                style="
+                  padding: 14px;
+                  background: rgba(0, 0, 0, 0.4);
+                  border-radius: 8px;
+                  margin-bottom: 10px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 12px;
+                    color: var(--pt50);
+                    font-weight: 600;
+                    margin-bottom: 4px;
+                  "
+                >
+                  시중은행
+                </div>
+                <div style="font-size: 18px; font-weight: 800; color: #fff">
+                  "잔액 전부 갚으세요"
+                </div>
+                <div style="font-size: 12px; color: #f87171; margin-top: 4px">
+                  기한이익 상실 → 일시상환 → 신용불량
+                </div>
+              </div>
+              <div
+                style="
+                  padding: 14px;
+                  background: rgba(34, 197, 94, 0.08);
+                  border: 1px solid rgba(34, 197, 94, 0.15);
+                  border-radius: 8px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 12px;
+                    color: var(--green);
+                    font-weight: 600;
+                    margin-bottom: 4px;
+                  "
+                >
+                  정책자금
+                </div>
+                <div style="font-size: 18px; font-weight: 800; color: #fff">
+                  "기존 조건대로 갚으면 됩니다"
+                </div>
+                <div style="font-size: 12px; color: #86efac; margin-top: 4px">
+                  분할 상환 유지 · 재창업 시 추가 지원 가능
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scene-detail">
+            <h4>모션 & 연출</h4>
+            <ul class="detail-list">
+              <li>"만약 사업이 어려워지면?" 텍스트 등장</li>
+              <li>상단: 빨간 카드 — 은행 일시상환 (흔들림 효과)</li>
+              <li>하단: 초록 카드 — 정책자금 분할상환 (안정 효과)</li>
+              <li>순차 등장 (빨강 먼저 → 초록이 덮으며)</li>
+              <li>빨간 카드에 경고 아이콘 깜빡임</li>
+            </ul>
+            <span class="motion-tag">Shake + Slide Over + Warning Blink</span>
+          </div>
+        </div>
+        <div class="narration">
+          💬 자막: "은행은 폐업 시 전액 즉시 상환. 정책자금은 꾸준히 갚으면 OK"
+        </div>
+      </div>
+
+      <!-- SCENE 6 -->
+      <div class="scene">
+        <div class="scene-header">
+          <div class="scene-num">6</div>
+          <div class="scene-meta">
+            <div class="title">정책자금 안전망 — "재기 가능"</div>
+            <div class="time">0:20 ~ 0:23 (3초)</div>
+          </div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-visual">
+            <h4>화면 구성</h4>
+            <div class="visual-box">
+              <div style="text-align: center">
+                <div
+                  style="
+                    font-size: 18px;
+                    font-weight: 800;
+                    color: #fff;
+                    margin-bottom: 16px;
+                  "
+                >
+                  정책자금이 다른 이유
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px">
+                  <div
+                    style="
+                      padding: 10px;
+                      background: rgba(255, 255, 255, 0.06);
+                      border-radius: 8px;
+                      font-size: 14px;
+                      text-align: left;
+                    "
+                  >
+                    <span style="color: var(--green); font-weight: 700"
+                      >낮은 금리</span
+                    >
+                    <span style="color: #8a949e">연 2.5% 고정</span>
+                  </div>
+                  <div
+                    style="
+                      padding: 10px;
+                      background: rgba(255, 255, 255, 0.06);
+                      border-radius: 8px;
+                      font-size: 14px;
+                      text-align: left;
+                    "
+                  >
+                    <span style="color: var(--green); font-weight: 700"
+                      >폐업 안전망</span
+                    >
+                    <span style="color: #8a949e">분할 상환 유지</span>
+                  </div>
+                  <div
+                    style="
+                      padding: 10px;
+                      background: rgba(255, 255, 255, 0.06);
+                      border-radius: 8px;
+                      font-size: 14px;
+                      text-align: left;
+                    "
+                  >
+                    <span style="color: var(--green); font-weight: 700"
+                      >재창업 지원</span
+                    >
+                    <span style="color: #8a949e">재기 시 추가 자금</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scene-detail">
+            <h4>모션 & 연출</h4>
+            <ul class="detail-list">
+              <li>배경 안정적 남색으로 전환</li>
+              <li>3가지 장점 카드 순차 슬라이드인</li>
+              <li>각 카드 좌측에 체크 아이콘 등장</li>
+              <li>전체적으로 밝고 안정감 있는 톤</li>
+            </ul>
+            <span class="motion-tag">Staggered Slide In + Check Icons</span>
+          </div>
+        </div>
+        <div class="narration">
+          💬 자막: "낮은 금리, 폐업 안전망, 재창업 지원까지"
+        </div>
+      </div>
+
+      <!-- SCENE 7 -->
+      <div class="scene">
+        <div class="scene-header">
+          <div class="scene-num">7</div>
+          <div class="scene-meta">
+            <div class="title">CTA — "우리 기업도 받을 수 있을까?"</div>
+            <div class="time">0:23 ~ 0:25 (2초)</div>
+          </div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-visual">
+            <h4>화면 구성</h4>
+            <div class="visual-box">
+              <div style="text-align: center">
+                <div
+                  class="main-text"
+                  style="font-size: 20px; text-align: center"
+                >
+                  우리 기업도<br />받을 수 있을까?
+                </div>
+                <div style="margin-top: 16px">
+                  <span
+                    style="
+                      display: inline-block;
+                      background: #fff;
+                      color: #0a0f1a;
+                      padding: 12px 28px;
+                      border-radius: 10px;
+                      font-size: 16px;
+                      font-weight: 800;
+                    "
+                    >무료 자금진단 받기</span
+                  >
+                </div>
+                <div style="margin-top: 10px; font-size: 12px; color: #8a949e">
+                  KPEC 기업정책자금센터
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scene-detail">
+            <h4>모션 & 연출</h4>
+            <ul class="detail-list">
+              <li>전체 줌아웃 → 중앙 집중</li>
+              <li>CTA 버튼: 흰색 배경 + 검정 텍스트 (가독성 최대)</li>
+              <li>버튼 펄스 효과 (1회)</li>
+              <li>KPEC 로고 페이드인</li>
+              <li>마지막 0.5초 정지</li>
+            </ul>
+            <span class="motion-tag">Zoom Out + Pulse + Logo Fade</span>
+          </div>
+        </div>
+        <div class="narration">
+          💬 자막: "우리 기업도 받을 수 있을까? 무료 자금진단"
+        </div>
+      </div>
+
+      <!-- 이미지/영상 프롬프트 -->
+      <div class="prompt-section">
+        <h2>이미지/영상 생성 프롬프트</h2>
+
+        <div class="prompt-card">
+          <h3>배경 영상 — Scene 1 (훅)</h3>
+          <div class="for">용도: 0~3초 배경</div>
+          <div class="prompt-box">
+            Extreme close-up of Korean won bills being counted, shallow depth of
+            field, dark moody lighting. 100,000 won notes fanning out in slow
+            motion. Cinematic dark blue-black tones. 9:16 vertical. No faces
+            visible.
+          </div>
+          <button
+            class="copy-btn"
+            onclick="
+              navigator.clipboard.writeText(
+                this.previousElementSibling.textContent.trim(),
+              )
+            "
+          >
+            복사
+          </button>
+        </div>
+
+        <div class="prompt-card">
+          <h3>배경 영상 — Scene 2 (시중은행)</h3>
+          <div class="for">용도: 3~7초 배경</div>
+          <div class="prompt-box">
+            Abstract financial chart going upward with red glow, dark
+            background. Rising interest rate visualization, red line graph
+            climbing steeply. Numbers and percentage symbols floating. Ominous
+            corporate mood. 9:16 vertical format.
+          </div>
+          <button
+            class="copy-btn"
+            onclick="
+              navigator.clipboard.writeText(
+                this.previousElementSibling.textContent.trim(),
+              )
+            "
+          >
+            복사
+          </button>
+        </div>
+
+        <div class="prompt-card">
+          <h3>배경 영상 — Scene 3 (정책자금)</h3>
+          <div class="for">용도: 7~12초 배경</div>
+          <div class="prompt-box">
+            Clean bright Korean government building exterior, modern
+            architecture with glass and steel. Blue sky, warm sunlight hitting
+            the facade. Camera slowly tilts up. Optimistic, trustworthy mood.
+            Blue and white palette. 9:16 vertical format.
+          </div>
+          <button
+            class="copy-btn"
+            onclick="
+              navigator.clipboard.writeText(
+                this.previousElementSibling.textContent.trim(),
+              )
+            "
+          >
+            복사
+          </button>
+        </div>
+
+        <div class="prompt-card">
+          <h3>배경 이미지 — Scene 4 (금액 비교)</h3>
+          <div class="for">용도: 12~16초 배경</div>
+          <div class="prompt-box">
+            Dark minimal background with subtle green gradient glow at center.
+            Abstract financial comparison infographic style. Split composition
+            with warm red tones fading on left and cool green tones growing on
+            right. No text. 9:16 vertical.
+          </div>
+          <button
+            class="copy-btn"
+            onclick="
+              navigator.clipboard.writeText(
+                this.previousElementSibling.textContent.trim(),
+              )
+            "
+          >
+            복사
+          </button>
+        </div>
+
+        <div class="prompt-card">
+          <h3>배경 영상 — Scene 5 (폐업 리스크)</h3>
+          <div class="for">용도: 16~20초 배경</div>
+          <div class="prompt-box">
+            Dark moody shot of closed storefront with shutters down at night.
+            Rain on window, dimly lit street. Feeling of business closure and
+            hardship. Desaturated blue-gray tones. 9:16 vertical format. Subtle
+            slow camera drift.
+          </div>
+          <button
+            class="copy-btn"
+            onclick="
+              navigator.clipboard.writeText(
+                this.previousElementSibling.textContent.trim(),
+              )
+            "
+          >
+            복사
+          </button>
+        </div>
+
+        <div class="prompt-card">
+          <h3>배경 영상 — Scene 7 (CTA)</h3>
+          <div class="for">용도: 23~25초 엔딩</div>
+          <div class="prompt-box">
+            Clean bright blue gradient background with soft light rays
+            converging to center. Minimal corporate ending screen. Soft white
+            particles rising slowly. 9:16 vertical. Calm, trustworthy,
+            professional atmosphere. Slight bokeh effect.
+          </div>
+          <button
+            class="copy-btn"
+            onclick="
+              navigator.clipboard.writeText(
+                this.previousElementSibling.textContent.trim(),
+              )
+            "
+          >
+            복사
+          </button>
+        </div>
+      </div>
+
+      <!-- 제작 참고 -->
+      <div class="note">
+        <strong>제작 참고사항</strong>
+        • 권장 툴: CapCut / After Effects / Remotion (코드 기반)<br />
+        • 폰트: Pretendard (본 사이트와 동일)<br />
+        • 금액/이율은 가장 큰 폰트 사용 (48px+ 상당). 배경과 최대 대비<br />
+        • 파란 배경 위에는 반드시 흰색 또는 연초록 텍스트 사용 (파란글씨
+        금지)<br />
+        • 빨간 숫자는 어두운 배경 위에서만 사용<br />
+        • 전체 자막 필수 (사운드 off에서도 내용 전달)<br />
+        • BGM: Artlist / Epidemic Sound에서 "corporate minimal" 검색<br />
+        • 세로 9:16 기준, 텍스트 세이프존 내 배치
+      </div>
+    </div>
+  </body>
+</html>

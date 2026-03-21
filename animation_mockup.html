@@ -1,0 +1,3016 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPEC Motion Animation Mockup v3</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --red: #ed2939;
+        --blue: #1a56a8;
+        --blue-dark: #0f3d7a;
+        --blue-light: #e8f0fe;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-400: #94a3b8;
+        --gray-600: #475569;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --cyan: #4a9eff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--gray-100);
+        color: var(--gray-800);
+        line-height: 1.6;
+      }
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 24px;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .nav button {
+        padding: 7px 16px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        background: #fff;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--gray-600);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .nav button:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      .nav button.active {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue);
+      }
+      .section {
+        display: none;
+        min-height: 100vh;
+        padding: 100px 24px 60px;
+        flex-direction: column;
+        align-items: center;
+      }
+      .section.active {
+        display: flex;
+      }
+      .section-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--gray-900);
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      .section-desc {
+        font-size: 15px;
+        color: var(--gray-400);
+        margin-bottom: 48px;
+        text-align: center;
+        max-width: 600px;
+      }
+      .demo-box {
+        background: #fff;
+        border-radius: 16px;
+        padding: 60px;
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.06),
+          0 8px 32px rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+        width: 100%;
+        max-width: 720px;
+        position: relative;
+        overflow: hidden;
+      }
+      .demo-box + .demo-box {
+        margin-top: 32px;
+      }
+      .demo-label {
+        position: absolute;
+        top: 16px;
+        left: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--gray-400);
+      }
+      .restart-btn {
+        margin-top: 24px;
+        padding: 8px 20px;
+        border: 1px solid var(--gray-200);
+        border-radius: 6px;
+        background: var(--gray-50);
+        font-family: inherit;
+        font-size: 13px;
+        color: var(--gray-600);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .restart-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* ===== 1A: Document Scanner ===== */
+      .scanner-wrap {
+        width: 120px;
+        height: 160px;
+        position: relative;
+      }
+      .scanner-doc {
+        width: 100%;
+        height: 100%;
+        border: 2px solid var(--gray-200);
+        border-radius: 8px;
+        background: #fff;
+        position: relative;
+        overflow: hidden;
+      }
+      .scanner-lines {
+        position: absolute;
+        top: 24px;
+        left: 16px;
+        right: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .scanner-line {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--gray-100);
+        animation: scannerLine 2s ease-in-out infinite;
+      }
+      .scanner-line:nth-child(1) {
+        width: 80%;
+        animation-delay: 0s;
+      }
+      .scanner-line:nth-child(2) {
+        width: 60%;
+        animation-delay: 0.15s;
+      }
+      .scanner-line:nth-child(3) {
+        width: 90%;
+        animation-delay: 0.3s;
+      }
+      .scanner-line:nth-child(4) {
+        width: 50%;
+        animation-delay: 0.45s;
+      }
+      .scanner-line:nth-child(5) {
+        width: 75%;
+        animation-delay: 0.6s;
+      }
+      .scanner-line:nth-child(6) {
+        width: 40%;
+        animation-delay: 0.75s;
+      }
+      @keyframes scannerLine {
+        0%,
+        100% {
+          background: var(--gray-100);
+        }
+        50% {
+          background: var(--blue-light);
+        }
+      }
+      .scanner-beam {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--blue),
+          transparent
+        );
+        animation: scanBeam 2s ease-in-out infinite;
+        box-shadow: 0 0 12px rgba(26, 86, 168, 0.4);
+      }
+      @keyframes scanBeam {
+        0% {
+          top: 0;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          top: 100%;
+          opacity: 0;
+        }
+      }
+      .scanner-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .scanner-badge svg {
+        width: 14px;
+        height: 14px;
+      }
+      .scanner-text {
+        margin-top: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--gray-600);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      /* ===== 1B: Circuit Processing System ===== */
+      .circuit-board {
+        position: relative;
+        width: 340px;
+        height: 240px;
+        background: var(--gray-900);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(26, 86, 168, 0.3);
+      }
+      .circuit-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.05;
+        background-image:
+          linear-gradient(rgba(74, 158, 255, 0.5) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(74, 158, 255, 0.5) 1px, transparent 1px);
+        background-size: 16px 16px;
+      }
+      /* CPU chip */
+      .cpu-chip {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 68px;
+        height: 68px;
+        border-radius: 8px;
+        border: 2px solid rgba(74, 158, 255, 0.5);
+        background: rgba(15, 61, 122, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 5;
+      }
+      .cpu-chip::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 10px;
+        animation: cpuGlow 2s ease-in-out infinite;
+      }
+      @keyframes cpuGlow {
+        0%,
+        100% {
+          box-shadow:
+            0 0 8px rgba(74, 158, 255, 0.2),
+            inset 0 0 8px rgba(74, 158, 255, 0.05);
+        }
+        50% {
+          box-shadow:
+            0 0 24px rgba(74, 158, 255, 0.5),
+            inset 0 0 12px rgba(74, 158, 255, 0.1);
+        }
+      }
+      .cpu-label {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--cyan);
+        letter-spacing: 2px;
+        z-index: 1;
+      }
+      .cpu-freq {
+        font-size: 7px;
+        color: rgba(74, 158, 255, 0.5);
+        margin-top: 2px;
+        z-index: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      /* Pins */
+      .cpu-pins {
+        position: absolute;
+        display: flex;
+        gap: 5px;
+      }
+      .cpu-pins.top {
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .cpu-pins.bottom {
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .cpu-pins.left {
+        left: -5px;
+        top: 50%;
+        transform: translateY(-50%);
+        flex-direction: column;
+      }
+      .cpu-pins.right {
+        right: -5px;
+        top: 50%;
+        transform: translateY(-50%);
+        flex-direction: column;
+      }
+      .pin {
+        width: 4px;
+        height: 5px;
+        background: rgba(74, 158, 255, 0.4);
+        border-radius: 1px;
+      }
+      .cpu-pins.left .pin,
+      .cpu-pins.right .pin {
+        width: 5px;
+        height: 4px;
+      }
+      /* Processing nodes */
+      .proc-node {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        border: 1.5px solid rgba(74, 158, 255, 0.3);
+        background: rgba(15, 61, 122, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 7px;
+        font-weight: 700;
+        color: rgba(74, 158, 255, 0.6);
+        letter-spacing: 1px;
+        z-index: 3;
+      }
+      .proc-node.active {
+        border-color: rgba(74, 158, 255, 0.6);
+        animation: nodeActive 2s ease-in-out infinite;
+      }
+      @keyframes nodeActive {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(74, 158, 255, 0);
+        }
+        50% {
+          box-shadow: 0 0 10px 2px rgba(74, 158, 255, 0.25);
+        }
+      }
+      .pn1 {
+        top: 20px;
+        left: 28px;
+        animation-delay: 0s;
+      }
+      .pn2 {
+        top: 20px;
+        right: 28px;
+        animation-delay: 0.5s;
+      }
+      .pn3 {
+        bottom: 20px;
+        left: 28px;
+        animation-delay: 1s;
+      }
+      .pn4 {
+        bottom: 20px;
+        right: 28px;
+        animation-delay: 1.5s;
+      }
+      .pn5 {
+        top: 50%;
+        left: 20px;
+        transform: translateY(-50%);
+        animation-delay: 0.3s;
+      }
+      .pn6 {
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        animation-delay: 0.8s;
+      }
+      /* Binary streams */
+      .binary-stream {
+        position: absolute;
+        font-family: "Inter", monospace;
+        font-size: 7px;
+        color: rgba(74, 158, 255, 0.12);
+        font-weight: 400;
+        letter-spacing: 1px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .bs1 {
+        top: 6px;
+        left: 68px;
+        width: 200px;
+        animation: bsScroll 10s linear infinite;
+      }
+      .bs2 {
+        bottom: 6px;
+        right: 68px;
+        width: 200px;
+        animation: bsScroll 12s linear infinite reverse;
+      }
+      @keyframes bsScroll {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+      /* Trace SVG */
+      .circuit-traces {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .trace {
+        fill: none;
+        stroke: rgba(74, 158, 255, 0.12);
+        stroke-width: 1.5;
+      }
+      .trace-pulse {
+        fill: none;
+        stroke: var(--cyan);
+        stroke-width: 2;
+        stroke-dasharray: 10 120;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 3px rgba(74, 158, 255, 0.6));
+      }
+      .tp1 {
+        animation: tp 2.5s linear infinite;
+      }
+      .tp2 {
+        animation: tp 3s linear infinite;
+        animation-delay: -0.8s;
+      }
+      .tp3 {
+        animation: tp 2.8s linear infinite;
+        animation-delay: -1.5s;
+      }
+      .tp4 {
+        animation: tp 3.2s linear infinite;
+        animation-delay: -0.3s;
+      }
+      .tp5 {
+        animation: tp 2.6s linear infinite;
+        animation-delay: -2s;
+      }
+      .tp6 {
+        animation: tp 3.5s linear infinite;
+        animation-delay: -1s;
+      }
+      @keyframes tp {
+        0% {
+          stroke-dashoffset: 0;
+        }
+        100% {
+          stroke-dashoffset: -130;
+        }
+      }
+      /* Particle dots */
+      .particle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: var(--cyan);
+        border-radius: 50%;
+        filter: drop-shadow(0 0 2px var(--cyan));
+        z-index: 4;
+        opacity: 0;
+      }
+      .p1 {
+        animation: particle1 3s ease-in-out infinite;
+      }
+      .p2 {
+        animation: particle2 3.5s ease-in-out infinite;
+      }
+      .p3 {
+        animation: particle3 2.8s ease-in-out infinite;
+      }
+      @keyframes particle1 {
+        0% {
+          left: 28px;
+          top: 35px;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        45% {
+          left: 136px;
+          top: 88px;
+          opacity: 1;
+        }
+        55% {
+          opacity: 0;
+        }
+        100% {
+          left: 136px;
+          top: 88px;
+          opacity: 0;
+        }
+      }
+      @keyframes particle2 {
+        0% {
+          right: 28px;
+          top: 35px;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        45% {
+          right: 136px;
+          top: 88px;
+          opacity: 1;
+        }
+        55% {
+          opacity: 0;
+        }
+        100% {
+          right: 136px;
+          top: 88px;
+          opacity: 0;
+        }
+      }
+      @keyframes particle3 {
+        0% {
+          left: 28px;
+          bottom: 35px;
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        45% {
+          left: 136px;
+          bottom: 88px;
+          opacity: 1;
+        }
+        55% {
+          opacity: 0;
+        }
+        100% {
+          left: 136px;
+          bottom: 88px;
+          opacity: 0;
+        }
+      }
+
+      /* System status below board */
+      .sys-status {
+        display: flex;
+        gap: 24px;
+        margin-top: 20px;
+      }
+      .sys-status-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--gray-400);
+      }
+      .sys-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .sys-dot.ok {
+        background: #22c55e;
+        animation: statusBlink 1.5s ease-in-out infinite;
+      }
+      .sys-dot.wait {
+        background: #f59e0b;
+        animation: statusBlink 2s ease-in-out infinite;
+      }
+      @keyframes statusBlink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .sys-progress {
+        margin-top: 16px;
+        width: 240px;
+        height: 6px;
+        background: var(--gray-100);
+        border-radius: 3px;
+        overflow: hidden;
+        position: relative;
+      }
+      .sys-progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--blue), var(--cyan));
+        border-radius: 3px;
+        animation: sysFill 4s ease-in-out infinite;
+      }
+      @keyframes sysFill {
+        0% {
+          width: 0%;
+        }
+        85% {
+          width: 100%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+      .sys-label {
+        margin-top: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--gray-600);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      .sys-sublabel {
+        font-size: 12px;
+        color: var(--gray-400);
+        margin-top: 2px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ===== 1C: Stamp Seal ===== */
+      .stamp-container {
+        position: relative;
+        width: 140px;
+        height: 140px;
+      }
+      .stamp-circle {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid var(--red);
+        position: relative;
+        animation: stampAppear 2.5s ease-in-out infinite;
+      }
+      .stamp-inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70%;
+        height: 70%;
+        border-radius: 50%;
+        border: 2px dashed var(--red);
+        opacity: 0.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .stamp-text-inner {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--red);
+        letter-spacing: 2px;
+      }
+      @keyframes stampAppear {
+        0% {
+          transform: scale(1.5) rotate(-15deg);
+          opacity: 0;
+        }
+        15% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+        85% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1.5) rotate(15deg);
+          opacity: 0;
+        }
+      }
+      .stamp-label {
+        margin-top: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--gray-600);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      /* ===== 1D: Data Flow ===== */
+      .dataflow {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      .dataflow-node {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dataflow-node.blue {
+        background: var(--blue-light);
+        border: 2px solid var(--blue);
+      }
+      .dataflow-node.red {
+        background: #fef2f2;
+        border: 2px solid var(--red);
+      }
+      .dataflow-arrow {
+        display: flex;
+        gap: 4px;
+      }
+      .dataflow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--blue);
+        animation: flowDot 1.2s ease-in-out infinite;
+      }
+      .dataflow-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .dataflow-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes flowDot {
+        0%,
+        100% {
+          opacity: 0.2;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      /* ===== 2: ERROR ===== */
+      .error-page {
+        text-align: center;
+        width: 100%;
+      }
+      .lost-doc-wrap {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+      }
+      .lost-doc {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80px;
+        height: 100px;
+      }
+      .lost-doc-paper {
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        border: 2px solid var(--gray-200);
+        border-radius: 6px;
+        position: relative;
+        animation: floatDoc 3s ease-in-out infinite;
+      }
+      .lost-doc-paper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--gray-100) 50%,
+          var(--gray-200) 50%
+        );
+        border-radius: 0 6px 0 0;
+      }
+      .lost-doc-lines {
+        position: absolute;
+        top: 28px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .lost-doc-line {
+        height: 4px;
+        border-radius: 2px;
+        background: var(--gray-100);
+      }
+      .lost-doc-line:nth-child(1) {
+        width: 70%;
+      }
+      .lost-doc-line:nth-child(2) {
+        width: 90%;
+      }
+      .lost-doc-line:nth-child(3) {
+        width: 50%;
+      }
+      @keyframes floatDoc {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) rotate(-3deg);
+        }
+        50% {
+          transform: translate(-50%, -55%) rotate(3deg);
+        }
+      }
+      .lost-magnifier {
+        position: absolute;
+        bottom: 20px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        animation: searchMove 3s ease-in-out infinite;
+      }
+      .magnifier-circle {
+        width: 36px;
+        height: 36px;
+        border: 3px solid var(--blue);
+        border-radius: 50%;
+        position: relative;
+      }
+      .magnifier-circle::after {
+        content: "?";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--blue);
+      }
+      .magnifier-handle {
+        position: absolute;
+        bottom: -8px;
+        right: -8px;
+        width: 18px;
+        height: 4px;
+        background: var(--blue);
+        border-radius: 2px;
+        transform: rotate(45deg);
+        transform-origin: left center;
+      }
+      @keyframes searchMove {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        33% {
+          transform: translate(-15px, -10px);
+        }
+        66% {
+          transform: translate(10px, -5px);
+        }
+      }
+      .error-404-text {
+        font-size: 72px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        margin-top: 16px;
+      }
+      .error-404-text .four {
+        color: var(--blue);
+      }
+      .error-404-text .zero {
+        color: var(--red);
+        display: inline-block;
+        animation: zeroSpin 4s ease-in-out infinite;
+      }
+      @keyframes zeroSpin {
+        0%,
+        80%,
+        100% {
+          transform: rotate(0);
+        }
+        90% {
+          transform: rotate(360deg);
+        }
+      }
+      .error-msg {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--gray-600);
+        margin-top: 8px;
+      }
+      .error-sub {
+        font-size: 14px;
+        color: var(--gray-400);
+        margin-top: 4px;
+      }
+      .error-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 28px;
+        padding: 12px 28px;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .error-btn:hover {
+        background: var(--blue-dark);
+        transform: translateY(-1px);
+      }
+      .error-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+      .broken-gear-wrap {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        margin: 0 auto;
+      }
+      .broken-gear-main {
+        width: 100%;
+        height: 100%;
+        animation: brokenGearSpin 6s linear infinite;
+        position: relative;
+      }
+      .broken-gear-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100px;
+        height: 100px;
+        border: 4px solid var(--gray-200);
+        border-radius: 50%;
+      }
+      .broken-gear-ring::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 30px;
+        background: var(--gray-200);
+        border-radius: 50%;
+      }
+      @keyframes brokenGearSpin {
+        0% {
+          transform: rotate(0);
+        }
+        70% {
+          transform: rotate(300deg);
+        }
+        75% {
+          transform: rotate(295deg);
+        }
+        80% {
+          transform: rotate(310deg);
+        }
+        85% {
+          transform: rotate(305deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .broken-bolt {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 28px;
+        color: var(--red);
+        animation: boltFlash 2s ease-in-out infinite;
+      }
+      @keyframes boltFlash {
+        0%,
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      /* ===== 3: TRANSITIONS ===== */
+      .transition-demo {
+        width: 100%;
+        max-width: 480px;
+        height: 320px;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        background: #fff;
+      }
+      .curtain-left,
+      .curtain-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        z-index: 10;
+      }
+      .curtain-left {
+        left: 0;
+        background: var(--blue);
+        animation: curtainLeft 3s ease-in-out infinite;
+      }
+      .curtain-right {
+        right: 0;
+        background: var(--blue-dark);
+        animation: curtainRight 3s ease-in-out infinite;
+      }
+      @keyframes curtainLeft {
+        0% {
+          transform: translateX(0);
+        }
+        30% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(-100%);
+        }
+        80% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      @keyframes curtainRight {
+        0% {
+          transform: translateX(0);
+        }
+        30% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(100%);
+        }
+        80% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .curtain-logo {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 15;
+        font-size: 32px;
+        font-weight: 900;
+        white-space: nowrap;
+        animation: curtainLogo 3s ease-in-out infinite;
+      }
+      .curtain-logo .k {
+        color: #fff;
+      }
+      .curtain-logo .pec {
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 300;
+      }
+      @keyframes curtainLogo {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        30% {
+          opacity: 1;
+        }
+        45% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+        55%,
+        80% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+      .transition-content {
+        position: absolute;
+        inset: 0;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .tc-header {
+        width: 60%;
+        height: 12px;
+        background: var(--gray-100);
+        border-radius: 4px;
+      }
+      .tc-line {
+        height: 8px;
+        background: var(--gray-100);
+        border-radius: 4px;
+      }
+      .tc-line:nth-child(2) {
+        width: 90%;
+      }
+      .tc-line:nth-child(3) {
+        width: 75%;
+      }
+      .tc-line:nth-child(4) {
+        width: 85%;
+      }
+      .tc-block {
+        margin-top: 8px;
+        width: 100%;
+        height: 80px;
+        background: var(--blue-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: var(--blue);
+        font-weight: 600;
+      }
+      .stamp-reveal-wrap {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .stamp-reveal-bg {
+        position: absolute;
+        inset: 0;
+        background: var(--gray-50);
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        gap: 10px;
+      }
+      .sr-h {
+        width: 50%;
+        height: 14px;
+        background: var(--gray-200);
+        border-radius: 4px;
+      }
+      .sr-l {
+        width: 80%;
+        height: 8px;
+        background: var(--gray-100);
+        border-radius: 4px;
+      }
+      .sr-l2 {
+        width: 65%;
+        height: 8px;
+        background: var(--gray-100);
+        border-radius: 4px;
+      }
+      .sr-box {
+        margin-top: auto;
+        height: 60px;
+        background: var(--blue-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: var(--blue);
+        font-weight: 600;
+      }
+      .stamp-reveal-overlay {
+        position: absolute;
+        inset: 0;
+        background: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: stampReveal 4s ease-in-out infinite;
+      }
+      .stamp-reveal-seal {
+        width: 80px;
+        height: 80px;
+        border: 3px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: stampRevealSeal 4s ease-in-out infinite;
+      }
+      .stamp-reveal-seal-inner {
+        font-size: 11px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 2px;
+      }
+      @keyframes stampReveal {
+        0%,
+        30% {
+          clip-path: circle(100% at 50% 50%);
+        }
+        50% {
+          clip-path: circle(0% at 50% 50%);
+        }
+        70%,
+        100% {
+          clip-path: circle(100% at 50% 50%);
+        }
+      }
+      @keyframes stampRevealSeal {
+        0% {
+          transform: scale(1.3) rotate(-10deg);
+          opacity: 0;
+        }
+        15% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+        30% {
+          opacity: 1;
+        }
+        50% {
+          transform: scale(0.8) rotate(10deg);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.3) rotate(-10deg);
+          opacity: 0;
+        }
+        85% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* ===== 4: MICRO ===== */
+      .micro-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        width: 100%;
+        max-width: 600px;
+      }
+      .micro-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .micro-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(26, 86, 168, 0.12);
+        border-color: var(--blue);
+      }
+      .micro-card:active {
+        transform: translateY(-1px) scale(0.98);
+      }
+      .micro-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+      .micro-card:hover .micro-icon {
+        transform: scale(1.1);
+      }
+      .micro-icon.blue {
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .micro-icon.red {
+        background: #fef2f2;
+        color: var(--red);
+      }
+      .micro-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gray-800);
+      }
+      .ripple-btn {
+        position: relative;
+        overflow: hidden;
+        padding: 14px 32px;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .ripple-btn:hover {
+        background: var(--blue-dark);
+      }
+      .ripple-btn .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(0);
+        animation: rippleEffect 0.6s ease-out;
+        pointer-events: none;
+      }
+      @keyframes rippleEffect {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+      .counter-wrap {
+        display: flex;
+        gap: 32px;
+      }
+      .counter-item {
+        text-align: center;
+      }
+      .counter-num {
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--blue);
+        font-variant-numeric: tabular-nums;
+      }
+      .counter-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--gray-400);
+        margin-top: 4px;
+      }
+      .check-items {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .check-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+      }
+      .check-item:hover {
+        border-color: var(--blue);
+      }
+      .check-item.checked {
+        border-color: var(--blue);
+        background: var(--blue-light);
+      }
+      .check-box {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--gray-200);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        flex-shrink: 0;
+      }
+      .check-item.checked .check-box {
+        background: var(--blue);
+        border-color: var(--blue);
+        animation: checkStamp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes checkStamp {
+        0% {
+          transform: scale(0.5) rotate(-10deg);
+        }
+        60% {
+          transform: scale(1.2) rotate(5deg);
+        }
+        100% {
+          transform: scale(1) rotate(0);
+        }
+      }
+      .check-box svg {
+        width: 14px;
+        height: 14px;
+        stroke: #fff;
+        opacity: 0;
+        transition: 0.2s;
+      }
+      .check-item.checked .check-box svg {
+        opacity: 1;
+      }
+      .check-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gray-800);
+      }
+
+      /* ===== 5: SKELETON ===== */
+      .skeleton-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 24px;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .skel-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      .skel-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--gray-100);
+        flex-shrink: 0;
+      }
+      .skel-text-block {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .skel-line {
+        height: 10px;
+        border-radius: 4px;
+        background: var(--gray-100);
+      }
+      .skel-line.w70 {
+        width: 70%;
+      }
+      .skel-line.w50 {
+        width: 50%;
+      }
+      .skel-body {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .skel-block {
+        width: 100%;
+        height: 120px;
+        border-radius: 8px;
+        background: var(--gray-100);
+      }
+      .shimmer {
+        position: relative;
+        overflow: hidden;
+      }
+      .shimmer::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        bottom: 0;
+        width: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.6),
+          transparent
+        );
+        animation: shimmer 1.8s ease-in-out infinite;
+      }
+      @keyframes shimmer {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      /* ===== 6: SUCCESS ===== */
+      .success-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .success-circle svg {
+        width: 48px;
+        height: 48px;
+        stroke: var(--blue);
+      }
+      .success-circle svg path {
+        stroke-dasharray: 60;
+        stroke-dashoffset: 60;
+        animation: drawCheck 0.6s ease-out 0.3s forwards;
+      }
+      @keyframes drawCheck {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      .success-circle::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 4px solid var(--blue);
+        animation: successRing 0.6s ease-out;
+      }
+      @keyframes successRing {
+        0% {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .success-stamp {
+        width: 100px;
+        height: 100px;
+        border: 3px solid var(--red);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: stampDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .success-stamp-text {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--red);
+        letter-spacing: 2px;
+      }
+      @keyframes stampDrop {
+        0% {
+          transform: scale(2) rotate(-20deg);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+      }
+
+      /* ===== 7: OG IMAGE ===== */
+      .og-preview {
+        width: 100%;
+        max-width: 600px;
+        aspect-ratio: 1200/630;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--gray-200);
+        position: relative;
+        background: #fff;
+      }
+      .og-homepage {
+        background: linear-gradient(
+          135deg,
+          #0a2d5e 0%,
+          var(--blue) 50%,
+          var(--blue-dark) 100%
+        );
+        display: flex;
+      }
+      .og-hp-left {
+        flex: 1;
+        padding: 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .og-hp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 6px 14px;
+        width: fit-content;
+        margin-bottom: 20px;
+      }
+      .og-hp-badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+        animation: statusBlink 1.5s ease-in-out infinite;
+      }
+      .og-hp-badge-text {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+      }
+      .og-hp-logo {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 12px;
+      }
+      .og-hp-logo-k {
+        font-size: 48px;
+        font-weight: 900;
+        color: var(--red);
+        line-height: 1;
+      }
+      .og-hp-logo-pec {
+        font-size: 48px;
+        font-weight: 300;
+        color: #fff;
+        line-height: 1;
+      }
+      .og-hp-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .og-hp-sub {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.5;
+      }
+      .og-hp-right {
+        width: 35%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .og-hp-seal {
+        width: 120px;
+        height: 120px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: ogSealPulse 3s ease-in-out infinite;
+      }
+      .og-hp-seal-inner {
+        width: 90px;
+        height: 90px;
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.6);
+        letter-spacing: 3px;
+      }
+      @keyframes ogSealPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 1;
+        }
+      }
+      .og-hp-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.08;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      .og-service {
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+      }
+      .og-svc-top {
+        height: 8px;
+        background: linear-gradient(90deg, var(--red), var(--blue));
+      }
+      .og-svc-body {
+        flex: 1;
+        padding: 40px 48px;
+        display: flex;
+        align-items: center;
+        gap: 40px;
+      }
+      .og-svc-left {
+        flex: 1;
+      }
+      .og-svc-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--red);
+        margin-bottom: 12px;
+      }
+      .og-svc-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--gray-900);
+        line-height: 1.3;
+      }
+      .og-svc-desc {
+        font-size: 14px;
+        color: var(--gray-400);
+        margin-top: 8px;
+      }
+      .og-svc-right {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .og-svc-stat {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: var(--gray-50);
+        border-radius: 8px;
+        border-left: 3px solid var(--blue);
+      }
+      .og-svc-stat-num {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--blue);
+      }
+      .og-svc-stat-label {
+        font-size: 11px;
+        color: var(--gray-400);
+      }
+      .og-svc-logo {
+        position: absolute;
+        bottom: 16px;
+        right: 24px;
+        display: flex;
+        align-items: baseline;
+      }
+      .og-svc-logo-k {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--red);
+      }
+      .og-svc-logo-pec {
+        font-size: 18px;
+        font-weight: 300;
+        color: var(--blue);
+      }
+      .og-article {
+        background: var(--gray-900);
+        display: flex;
+        flex-direction: column;
+      }
+      .og-art-accent {
+        height: 4px;
+        background: var(--red);
+      }
+      .og-art-body {
+        flex: 1;
+        padding: 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .og-art-cat {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--red);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 16px;
+      }
+      .og-art-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.4;
+      }
+      .og-art-meta {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .og-art-date,
+      .og-art-author {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .og-art-logo {
+        position: absolute;
+        bottom: 20px;
+        right: 24px;
+        display: flex;
+        align-items: baseline;
+      }
+      .og-art-logo-k {
+        font-size: 16px;
+        font-weight: 900;
+        color: var(--red);
+      }
+      .og-art-logo-pec {
+        font-size: 16px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .og-contact {
+        background: linear-gradient(
+          135deg,
+          var(--blue) 0%,
+          var(--blue-dark) 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+        position: relative;
+      }
+      .og-ct-pattern {
+        position: absolute;
+        inset: 0;
+        opacity: 0.06;
+        background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+      .og-ct-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: ogCtPulse 2s ease-in-out infinite;
+      }
+      @keyframes ogCtPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 0 16px rgba(255, 255, 255, 0);
+        }
+      }
+      .og-ct-icon svg {
+        width: 28px;
+        height: 28px;
+        stroke: #fff;
+      }
+      .og-ct-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #fff;
+        z-index: 1;
+      }
+      .og-ct-sub {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        z-index: 1;
+      }
+      .og-ct-phone {
+        font-size: 22px;
+        font-weight: 900;
+        color: #fff;
+        z-index: 1;
+        letter-spacing: 1px;
+      }
+      .og-ct-logo {
+        position: absolute;
+        bottom: 16px;
+        right: 24px;
+        display: flex;
+        align-items: baseline;
+        z-index: 1;
+      }
+      .og-ct-logo-k {
+        font-size: 16px;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .og-ct-logo-pec {
+        font-size: 16px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* ===== 8: SPEC ===== */
+      .spec-table {
+        width: 100%;
+        max-width: 720px;
+        margin-top: 32px;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .spec-table table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .spec-table th {
+        text-align: left;
+        padding: 12px 16px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--gray-400);
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+      }
+      .spec-table td {
+        padding: 10px 16px;
+        font-size: 13px;
+        color: var(--gray-600);
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .spec-table tr:last-child td {
+        border-bottom: none;
+      }
+      .spec-table code {
+        background: var(--blue-light);
+        color: var(--blue);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <button class="active" onclick="showSection('loading')">Loading</button>
+      <button onclick="showSection('error')">404/500</button>
+      <button onclick="showSection('transition')">Transition</button>
+      <button onclick="showSection('micro')">Micro</button>
+      <button onclick="showSection('skeleton')">Skeleton</button>
+      <button onclick="showSection('success')">Success</button>
+      <button onclick="showSection('og')">OG Image</button>
+      <button onclick="showSection('spec')">Spec</button>
+    </nav>
+
+    <!-- ===== 1. LOADING ===== -->
+    <section class="section active" id="loading">
+      <h2 class="section-title">Loading Animations</h2>
+      <p class="section-desc">정부/관공서 느낌의 신뢰감 있는 로딩 4종</p>
+
+      <!-- 1A: Document Scanner -->
+      <div class="demo-box">
+        <span class="demo-label">A. Document Scanner</span>
+        <div class="scanner-wrap">
+          <div class="scanner-doc">
+            <div class="scanner-lines">
+              <div class="scanner-line"></div>
+              <div class="scanner-line"></div>
+              <div class="scanner-line"></div>
+              <div class="scanner-line"></div>
+              <div class="scanner-line"></div>
+              <div class="scanner-line"></div>
+            </div>
+            <div class="scanner-beam"></div>
+            <div class="scanner-badge">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2.5"
+              >
+                <path d="M9 12l2 2 4-4" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <p class="scanner-text">서류를 확인하고 있습니다...</p>
+      </div>
+
+      <!-- 1B: Circuit Processing System -->
+      <div class="demo-box" style="min-height: 480px">
+        <span class="demo-label">B. Circuit Processing System</span>
+        <div class="circuit-board">
+          <div class="circuit-grid"></div>
+          <!-- SVG Traces -->
+          <svg class="circuit-traces" viewBox="0 0 340 240">
+            <!-- Static traces -->
+            <path class="trace" d="M43 35 L100 35 L130 86" />
+            <path class="trace" d="M297 35 L240 35 L210 86" />
+            <path class="trace" d="M43 205 L100 205 L130 154" />
+            <path class="trace" d="M297 205 L240 205 L210 154" />
+            <path class="trace" d="M35 120 L100 120 L126 120" />
+            <path class="trace" d="M305 120 L240 120 L214 120" />
+            <!-- Cross traces -->
+            <path class="trace" d="M43 35 L43 120" />
+            <path class="trace" d="M297 35 L297 120" />
+            <path class="trace" d="M43 120 L43 205" />
+            <path class="trace" d="M297 120 L297 205" />
+            <!-- Pulse traces (animated) -->
+            <path class="trace-pulse tp1" d="M43 35 L100 35 L130 86" />
+            <path class="trace-pulse tp2" d="M297 35 L240 35 L210 86" />
+            <path class="trace-pulse tp3" d="M43 205 L100 205 L130 154" />
+            <path class="trace-pulse tp4" d="M297 205 L240 205 L210 154" />
+            <path class="trace-pulse tp5" d="M35 120 L100 120 L126 120" />
+            <path class="trace-pulse tp6" d="M305 120 L240 120 L214 120" />
+          </svg>
+          <!-- Binary streams -->
+          <div class="binary-stream bs1">
+            01001011 01010000 01000101 01000011 00100000 01001011 01010000
+            01000101 01000011
+          </div>
+          <div class="binary-stream bs2">
+            11010010 10110100 01101001 00101100 11010010 10110100 01101001
+            00101100
+          </div>
+          <!-- Processing nodes -->
+          <div class="proc-node active pn1">IN</div>
+          <div class="proc-node active pn2">DB</div>
+          <div class="proc-node active pn3">AI</div>
+          <div class="proc-node active pn4">OUT</div>
+          <div class="proc-node active pn5">R/W</div>
+          <div class="proc-node active pn6">SEC</div>
+          <!-- Particles -->
+          <div class="particle p1"></div>
+          <div class="particle p2"></div>
+          <div class="particle p3"></div>
+          <!-- CPU Chip -->
+          <div class="cpu-chip">
+            <div class="cpu-pins top">
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+            </div>
+            <div class="cpu-pins bottom">
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+            </div>
+            <div class="cpu-pins left">
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+            </div>
+            <div class="cpu-pins right">
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+              <div class="pin"></div>
+            </div>
+            <span class="cpu-label">KPEC</span>
+            <span class="cpu-freq" id="cpuFreq">3.2 GHz</span>
+          </div>
+        </div>
+        <!-- Status -->
+        <div class="sys-status">
+          <div class="sys-status-item">
+            <div class="sys-dot ok"></div>
+            데이터 수집
+          </div>
+          <div class="sys-status-item">
+            <div class="sys-dot ok"></div>
+            문서 분석
+          </div>
+          <div class="sys-status-item">
+            <div class="sys-dot wait"></div>
+            심사 연산
+          </div>
+        </div>
+        <div class="sys-progress"><div class="sys-progress-bar"></div></div>
+        <p class="sys-label">시스템 처리 중...</p>
+        <p class="sys-sublabel" id="sysPercent">0%</p>
+      </div>
+
+      <!-- 1C: Stamp Seal -->
+      <div class="demo-box">
+        <span class="demo-label">C. Stamp Seal</span>
+        <div class="stamp-container">
+          <div class="stamp-circle">
+            <div class="stamp-inner">
+              <span class="stamp-text-inner">KPEC</span>
+            </div>
+          </div>
+        </div>
+        <p class="stamp-label">인증 처리 중...</p>
+      </div>
+
+      <!-- 1D: Data Flow -->
+      <div class="demo-box">
+        <span class="demo-label">D. Data Flow</span>
+        <div class="dataflow">
+          <div class="dataflow-node blue">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+          </div>
+          <div class="dataflow-arrow">
+            <div class="dataflow-dot"></div>
+            <div class="dataflow-dot"></div>
+            <div class="dataflow-dot"></div>
+          </div>
+          <div class="dataflow-node blue">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+          </div>
+          <div class="dataflow-arrow">
+            <div class="dataflow-dot"></div>
+            <div class="dataflow-dot"></div>
+            <div class="dataflow-dot"></div>
+          </div>
+          <div class="dataflow-node red">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+        </div>
+        <p
+          style="
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-600);
+            animation: pulse 2s ease-in-out infinite;
+          "
+        >
+          데이터 전송 및 보안 검증 중...
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== 2. ERROR ===== -->
+    <section class="section" id="error">
+      <h2 class="section-title">404 / 500 Error</h2>
+      <p class="section-desc">서류 분실 + 돋보기 탐색 모티브</p>
+      <div class="demo-box">
+        <span class="demo-label">A. 404 Lost Document</span>
+        <div class="error-page">
+          <div class="lost-doc-wrap">
+            <div class="lost-doc">
+              <div class="lost-doc-paper">
+                <div class="lost-doc-lines">
+                  <div class="lost-doc-line"></div>
+                  <div class="lost-doc-line"></div>
+                  <div class="lost-doc-line"></div>
+                </div>
+              </div>
+            </div>
+            <div class="lost-magnifier">
+              <div class="magnifier-circle"></div>
+              <div class="magnifier-handle"></div>
+            </div>
+          </div>
+          <div class="error-404-text">
+            <span class="four">4</span><span class="zero">0</span
+            ><span class="four">4</span>
+          </div>
+          <p class="error-msg">요청하신 페이지를 찾을 수 없습니다</p>
+          <p class="error-sub">페이지가 이동되었거나 삭제되었을 수 있습니다</p>
+          <button class="error-btn">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"
+              /></svg
+            >홈으로 돌아가기
+          </button>
+        </div>
+      </div>
+      <div class="demo-box">
+        <span class="demo-label">B. 500 System Error</span>
+        <div class="error-page">
+          <div class="broken-gear-wrap">
+            <div class="broken-gear-main">
+              <div class="broken-gear-ring"></div>
+            </div>
+            <div class="broken-bolt">&#9889;</div>
+          </div>
+          <div class="error-404-text" style="margin-top: 8px">
+            <span class="four">5</span><span class="zero">0</span
+            ><span class="four">0</span>
+          </div>
+          <p class="error-msg">일시적인 시스템 오류가 발생했습니다</p>
+          <p class="error-sub">잠시 후 다시 시도해 주세요</p>
+          <button class="error-btn">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" /></svg
+            >다시 시도
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 3. TRANSITIONS ===== -->
+    <section class="section" id="transition">
+      <h2 class="section-title">Page Transitions</h2>
+      <p class="section-desc">커튼형 / 직인 리빌 트랜지션</p>
+      <div class="demo-box">
+        <span class="demo-label">A. Curtain Split</span>
+        <div class="transition-demo">
+          <div class="curtain-left"></div>
+          <div class="curtain-right"></div>
+          <div class="curtain-logo">
+            <span class="k">K</span><span class="pec">PEC</span>
+          </div>
+          <div class="transition-content">
+            <div class="tc-header"></div>
+            <div class="tc-line"></div>
+            <div class="tc-line"></div>
+            <div class="tc-line"></div>
+            <div class="tc-block">콘텐츠 영역</div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-box">
+        <span class="demo-label">B. Stamp Reveal</span>
+        <div class="transition-demo">
+          <div class="stamp-reveal-wrap">
+            <div class="stamp-reveal-bg">
+              <div class="sr-h"></div>
+              <div class="sr-l"></div>
+              <div class="sr-l2"></div>
+              <div class="sr-l"></div>
+              <div class="sr-box">새 페이지 콘텐츠</div>
+            </div>
+            <div class="stamp-reveal-overlay">
+              <div class="stamp-reveal-seal">
+                <span class="stamp-reveal-seal-inner">KPEC</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4. MICRO ===== -->
+    <section class="section" id="micro">
+      <h2 class="section-title">Micro Interactions</h2>
+      <p class="section-desc">카드 호버, 버튼 리플, 카운터, 체크박스</p>
+      <div class="demo-box">
+        <span class="demo-label">A. Card Hover</span>
+        <div class="micro-grid">
+          <div class="micro-card">
+            <div class="micro-icon blue">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
+                />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+            </div>
+            <div class="micro-name">운전자금</div>
+          </div>
+          <div class="micro-card">
+            <div class="micro-icon blue">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="1" y="4" width="22" height="16" rx="2" />
+                <line x1="1" y1="10" x2="23" y2="10" />
+              </svg>
+            </div>
+            <div class="micro-name">시설자금</div>
+          </div>
+          <div class="micro-card">
+            <div class="micro-icon red">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
+            <div class="micro-name">기업인증</div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-box">
+        <span class="demo-label">B. Button Ripple</span
+        ><button class="ripple-btn" onclick="createRipple(event)">
+          무료 상담 신청
+        </button>
+      </div>
+      <div class="demo-box">
+        <span class="demo-label">C. Number Counter</span>
+        <div class="counter-wrap">
+          <div class="counter-item">
+            <div class="counter-num" data-target="2847">0</div>
+            <div class="counter-label">누적 상담건수</div>
+          </div>
+          <div class="counter-item">
+            <div class="counter-num" data-target="98">0</div>
+            <div class="counter-label">승인율 %</div>
+          </div>
+          <div class="counter-item">
+            <div class="counter-num" data-target="156">0</div>
+            <div class="counter-label">협력기관</div>
+          </div>
+        </div>
+        <button class="restart-btn" onclick="startCounters()">다시 재생</button>
+      </div>
+      <div class="demo-box">
+        <span class="demo-label">D. Checkbox Stamp</span>
+        <div class="check-items">
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="check-label">사업자등록증 제출</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="check-label">재무제표 확인 완료</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <span class="check-label">정책자금 적격 심사</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 5. SKELETON ===== -->
+    <section class="section" id="skeleton">
+      <h2 class="section-title">Skeleton & Shimmer</h2>
+      <p class="section-desc">콘텐츠 로딩 시 뼈대 UI</p>
+      <div class="demo-box">
+        <span class="demo-label">Card Skeleton</span>
+        <div class="skeleton-card">
+          <div class="skel-row">
+            <div class="skel-avatar shimmer"></div>
+            <div class="skel-text-block">
+              <div class="skel-line w70 shimmer"></div>
+              <div class="skel-line w50 shimmer"></div>
+            </div>
+          </div>
+          <div class="skel-body">
+            <div class="skel-line shimmer"></div>
+            <div class="skel-line shimmer" style="width: 85%"></div>
+            <div class="skel-line shimmer" style="width: 65%"></div>
+            <div class="skel-block shimmer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-box">
+        <span class="demo-label">List Skeleton</span>
+        <div
+          style="
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          "
+        >
+          <div class="skeleton-card" style="padding: 16px">
+            <div class="skel-row">
+              <div
+                class="skel-avatar shimmer"
+                style="width: 40px; height: 40px; border-radius: 8px"
+              ></div>
+              <div class="skel-text-block">
+                <div class="skel-line w70 shimmer"></div>
+                <div class="skel-line w50 shimmer"></div>
+              </div>
+            </div>
+          </div>
+          <div class="skeleton-card" style="padding: 16px">
+            <div class="skel-row">
+              <div
+                class="skel-avatar shimmer"
+                style="width: 40px; height: 40px; border-radius: 8px"
+              ></div>
+              <div class="skel-text-block">
+                <div class="skel-line shimmer" style="width: 60%"></div>
+                <div class="skel-line shimmer" style="width: 40%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="skeleton-card" style="padding: 16px">
+            <div class="skel-row">
+              <div
+                class="skel-avatar shimmer"
+                style="width: 40px; height: 40px; border-radius: 8px"
+              ></div>
+              <div class="skel-text-block">
+                <div class="skel-line shimmer" style="width: 75%"></div>
+                <div class="skel-line shimmer" style="width: 55%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 6. SUCCESS ===== -->
+    <section class="section" id="success">
+      <h2 class="section-title">Success / Complete</h2>
+      <p class="section-desc">폼 제출 완료, 심사 승인 상태</p>
+      <div class="demo-box">
+        <span class="demo-label">A. Check Complete</span>
+        <div class="success-circle" id="successCircle">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p
+          style="
+            margin-top: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--blue);
+          "
+        >
+          상담 신청이 완료되었습니다
+        </p>
+        <p style="margin-top: 4px; font-size: 14px; color: var(--gray-400)">
+          담당 컨설턴트가 곧 연락드리겠습니다
+        </p>
+        <button class="restart-btn" onclick="restartSuccess()">
+          다시 재생
+        </button>
+      </div>
+      <div class="demo-box">
+        <span class="demo-label">B. Approval Stamp</span>
+        <div id="stampArea">
+          <div class="success-stamp">
+            <span class="success-stamp-text">승인</span>
+          </div>
+        </div>
+        <p
+          style="
+            margin-top: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--red);
+          "
+        >
+          정책자금 심사 승인
+        </p>
+        <p style="margin-top: 4px; font-size: 14px; color: var(--gray-400)">
+          축하합니다! 자금 지원이 확정되었습니다
+        </p>
+        <button class="restart-btn" onclick="restartStamp()">다시 재생</button>
+      </div>
+    </section>
+
+    <!-- ===== 7. OG IMAGE ===== -->
+    <section class="section" id="og">
+      <h2 class="section-title">OG Image</h2>
+      <p class="section-desc">
+        정적 OG 이미지. D(Contact) 베이스 + A(Homepage) 문구. 1200x630
+      </p>
+
+      <div class="demo-box">
+        <span class="demo-label">OG — Default</span>
+        <div
+          class="og-preview"
+          style="
+            background: linear-gradient(
+              135deg,
+              var(--blue) 0%,
+              var(--blue-dark) 100%
+            );
+            display: flex;
+            align-items: center;
+            padding: 0;
+            position: relative;
+          "
+        >
+          <!-- Dot pattern bg -->
+          <div
+            style="
+              position: absolute;
+              inset: 0;
+              opacity: 0.06;
+              background-image: radial-gradient(
+                circle,
+                #fff 1px,
+                transparent 1px
+              );
+              background-size: 24px 24px;
+            "
+          ></div>
+          <!-- Left text -->
+          <div
+            style="
+              flex: 1;
+              padding: 48px 0 48px 56px;
+              z-index: 1;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            "
+          >
+            <div
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(255, 255, 255, 0.12);
+                border-radius: 20px;
+                padding: 6px 14px;
+                width: fit-content;
+                margin-bottom: 20px;
+              "
+            >
+              <div
+                style="
+                  width: 8px;
+                  height: 8px;
+                  border-radius: 50%;
+                  background: #22c55e;
+                "
+              ></div>
+              <span
+                style="
+                  font-size: 11px;
+                  color: rgba(255, 255, 255, 0.85);
+                  font-weight: 500;
+                "
+                >정부정책자금 전문</span
+              >
+            </div>
+            <p
+              style="
+                font-size: 30px;
+                font-weight: 800;
+                color: #fff;
+                line-height: 1.2;
+                margin-bottom: 10px;
+              "
+            >
+              기업정책자금센터
+            </p>
+            <p
+              style="
+                font-size: 16px;
+                color: rgba(255, 255, 255, 0.7);
+                line-height: 1.5;
+                font-weight: 400;
+              "
+            >
+              중소기업 정책자금 맞춤 컨설팅<br />운전자금 · 시설자금 · 기업인증
+            </p>
+          </div>
+          <!-- Right logo -->
+          <div
+            style="
+              width: 200px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 1;
+              padding-right: 40px;
+            "
+          >
+            <div style="display: flex; align-items: baseline">
+              <span
+                style="
+                  font-size: 72px;
+                  font-weight: 900;
+                  color: var(--red);
+                  line-height: 1;
+                "
+                >K</span
+              >
+              <span
+                style="
+                  font-size: 72px;
+                  font-weight: 300;
+                  color: rgba(255, 255, 255, 0.85);
+                  line-height: 1;
+                "
+                >PEC</span
+              >
+            </div>
+          </div>
+        </div>
+        <p style="margin-top: 12px; font-size: 12px; color: var(--gray-400)">
+          활용: 모든 페이지 기본 OG. 정적 이미지로 생성 (1200x630px)
+        </p>
+      </div>
+
+      <div class="demo-box" style="min-height: auto; padding: 32px">
+        <span class="demo-label">구현 참고</span>
+        <div style="margin-top: 16px; width: 100%; max-width: 500px">
+          <table
+            style="width: 100%; border-collapse: collapse; font-size: 13px"
+          >
+            <tr style="border-bottom: 1px solid var(--gray-100)">
+              <td
+                style="padding: 8px 0; color: var(--gray-400); font-weight: 600"
+              >
+                사이즈
+              </td>
+              <td style="padding: 8px 0; color: var(--gray-600)">
+                1200 x 630px
+              </td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--gray-100)">
+              <td
+                style="padding: 8px 0; color: var(--gray-400); font-weight: 600"
+              >
+                배경
+              </td>
+              <td style="padding: 8px 0; color: var(--gray-600)">
+                Blue gradient (#1a56a8 → #0f3d7a) + dot pattern
+              </td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--gray-100)">
+              <td
+                style="padding: 8px 0; color: var(--gray-400); font-weight: 600"
+              >
+                폰트
+              </td>
+              <td style="padding: 8px 0; color: var(--gray-600)">
+                Inter 800 (제목), 400 (설명)
+              </td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--gray-100)">
+              <td
+                style="padding: 8px 0; color: var(--gray-400); font-weight: 600"
+              >
+                로고
+              </td>
+              <td style="padding: 8px 0; color: var(--gray-600)">
+                K(#ed2939 900) + PEC(#fff 300) 오른쪽 배치
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="padding: 8px 0; color: var(--gray-400); font-weight: 600"
+              >
+                생성 방식
+              </td>
+              <td style="padding: 8px 0; color: var(--gray-600)">
+                Next.js @vercel/og 또는 정적 PNG export
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 8. SPEC ===== -->
+    <section class="section" id="spec">
+      <h2 class="section-title">Spec</h2>
+      <p class="section-desc">구현 참고 사양</p>
+      <div class="spec-table">
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>애니메이션</th>
+              <th>Duration</th>
+              <th>활용처</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Loading A</td>
+              <td>Document Scanner</td>
+              <td><code>2s</code></td>
+              <td>초기 로딩, 서류 처리</td>
+            </tr>
+            <tr>
+              <td>Loading B</td>
+              <td>Circuit Processing</td>
+              <td><code>2.5~3.5s traces</code></td>
+              <td>시스템 연산, 백엔드 처리</td>
+            </tr>
+            <tr>
+              <td>Loading C</td>
+              <td>Stamp Seal</td>
+              <td><code>2.5s</code></td>
+              <td>인증, 승인 대기</td>
+            </tr>
+            <tr>
+              <td>Loading D</td>
+              <td>Data Flow</td>
+              <td><code>1.2s</code></td>
+              <td>API 호출, 데이터 전송</td>
+            </tr>
+            <tr>
+              <td>Error</td>
+              <td>404 Lost Doc / 500 Gear</td>
+              <td><code>3~6s</code></td>
+              <td>에러 페이지</td>
+            </tr>
+            <tr>
+              <td>Transition</td>
+              <td>Curtain / Stamp Reveal</td>
+              <td><code>3~4s</code></td>
+              <td>페이지 전환</td>
+            </tr>
+            <tr>
+              <td>Micro</td>
+              <td>Hover/Ripple/Counter/Check</td>
+              <td><code>0.3~2s</code></td>
+              <td>UI 인터랙션</td>
+            </tr>
+            <tr>
+              <td>Skeleton</td>
+              <td>Shimmer</td>
+              <td><code>1.8s</code></td>
+              <td>콘텐츠 로딩</td>
+            </tr>
+            <tr>
+              <td>Success</td>
+              <td>Check Draw / Stamp Drop</td>
+              <td><code>0.5~0.6s</code></td>
+              <td>완료/승인</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="spec-table" style="margin-top: 24px">
+        <table>
+          <thead>
+            <tr>
+              <th>OG Template</th>
+              <th>용도</th>
+              <th>배경</th>
+              <th>사이즈</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Homepage</td>
+              <td>메인, 기본 공유</td>
+              <td>Blue gradient + grid</td>
+              <td><code>1200x630</code></td>
+            </tr>
+            <tr>
+              <td>Service</td>
+              <td>서비스 소개</td>
+              <td>White + accent bar</td>
+              <td><code>1200x630</code></td>
+            </tr>
+            <tr>
+              <td>Article</td>
+              <td>블로그, 뉴스</td>
+              <td>Dark + red accent</td>
+              <td><code>1200x630</code></td>
+            </tr>
+            <tr>
+              <td>Contact</td>
+              <td>상담 CTA</td>
+              <td>Blue gradient + dots</td>
+              <td><code>1200x630</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <script>
+      function showSection(id) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".nav button")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        event.target.classList.add("active");
+        if (id === "micro") setTimeout(startCounters, 300);
+      }
+      function createRipple(e) {
+        const b = e.currentTarget,
+          c = document.createElement("span");
+        c.classList.add("ripple");
+        const r = b.getBoundingClientRect(),
+          s = Math.max(r.width, r.height);
+        c.style.width = c.style.height = s + "px";
+        c.style.left = e.clientX - r.left - s / 2 + "px";
+        c.style.top = e.clientY - r.top - s / 2 + "px";
+        b.appendChild(c);
+        setTimeout(() => c.remove(), 600);
+      }
+      function startCounters() {
+        document.querySelectorAll(".counter-num").forEach((el) => {
+          const t = parseInt(el.dataset.target),
+            s = performance.now();
+          el.textContent = "0";
+          function u(n) {
+            const p = Math.min((n - s) / 2000, 1);
+            el.textContent = Math.round(
+              (1 - Math.pow(1 - p, 3)) * t,
+            ).toLocaleString();
+            if (p < 1) requestAnimationFrame(u);
+          }
+          requestAnimationFrame(u);
+        });
+      }
+      function toggleCheck(el) {
+        el.classList.toggle("checked");
+      }
+      function restartSuccess() {
+        const c = document.getElementById("successCircle"),
+          cl = c.cloneNode(true);
+        c.parentNode.replaceChild(cl, c);
+        cl.id = "successCircle";
+      }
+      function restartStamp() {
+        const a = document.getElementById("stampArea");
+        a.innerHTML = "";
+        setTimeout(() => {
+          a.innerHTML =
+            '<div class="success-stamp"><span class="success-stamp-text">승인</span></div>';
+        }, 100);
+      }
+
+      // System percent counter
+      !(function () {
+        const el = document.getElementById("sysPercent");
+        if (!el) return;
+        let v = 0;
+        setInterval(() => {
+          v += 1;
+          if (v > 100) v = 0;
+          el.textContent = v + "%";
+        }, 40);
+      })();
+
+      // CPU frequency flicker
+      !(function () {
+        const el = document.getElementById("cpuFreq");
+        if (!el) return;
+        const freqs = [
+          "3.2 GHz",
+          "3.4 GHz",
+          "3.1 GHz",
+          "3.6 GHz",
+          "3.3 GHz",
+          "2.9 GHz",
+        ];
+        let i = 0;
+        setInterval(() => {
+          el.textContent = freqs[i % freqs.length];
+          i++;
+        }, 800);
+      })();
+    </script>
+  </body>
+</html>

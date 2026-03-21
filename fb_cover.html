@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KPEC Facebook Cover</title>
+    <link
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #f4f5f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-family: "Pretendard", system-ui, sans-serif;
+      }
+      .cover {
+        width: 820px;
+        height: 312px;
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #ecf2fe 50%,
+          #d8e5fd 100%
+        );
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 0 60px;
+      }
+      /* 배경 패턴 */
+      .cover::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23256ef4' fill-opacity='0.03'%3E%3Cpath d='M20 20h-2v2h2v-2zm-10 0h-2v2h2v-2zm20 0h-2v2h2v-2zM10 10h-2v2h2v-2zm10 0h-2v2h2v-2zm10 0h-2v2h2v-2z'/%3E%3C/g%3E%3C/svg%3E");
+      }
+      /* 우측 장식 */
+      .cover::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -80px;
+        width: 360px;
+        height: 360px;
+        background: radial-gradient(
+          circle,
+          rgba(37, 110, 244, 0.08) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .deco-circle {
+        position: absolute;
+        right: 40px;
+        bottom: -60px;
+        width: 240px;
+        height: 240px;
+        border: 2px solid rgba(37, 110, 244, 0.08);
+        border-radius: 50%;
+      }
+      .deco-circle2 {
+        position: absolute;
+        right: 100px;
+        bottom: -30px;
+        width: 160px;
+        height: 160px;
+        border: 1px solid rgba(37, 110, 244, 0.05);
+        border-radius: 50%;
+      }
+      .content {
+        position: relative;
+        z-index: 1;
+        max-width: 520px;
+      }
+      .logo {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: baseline;
+        gap: 2px;
+      }
+      .logo .k {
+        font-size: 32px;
+        font-weight: 900;
+        color: #d63d4a;
+      }
+      .logo .pec {
+        font-size: 32px;
+        font-weight: 300;
+        color: #0b50d0;
+      }
+      .title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #1e2124;
+        line-height: 1.35;
+        margin-bottom: 10px;
+      }
+      .title em {
+        font-style: normal;
+        color: #256ef4;
+      }
+      .sub {
+        font-size: 14px;
+        color: #6d7882;
+        line-height: 1.5;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: #ffffff;
+        border: 1px solid #e6e8ea;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #256ef4;
+      }
+      /* 우측 수치 */
+      .stats {
+        position: absolute;
+        right: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        border: 1px solid #e6e8ea;
+        border-radius: 10px;
+        padding: 12px 18px;
+        text-align: center;
+        min-width: 130px;
+      }
+      .stat-card .num {
+        font-size: 24px;
+        font-weight: 900;
+        color: #0b50d0;
+        line-height: 1;
+      }
+      .stat-card .label {
+        font-size: 10px;
+        color: #6d7882;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+      .url {
+        position: absolute;
+        bottom: 14px;
+        right: 60px;
+        font-size: 11px;
+        color: #8a949e;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cover">
+      <div class="deco-circle"></div>
+      <div class="deco-circle2"></div>
+      <div class="content">
+        <div class="logo">
+          <span class="k">K</span><span class="pec">PEC</span>
+        </div>
+        <div class="title">
+          중소기업 <em>정책자금</em>,<br />
+          재무 구조에 맞게 설계합니다
+        </div>
+        <div class="sub">한국기업정책자금센터</div>
+        <div class="tags">
+          <div class="tag">운전자금</div>
+          <div class="tag">시설자금</div>
+          <div class="tag">기업인증</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="num">2.5%~</div>
+          <div class="label">정책자금 금리</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">4.4조</div>
+          <div class="label">2026년 예산</div>
+        </div>
+      </div>
+      <div class="url">jsbizfunding.kr</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+name = "kpec-worker"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[vars]
+ADMIN_EMAIL = "kjs010zzz@gmail.com"

@@ -1,0 +1,1296 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPEC Logo Concepts - 20 Variations (v2)</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Serif:wght@400;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", "Segoe UI", sans-serif;
+        background: #f0f2f5;
+        padding: 40px 20px;
+        color: #333;
+      }
+      h1 {
+        text-align: center;
+        font-size: 28px;
+        color: #1a56a8;
+        margin-bottom: 8px;
+      }
+      .subtitle {
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 12px;
+      }
+      .base-info {
+        text-align: center;
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 40px;
+      }
+      .color-info {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .color-swatch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #555;
+      }
+      .color-swatch span {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        display: inline-block;
+        border: 1px solid #ddd;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 24px;
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        transition:
+          box-shadow 0.2s,
+          transform 0.2s;
+      }
+      .card:hover {
+        box-shadow: 0 8px 24px rgba(0, 52, 120, 0.12);
+        transform: translateY(-2px);
+      }
+      .logo-area {
+        width: 100%;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        flex-direction: column;
+      }
+      .card-footer {
+        padding: 14px 18px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card-num {
+        background: #1a56a8;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+      }
+      .card-desc {
+        font-size: 11px;
+        color: #888;
+        margin-top: 2px;
+      }
+
+      /* Colors */
+      :root {
+        --blue: #1a56a8;
+        --red: #ed2939;
+        --gray: #666;
+        --light-gray: #999;
+      }
+
+      /* Shared */
+      .lt {
+        font-family: "Inter", "Segoe UI", sans-serif;
+      }
+      .k-red {
+        color: var(--red);
+      }
+      .k-blue {
+        color: var(--blue);
+      }
+
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        body {
+          padding: 20px 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>KPEC Logo Concepts v2</h1>
+    <p class="subtitle">
+      Korea Professional Engineers Council - 20 Logo Variations
+    </p>
+    <p class="base-info">
+      Base: #01 Clean Underline / #04 Split Color / #13 Vertical Line
+    </p>
+
+    <div class="color-info">
+      <div class="color-swatch">
+        <span style="background: #1a56a8"></span> Blue #1A56A8
+      </div>
+      <div class="color-swatch">
+        <span style="background: #ed2939"></span> Red #ED2939
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- ========== #01 계열: UNDERLINE / ACCENT LINE ========== -->
+
+      <!-- 01 - Original Clean Underline (dual color) -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="font-size: 52px; font-weight: 700; letter-spacing: 6px"
+              class="lt"
+            >
+              <span class="k-red">K</span><span class="k-blue">PEC</span>
+            </div>
+            <div
+              style="
+                width: 130px;
+                height: 5px;
+                background: var(--red);
+                margin: 8px auto 0;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 11px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 10px;
+              "
+              class="lt"
+            >
+              Korea Professional
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">01</div>
+          <div>
+            <div class="card-title">Clean Underline</div>
+            <div class="card-desc">K(레드)+PEC(블루) + 레드 밑줄</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 - Double Line -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                width: 160px;
+                height: 3px;
+                background: var(--blue);
+                margin: 0 auto;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 50px;
+                font-weight: 800;
+                letter-spacing: 8px;
+                margin: 8px 0;
+              "
+              class="lt"
+            >
+              <span class="k-red">K</span><span class="k-blue">PEC</span>
+            </div>
+            <div
+              style="
+                width: 160px;
+                height: 3px;
+                background: var(--red);
+                margin: 0 auto;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--blue);
+                letter-spacing: 3px;
+                margin-top: 10px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              ENGINEERS COUNCIL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">02</div>
+          <div>
+            <div class="card-title">Double Line</div>
+            <div class="card-desc">상단 블루라인 + 하단 레드라인</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 - Thick Bar Underline -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="font-size: 54px; font-weight: 900; letter-spacing: 6px"
+              class="lt"
+            >
+              <span class="k-red">K</span><span class="k-blue">PEC</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                margin: 10px auto 0;
+                width: 150px;
+                height: 8px;
+              "
+            >
+              <div style="flex: 1; background: var(--red)"></div>
+              <div style="flex: 3; background: var(--blue)"></div>
+            </div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--gray);
+                letter-spacing: 1.5px;
+                margin-top: 10px;
+              "
+              class="lt"
+            >
+              Korea Professional Engineers Council
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">03</div>
+          <div>
+            <div class="card-title">Thick Split Bar</div>
+            <div class="card-desc">K:PEC 비율 반영 두꺼운 바</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 - Overline Accent -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                width: 40px;
+                height: 5px;
+                background: var(--red);
+                margin: 0 auto;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 52px;
+                font-weight: 700;
+                letter-spacing: 6px;
+                margin-top: 6px;
+              "
+              class="lt"
+            >
+              <span class="k-red">K</span><span class="k-blue">PEC</span>
+            </div>
+            <div
+              style="
+                font-size: 10px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 8px;
+                font-weight: 400;
+              "
+              class="lt"
+            >
+              KOREA PROFESSIONAL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">04</div>
+          <div>
+            <div class="card-title">Overline Accent</div>
+            <div class="card-desc">상단 레드 악센트 바</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 - Underline + Dot -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="font-size: 50px; font-weight: 700; letter-spacing: 8px"
+              class="lt"
+            >
+              <span class="k-red">K</span><span class="k-blue">PEC</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 10px;
+              "
+            >
+              <div
+                style="width: 50px; height: 2px; background: var(--blue)"
+              ></div>
+              <div
+                style="
+                  width: 8px;
+                  height: 8px;
+                  border-radius: 50%;
+                  background: var(--red);
+                "
+              ></div>
+              <div
+                style="width: 50px; height: 2px; background: var(--blue)"
+              ></div>
+            </div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--blue);
+                letter-spacing: 2.5px;
+                margin-top: 10px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              ENGINEERS COUNCIL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">05</div>
+          <div>
+            <div class="card-title">Line & Dot</div>
+            <div class="card-desc">블루 라인 + 센터 레드 도트</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 06 - Gradient Underline -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="font-size: 52px; font-weight: 800; letter-spacing: 6px"
+              class="lt"
+            >
+              <span class="k-red">K</span><span class="k-blue">PEC</span>
+            </div>
+            <div
+              style="
+                width: 160px;
+                height: 4px;
+                background: linear-gradient(90deg, var(--red), var(--blue));
+                margin: 10px auto 0;
+                border-radius: 2px;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--gray);
+                letter-spacing: 1.5px;
+                margin-top: 10px;
+              "
+              class="lt"
+            >
+              Professional Engineers Council
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">06</div>
+          <div>
+            <div class="card-title">Gradient Line</div>
+            <div class="card-desc">레드→블루 그라데이션 밑줄</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 07 - Bracket Underline -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="font-size: 50px; font-weight: 700; letter-spacing: 6px"
+              class="lt"
+            >
+              <span class="k-red">K</span><span class="k-blue">PEC</span>
+            </div>
+            <div
+              style="
+                width: 160px;
+                margin: 8px auto 0;
+                border-bottom: 3px solid var(--blue);
+                border-left: 3px solid var(--red);
+                border-right: 3px solid var(--red);
+                height: 10px;
+                border-radius: 0 0 4px 4px;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 8px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              KOREA PROFESSIONAL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">07</div>
+          <div>
+            <div class="card-title">Bracket Line</div>
+            <div class="card-desc">U자 브래킷 하단 장식</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== #04 계열: SPLIT COLOR / DIVIDER ========== -->
+
+      <!-- 08 - Original Split Color -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="font-size: 64px; font-weight: 900; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  width: 3px;
+                  height: 50px;
+                  background: var(--blue);
+                  margin: 0 2px;
+                  display: inline-block;
+                "
+              ></span>
+              <span
+                style="font-size: 64px; font-weight: 900; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--gray);
+                letter-spacing: 1px;
+                margin-top: 8px;
+                font-weight: 300;
+              "
+              class="lt"
+            >
+              Korea Professional Engineers Council
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">08</div>
+          <div>
+            <div class="card-title">Split Color</div>
+            <div class="card-desc">K(레드) | PEC(블루) 구분선</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 09 - Red Block K -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: stretch;
+                justify-content: center;
+              "
+            >
+              <div
+                style="
+                  background: var(--red);
+                  padding: 6px 14px;
+                  border-radius: 4px;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                <span
+                  style="font-size: 52px; font-weight: 900; color: #fff"
+                  class="lt"
+                  >K</span
+                >
+              </div>
+              <span
+                style="
+                  font-size: 52px;
+                  font-weight: 900;
+                  color: var(--blue);
+                  margin-left: 6px;
+                "
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                width: 170px;
+                height: 2px;
+                background: var(--blue);
+                margin: 8px auto 0;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 7px;
+                color: var(--blue);
+                letter-spacing: 1.5px;
+                margin-top: 8px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              KOREA PROFESSIONAL ENGINEERS COUNCIL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">09</div>
+          <div>
+            <div class="card-title">Red Block K</div>
+            <div class="card-desc">K 레드 블록 배경 + PEC 블루</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 - Blue Block PEC -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: stretch;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  font-size: 52px;
+                  font-weight: 900;
+                  color: var(--red);
+                  margin-right: 6px;
+                "
+                class="lt"
+                >K</span
+              >
+              <div
+                style="
+                  background: var(--blue);
+                  padding: 6px 16px;
+                  border-radius: 4px;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                <span
+                  style="font-size: 52px; font-weight: 900; color: #fff"
+                  class="lt"
+                  >PEC</span
+                >
+              </div>
+            </div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--gray);
+                letter-spacing: 1.2px;
+                margin-top: 12px;
+                font-weight: 400;
+              "
+              class="lt"
+            >
+              Korea Professional Engineers Council
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">10</div>
+          <div>
+            <div class="card-title">Blue Block PEC</div>
+            <div class="card-desc">K 레드 + PEC 블루 블록</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11 - Split with Dot Divider -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+              "
+            >
+              <span
+                style="font-size: 58px; font-weight: 800; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 6px;
+                  padding: 8px 0;
+                "
+              >
+                <div
+                  style="
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: var(--red);
+                  "
+                ></div>
+                <div
+                  style="
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: var(--blue);
+                  "
+                ></div>
+              </div>
+              <span
+                style="font-size: 58px; font-weight: 800; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 8px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 8px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              PROFESSIONAL ENGINEERS COUNCIL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">11</div>
+          <div>
+            <div class="card-title">Dot Divider</div>
+            <div class="card-desc">이중 도트로 K · PEC 분리</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12 - Outline K + Solid PEC -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  font-size: 60px;
+                  font-weight: 900;
+                  color: transparent;
+                  -webkit-text-stroke: 2.5px var(--red);
+                "
+                class="lt"
+                >K</span
+              >
+              <span
+                style="font-size: 60px; font-weight: 900; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                width: 140px;
+                height: 3px;
+                background: var(--red);
+                margin: 8px auto 0;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 10px;
+              "
+              class="lt"
+            >
+              ENGINEERS COUNCIL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">12</div>
+          <div>
+            <div class="card-title">Outline K</div>
+            <div class="card-desc">K 아웃라인(레드) + PEC 솔리드(블루)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 13 - Split Weight -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: baseline;
+                justify-content: center;
+              "
+            >
+              <span
+                style="font-size: 64px; font-weight: 900; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="font-size: 64px; font-weight: 300; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--gray);
+                letter-spacing: 1.5px;
+                margin-top: 6px;
+              "
+              class="lt"
+            >
+              Korea Professional Engineers Council
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">13</div>
+          <div>
+            <div class="card-title">Split Weight</div>
+            <div class="card-desc">K(굵은 레드) + PEC(가는 블루)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== #13 계열: VERTICAL LINE / SEPARATOR ========== -->
+
+      <!-- 14 - Original Vertical Line -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+              "
+            >
+              <span
+                style="font-size: 72px; font-weight: 300; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  width: 2px;
+                  height: 60px;
+                  background: var(--blue);
+                  display: inline-block;
+                "
+              ></span>
+              <span
+                style="font-size: 72px; font-weight: 300; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 8px;
+                color: var(--gray);
+                letter-spacing: 1.2px;
+                margin-top: 8px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              Korea Professional Engineers Council
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">14</div>
+          <div>
+            <div class="card-title">Vertical Line</div>
+            <div class="card-desc">경량 서체 + 블루 수직 구분선</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 15 - Thick Vertical Bar -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="font-size: 60px; font-weight: 700; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  width: 6px;
+                  height: 55px;
+                  background: var(--red);
+                  display: inline-block;
+                  margin: 0 4px;
+                  border-radius: 3px;
+                "
+              ></span>
+              <span
+                style="font-size: 60px; font-weight: 700; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 8px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 10px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              ENGINEERS COUNCIL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">15</div>
+          <div>
+            <div class="card-title">Thick Bar</div>
+            <div class="card-desc">두꺼운 레드 수직 바 분리</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 16 - Double Vertical Lines -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="font-size: 62px; font-weight: 600; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  display: inline-flex;
+                  flex-direction: row;
+                  gap: 3px;
+                  margin: 0 5px;
+                "
+              >
+                <span
+                  style="
+                    width: 2px;
+                    height: 50px;
+                    background: var(--red);
+                    display: inline-block;
+                  "
+                ></span>
+                <span
+                  style="
+                    width: 2px;
+                    height: 50px;
+                    background: var(--blue);
+                    display: inline-block;
+                  "
+                ></span>
+              </span>
+              <span
+                style="font-size: 62px; font-weight: 600; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 9px;
+                color: var(--gray);
+                letter-spacing: 1.5px;
+                margin-top: 8px;
+              "
+              class="lt"
+            >
+              Korea Professional Engineers Council
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">16</div>
+          <div>
+            <div class="card-title">Double Line</div>
+            <div class="card-desc">이중 수직선 (레드+블루)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 17 - Vertical Gradient Bar -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="font-size: 64px; font-weight: 700; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  width: 4px;
+                  height: 55px;
+                  background: linear-gradient(180deg, var(--red), var(--blue));
+                  display: inline-block;
+                  margin: 0 4px;
+                  border-radius: 2px;
+                "
+              ></span>
+              <span
+                style="font-size: 64px; font-weight: 700; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 8px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 10px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              PROFESSIONAL ENGINEERS
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">17</div>
+          <div>
+            <div class="card-title">Gradient Bar</div>
+            <div class="card-desc">수직 그라데이션 바 (레드→블루)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 18 - Vertical Line + Bottom Accent -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+              "
+            >
+              <span
+                style="font-size: 56px; font-weight: 800; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  width: 2px;
+                  height: 48px;
+                  background: var(--red);
+                  display: inline-block;
+                "
+              ></span>
+              <span
+                style="font-size: 56px; font-weight: 800; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                display: flex;
+                width: 180px;
+                margin: 10px auto 0;
+                height: 3px;
+              "
+            >
+              <div style="width: 25%; background: var(--red)"></div>
+              <div style="width: 75%; background: var(--blue)"></div>
+            </div>
+            <div
+              style="
+                font-size: 8px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 8px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              KOREA PROFESSIONAL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">18</div>
+          <div>
+            <div class="card-title">Line + Accent</div>
+            <div class="card-desc">수직선 + 하단 스플릿 바</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 19 - Condensed Vertical -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <span
+                style="
+                  font-size: 68px;
+                  font-weight: 900;
+                  color: var(--red);
+                  letter-spacing: -2px;
+                "
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  width: 3px;
+                  height: 55px;
+                  background: var(--blue);
+                  display: inline-block;
+                  margin: 0 1px;
+                "
+              ></span>
+              <span
+                style="
+                  font-size: 68px;
+                  font-weight: 900;
+                  color: var(--blue);
+                  letter-spacing: -2px;
+                "
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 7px;
+                color: var(--blue);
+                letter-spacing: 3px;
+                margin-top: 8px;
+                font-weight: 600;
+              "
+              class="lt"
+            >
+              ENGINEERS COUNCIL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">19</div>
+          <div>
+            <div class="card-title">Condensed</div>
+            <div class="card-desc">압축 자간 + 블루 수직선</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 20 - Framed Vertical -->
+      <div class="card">
+        <div class="logo-area">
+          <div style="text-align: center">
+            <div
+              style="
+                display: inline-flex;
+                align-items: center;
+                border: 2.5px solid var(--blue);
+                padding: 10px 28px;
+                border-radius: 4px;
+                gap: 6px;
+              "
+            >
+              <span
+                style="font-size: 48px; font-weight: 800; color: var(--red)"
+                class="lt"
+                >K</span
+              >
+              <span
+                style="
+                  width: 2px;
+                  height: 42px;
+                  background: var(--red);
+                  display: inline-block;
+                "
+              ></span>
+              <span
+                style="font-size: 48px; font-weight: 800; color: var(--blue)"
+                class="lt"
+                >PEC</span
+              >
+            </div>
+            <div
+              style="
+                width: 8px;
+                height: 8px;
+                background: var(--red);
+                transform: rotate(45deg);
+                margin: 10px auto 0;
+              "
+            ></div>
+            <div
+              style="
+                font-size: 8px;
+                color: var(--blue);
+                letter-spacing: 2px;
+                margin-top: 8px;
+                font-weight: 500;
+              "
+              class="lt"
+            >
+              KOREA PROFESSIONAL
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-num">20</div>
+          <div>
+            <div class="card-title">Framed</div>
+            <div class="card-desc">블루 프레임 + 수직선 분리</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        text-align: center;
+        margin-top: 48px;
+        padding: 20px;
+        color: #999;
+        font-size: 12px;
+      "
+    >
+      KPEC Logo Concepts v2 &mdash; Blue #1A56A8 + Red #ED2939 &mdash; 2025
+    </div>
+  </body>
+</html>
