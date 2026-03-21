@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Sidebar from "@/components/admin/Sidebar";
-import { adminHref } from "@/lib/admin-utils";
 
 export default function AdminLayout({
   children,
@@ -27,7 +26,7 @@ export default function AdminLayout({
 
     const token = localStorage.getItem("kpec_admin_token");
     if (!token) {
-      router.replace(adminHref("/admin/login"));
+      router.replace("/admin/login");
       return;
     }
 
@@ -35,13 +34,13 @@ export default function AdminLayout({
       const payload = JSON.parse(atob(token));
       if (payload.exp && payload.exp < Date.now()) {
         localStorage.removeItem("kpec_admin_token");
-        router.replace(adminHref("/admin/login"));
+        router.replace("/admin/login");
         return;
       }
       setIsAuthenticated(true);
     } catch {
       localStorage.removeItem("kpec_admin_token");
-      router.replace(adminHref("/admin/login"));
+      router.replace("/admin/login");
       return;
     }
 
@@ -91,7 +90,7 @@ export default function AdminLayout({
 
   const handleLogout = () => {
     localStorage.removeItem("kpec_admin_token");
-    router.replace(adminHref("/admin/login"));
+    router.replace("/admin/login");
   };
 
   const pageTitleMap: Record<string, string> = {
@@ -105,8 +104,7 @@ export default function AdminLayout({
     "/admin/analytics": "방문통계",
     "/admin/settings": "설정",
   };
-  const pageTitle =
-    pageTitleMap[pathname] || pageTitleMap[`/admin${pathname}`] || "관리자";
+  const pageTitle = pageTitleMap[pathname] || "관리자";
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -175,10 +173,9 @@ export default function AdminLayout({
         ].map((item) => (
           <a
             key={item.href}
-            href={adminHref(item.href)}
+            href={item.href}
             className={`flex-1 flex flex-col items-center py-2 text-xs ${
               pathname === item.href ||
-              pathname === item.href.replace(/^\/admin/, "") ||
               (item.href !== "/admin" && pathname.startsWith(item.href))
                 ? "text-[#1A56A8]"
                 : "text-gray-400"

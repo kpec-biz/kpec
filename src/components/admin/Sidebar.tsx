@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { adminHref, isAdminActive } from "@/lib/admin-utils";
 
 const navSections = [
   {
@@ -70,7 +69,10 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
 
-  const isActive = (href: string) => isAdminActive(pathname, href);
+  const isActive = (href: string) => {
+    if (href === "/admin") return pathname === "/admin";
+    return pathname.startsWith(href);
+  };
 
   return (
     <>
@@ -92,7 +94,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Logo */}
         <div className="h-[70px] flex items-center px-6 border-b border-white/10">
-          <Link href={adminHref("/admin")} className="flex items-center gap-2">
+          <Link href={"/admin"} className="flex items-center gap-2">
             <span className="text-2xl font-black text-[#ED2939]">K</span>
             <span className="text-2xl font-light text-white">PEC</span>
             <span className="text-xs text-white/50 ml-2">Admin</span>
@@ -112,7 +114,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               {section.items.map((item) => (
                 <Link
                   key={item.href}
-                  href={adminHref(item.href)}
+                  href={item.href}
                   onClick={onClose}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all
                     ${
