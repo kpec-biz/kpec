@@ -126,6 +126,21 @@ export async function GET(req: NextRequest) {
         pageViews: Number(r.metricValues?.[1]?.value),
       }));
 
+      // 지역별 방문자
+      const [geoReport] = await client.runReport({
+        property,
+        dateRanges: [{ startDate: period.startDate, endDate: "today" }],
+        dimensions: [{ name: "region" }],
+        metrics: [{ name: "activeUsers" }],
+        orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+        limit: 10,
+      });
+
+      const regions = (geoReport.rows || []).map((r) => ({
+        name: r.dimensionValues?.[0]?.value,
+        users: Number(r.metricValues?.[0]?.value),
+      }));
+
       results.push({
         fields: {
           date: new Date().toISOString().split("T")[0],
@@ -139,6 +154,7 @@ export async function GET(req: NextRequest) {
           devices: JSON.stringify(devices),
           referrers: JSON.stringify(referrers),
           dailyTrend: JSON.stringify(dailyTrend),
+          regions: JSON.stringify(regions),
         },
       });
     }

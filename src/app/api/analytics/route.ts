@@ -122,6 +122,15 @@ export async function GET(req: NextRequest) {
         orderBys: [{ dimension: { dimensionName: "date" }, desc: false }],
       });
 
+      const [geo] = await client.runReport({
+        property,
+        dateRanges: [{ startDate, endDate }],
+        dimensions: [{ name: "region" }],
+        metrics: [{ name: "activeUsers" }],
+        orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+        limit: 10,
+      });
+
       return NextResponse.json({
         date: new Date().toISOString().split("T")[0],
         period: "custom",
@@ -149,6 +158,10 @@ export async function GET(req: NextRequest) {
           date: r.dimensionValues?.[0]?.value,
           users: Number(r.metricValues?.[0]?.value),
           pageViews: Number(r.metricValues?.[1]?.value),
+        })),
+        regions: (geo.rows || []).map((r) => ({
+          name: r.dimensionValues?.[0]?.value,
+          users: Number(r.metricValues?.[0]?.value),
         })),
       });
     } catch (err) {
@@ -200,5 +213,6 @@ export async function GET(req: NextRequest) {
     devices: JSON.parse(record.devices || "[]"),
     referrers: JSON.parse(record.referrers || "[]"),
     dailyTrend: JSON.parse(record.dailyTrend || "[]"),
+    regions: JSON.parse(record.regions || "[]"),
   });
 }
