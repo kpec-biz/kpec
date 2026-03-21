@@ -1,12 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/bizinfo",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/analytics",
-      "schedule": "0 1 * * *"
+      "path": "/api/cron/pipeline",
+      "schedule": "57 22 * * *"
     }
   ]
 }
