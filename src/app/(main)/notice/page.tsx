@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
-import { getNewsPosts, getAnalysisPosts } from "@/data/posts";
+import Skeleton from "@/components/Skeleton";
+import InstaBannerGrid from "@/components/InstaBannerGrid";
 
 // Airtable 공고 타입
 interface NoticeItem {
@@ -22,9 +23,6 @@ interface NoticeItem {
   status: string;
   tags: string;
 }
-
-const newsData = getNewsPosts();
-const analysisData = getAnalysisPosts();
 
 const faqs = [
   {
@@ -61,13 +59,26 @@ const tabMotion = {
 export default function NoticePage() {
   const [activeTab, setActiveTab] = useState(0);
   const [notices, setNotices] = useState<NoticeItem[]>([]);
+  const [newsData, setNewsData] = useState<NoticeItem[]>([]);
+  const [analysisData, setAnalysisData] = useState<NoticeItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/notices?limit=20")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.records) setNotices(data.records);
+    Promise.all([
+      fetch("/api/notices?limit=30").then((r) => r.json()),
+      fetch("/api/notices?category=뉴스&limit=10").then((r) => r.json()),
+      fetch("/api/notices?category=분석&limit=10").then((r) => r.json()),
+    ])
+      .then(([noticeRes, newsRes, analysisRes]) => {
+        // 공고 탭: 뉴스/분석 제외한 공고만
+        const allNotices = noticeRes.records || [];
+        setNotices(
+          allNotices.filter(
+            (r: NoticeItem) => r.category !== "뉴스" && r.category !== "분석",
+          ),
+        );
+        setNewsData(newsRes.records || []);
+        setAnalysisData(analysisRes.records || []);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -116,8 +127,14 @@ export default function NoticePage() {
                 className="bg-white rounded-xl border border-gray-10"
               >
                 {loading ? (
-                  <div className="p-12 text-center text-gray-40">
-                    불러오는 중...
+                  <div className="p-5 space-y-3">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div key={i} className="flex items-center gap-4 py-2">
+                        <Skeleton className="h-6 w-14 shrink-0" />
+                        <Skeleton className="h-5 flex-1" />
+                        <Skeleton className="h-4 w-20 shrink-0" />
+                      </div>
+                    ))}
                   </div>
                 ) : notices.length === 0 ? (
                   <div className="p-12 text-center text-gray-40">
@@ -145,25 +162,23 @@ export default function NoticePage() {
                 {...tabMotion}
                 className="bg-white rounded-xl border border-gray-10"
               >
-                <div className="divide-y divide-gray-10">
-                  {newsData.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/notice/${item.id}`}
-                      className="flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors"
-                    >
-                      <span className="flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full bg-success/10 text-success">
-                        {item.tag}
-                      </span>
-                      <span className="flex-1 text-gray-80 font-medium truncate">
-                        {item.title}
-                      </span>
-                      <span className="flex-shrink-0 text-sm text-gray-40">
-                        {item.date}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+                {newsData.length === 0 ? (
+                  <div className="p-5 space-y-3">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div key={i} className="flex items-center gap-4 py-2">
+                        <Skeleton className="h-6 w-14 shrink-0" />
+                        <Skeleton className="h-5 flex-1" />
+                        <Skeleton className="h-4 w-20 shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-10">
+                    {newsData.map((item, i) => (
+                      <NoticeRow key={item.pblancId} item={item} index={i} />
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -174,25 +189,23 @@ export default function NoticePage() {
                 {...tabMotion}
                 className="bg-white rounded-xl border border-gray-10"
               >
-                <div className="divide-y divide-gray-10">
-                  {analysisData.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/notice/${item.id}`}
-                      className="flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors"
-                    >
-                      <span className="flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full bg-point-50/10 text-point-50">
-                        {item.tag}
-                      </span>
-                      <span className="flex-1 text-gray-80 font-medium truncate">
-                        {item.title}
-                      </span>
-                      <span className="flex-shrink-0 text-sm text-gray-40">
-                        {item.date}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+                {analysisData.length === 0 ? (
+                  <div className="p-5 space-y-3">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div key={i} className="flex items-center gap-4 py-2">
+                        <Skeleton className="h-6 w-14 shrink-0" />
+                        <Skeleton className="h-5 flex-1" />
+                        <Skeleton className="h-4 w-20 shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-10">
+                    {analysisData.map((item, i) => (
+                      <NoticeRow key={item.pblancId} item={item} index={i} />
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -207,89 +220,51 @@ export default function NoticePage() {
           </AnimatePresence>
         </div>
       </section>
+
+      {/* 인스타 배너 그리드 */}
+      <InstaBannerGrid />
     </>
   );
 }
 
-// Airtable 공고 행 — 리라이팅된 제목 + 요약 펼침
+// 공고 행 — 클릭 시 바로 상세 페이지로 이동
 function NoticeRow({ item, index }: { item: NoticeItem; index: number }) {
-  const [open, setOpen] = useState(false);
-
   const categoryColor: Record<string, string> = {
     기술: "bg-blue-50/10 text-blue-600",
     경영: "bg-green-50/10 text-green-600",
     인력: "bg-orange-50/10 text-orange-600",
     금융: "bg-purple-50/10 text-purple-600",
     공고: "bg-primary-5 text-primary-60",
+    분석: "bg-point-50/10 text-point-50",
+    뉴스: "bg-success/10 text-success",
   };
 
   return (
-    <div>
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors text-left"
+    <Link
+      href={`/notice/${item.pblancId}`}
+      className="flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors"
+    >
+      <span
+        className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${index === 0 ? "bg-red-50 text-point-50" : categoryColor[item.category] || "bg-primary-5 text-primary-60"}`}
       >
-        <span
-          className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${index === 0 ? "bg-red-50 text-point-50" : categoryColor[item.category] || "bg-primary-5 text-primary-60"}`}
-        >
-          {index === 0 ? "신규" : item.category}
-        </span>
-        <span className="flex-1 text-gray-80 font-medium truncate">
-          {item.title}
-        </span>
-        <span className="flex-shrink-0 text-sm text-gray-40">
-          {item.publishDate}
-        </span>
-        <svg
-          className={`w-4 h-4 text-gray-40 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-4 pt-1">
-              <p className="text-sm text-gray-60 leading-relaxed mb-2">
-                {item.summary}
-              </p>
-              <div className="flex items-center gap-3 text-xs text-gray-40 mb-3">
-                <span>{item.source}</span>
-                <span>접수: {item.applyPeriod}</span>
-              </div>
-              <div className="flex gap-2">
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-60 text-white text-xs font-semibold rounded-lg hover:bg-primary-70 transition-colors"
-                >
-                  이 공고로 상담신청
-                </Link>
-                <Link
-                  href="/diagnosis"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-20 text-gray-60 text-xs font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
-                >
-                  자금적격 진단
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        {index === 0 ? "신규" : item.category}
+      </span>
+      <span className="flex-1 text-gray-80 font-medium truncate">
+        {item.title}
+      </span>
+      <span className="flex-shrink-0 text-sm text-gray-40">
+        {item.publishDate}
+      </span>
+      <svg
+        className="w-4 h-4 text-gray-30 flex-shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </Link>
   );
 }
 

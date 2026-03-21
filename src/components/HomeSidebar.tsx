@@ -202,24 +202,81 @@ export default function HomeSidebar() {
 
 const instaPosts = [
   {
-    image: "/images/instagram/insta-01-export.png",
-    caption: "수출기업이라면 금리 추가 우대! 최대 0.5%p 추가 인하",
+    image: "/images/instagram/insta-01.png",
+    caption: "은행 금리의 절반으로 자금을 조달하세요",
     likes: 47,
-    link: "https://www.instagram.com/kpec77/",
   },
   {
-    image: "/images/instagram/insta-02-document.png",
-    caption: "복잡한 서류, 전문가가 준비를 지원합니다",
+    image: "/images/instagram/insta-02.png",
+    caption: "최대 2년 거치, 부담 없는 상환 구조",
     likes: 63,
-    link: "https://www.instagram.com/kpec77/",
   },
   {
-    image: "/images/instagram/insta-03-newfund.png",
+    image: "/images/instagram/insta-03.png",
+    caption: "정책자금으로 기업 성장의 발판을 마련하세요",
+    likes: 85,
+  },
+  {
+    image: "/images/instagram/insta-04.png",
+    caption: "기업 신용등급 UP의 지름길",
+    likes: 52,
+  },
+  {
+    image: "/images/instagram/insta-05.png",
+    caption: "연간 20조 규모, 정부가 쏩니다",
+    likes: 71,
+  },
+  {
+    image: "/images/instagram/insta-06.png",
+    caption: "무료 자격진단, 지금 바로 확인하세요",
+    likes: 94,
+  },
+  {
+    image: "/images/instagram/insta-07.png",
+    caption: "담보 없이도 가능한 정책자금",
+    likes: 58,
+  },
+  {
+    image: "/images/instagram/insta-08.png",
+    caption: "창업 3년 이내라면 더 유리합니다",
+    likes: 66,
+  },
+  {
+    image: "/images/instagram/insta-09.png",
+    caption: "경쟁사는 이미 받고 있습니다",
+    likes: 73,
+  },
+  {
+    image: "/images/instagram/insta-10.png",
+    caption: "세금 절감 효과까지, 일석이조",
+    likes: 41,
+  },
+  {
+    image: "/images/instagram/insta-11.png",
+    caption: "운전·시설·R&D 다양한 자금 유형",
+    likes: 55,
+  },
+  {
+    image: "/images/instagram/insta-12.png",
+    caption: "하반기 마감 전, 지금이 신청 적기!",
+    likes: 88,
+  },
+  {
+    image: "/images/instagram/insta-13.png",
+    caption: "수출기업이라면 금리 추가 우대!",
+    likes: 47,
+  },
+  {
+    image: "/images/instagram/insta-14.png",
+    caption: "복잡한 서류, 전문가가 준비를 도와드립니다",
+    likes: 63,
+  },
+  {
+    image: "/images/instagram/insta-15.png",
     caption: "2026년 신규 정책자금, 지금 확인하세요",
     likes: 85,
-    link: "https://www.instagram.com/kpec77/",
   },
-];
+].map((p) => ({ ...p, link: "https://www.instagram.com/kpec77/" }));
 
 function InstagramFeed() {
   const [current, setCurrent] = useState(0);
@@ -259,8 +316,8 @@ function InstagramFeed() {
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
         </svg>
       </div>
-      {/* 이미지 */}
-      <div className="aspect-square relative overflow-hidden">
+      {/* 이미지 3:4 */}
+      <div className="aspect-[3/4] relative overflow-hidden">
         <img
           src={r2(post.image)}
           alt={post.caption}
@@ -286,18 +343,11 @@ function InstagramFeed() {
           {post.caption}
         </p>
       </div>
-      {/* 도트 */}
-      <div className="flex justify-center gap-1 pb-2">
-        {instaPosts.map((_, i) => (
-          <button
-            key={i}
-            onClick={(e) => {
-              e.preventDefault();
-              setCurrent(i);
-            }}
-            className={`w-1.5 h-1.5 rounded-full transition-all ${i === current ? "bg-primary-50 w-3" : "bg-gray-20"}`}
-          />
-        ))}
+      {/* 카운터 */}
+      <div className="flex justify-center pb-2">
+        <span className="text-[10px] text-gray-40">
+          {current + 1} / {instaPosts.length}
+        </span>
       </div>
     </a>
   );
