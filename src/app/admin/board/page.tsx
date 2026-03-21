@@ -113,27 +113,27 @@ export default function AdminBoardPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#1A56A8]/15 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left py-3 px-4 text-gray-400 font-medium w-[350px]">
+              <tr className="border-b border-[#1A56A8] bg-[#1A56A8]">
+                <th className="text-left py-3 px-4 text-white font-semibold w-[350px]">
                   제목
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium hidden sm:table-cell">
+                <th className="text-left py-3 px-4 text-white font-semibold hidden sm:table-cell">
                   카테고리
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium hidden md:table-cell">
+                <th className="text-left py-3 px-4 text-white font-semibold hidden md:table-cell">
                   작성일
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium hidden md:table-cell">
+                <th className="text-left py-3 px-4 text-white font-semibold hidden md:table-cell">
                   조회수
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                <th className="text-left py-3 px-4 text-white font-semibold">
                   상태
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                <th className="text-left py-3 px-4 text-white font-semibold">
                   관리
                 </th>
               </tr>
@@ -142,7 +142,7 @@ export default function AdminBoardPage() {
               {paged.map((post) => (
                 <tr
                   key={post.id}
-                  className="border-b border-gray-50 hover:bg-gray-50/50"
+                  className="border-b border-[#1A56A8]/10 hover:bg-[#E8EEF6]/50"
                 >
                   <td className="py-3 px-4">
                     <span className="font-medium text-gray-900 line-clamp-1">
@@ -185,7 +185,7 @@ export default function AdminBoardPage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A56A8]/10">
           <span className="text-xs text-gray-400">총 {filtered.length}건</span>
           <div className="flex items-center gap-1">
             <button

@@ -6,13 +6,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
 import { getNewsPosts, getAnalysisPosts } from "@/data/posts";
 
-// 기업마당 API 공고 타입
-interface BizInfoItem {
-  pblancNm: string;
-  pblancUrl: string;
-  creatPnttm: string;
-  pldirSportRealmLclasCodeNm: string;
-  bsnsSumryCn: string;
+// Airtable 공고 타입
+interface NoticeItem {
+  id: string;
+  pblancId: string;
+  title: string;
+  originalTitle: string;
+  summary: string;
+  contentUrl: string;
+  category: string;
+  source: string;
+  applyPeriod: string;
+  originalUrl: string;
+  publishDate: string;
+  status: string;
+  tags: string;
 }
 
 const newsData = getNewsPosts();
@@ -43,19 +51,6 @@ const faqs = [
 
 const tabs = ["정책자금 공고", "정책자금 뉴스", "정책자금 분석", "FAQ"];
 
-function formatDate(dateStr: string) {
-  if (!dateStr) return "";
-  return dateStr.slice(0, 10).replace(/-/g, ".");
-}
-
-function getTag(category: string) {
-  if (category.includes("기술")) return "기술";
-  if (category.includes("인력")) return "인력";
-  if (category.includes("경영")) return "경영";
-  if (category.includes("금융")) return "금융";
-  return "공고";
-}
-
 const tabMotion = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
@@ -65,14 +60,14 @@ const tabMotion = {
 
 export default function NoticePage() {
   const [activeTab, setActiveTab] = useState(0);
-  const [bizInfoItems, setBizInfoItems] = useState<BizInfoItem[]>([]);
+  const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/bizinfo?size=10&page=1")
+    fetch("/api/notices?limit=20")
       .then((res) => res.json())
       .then((data) => {
-        if (data.jsonArray) setBizInfoItems(data.jsonArray);
+        if (data.records) setNotices(data.records);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -113,7 +108,7 @@ export default function NoticePage() {
           </div>
 
           <AnimatePresence mode="wait">
-            {/* 탭 1: 정책자금 공고 (기업마당 API → 내부 링크) */}
+            {/* 탭 1: 정책자금 공고 (Airtable 리라이팅 데이터) */}
             {activeTab === 0 && (
               <motion.div
                 key="tab-0"
@@ -124,14 +119,14 @@ export default function NoticePage() {
                   <div className="p-12 text-center text-gray-40">
                     불러오는 중...
                   </div>
-                ) : bizInfoItems.length === 0 ? (
+                ) : notices.length === 0 ? (
                   <div className="p-12 text-center text-gray-40">
                     공고를 불러오지 못했습니다
                   </div>
                 ) : (
                   <div className="divide-y divide-gray-10">
-                    {bizInfoItems.map((item, i) => (
-                      <BizInfoRow key={i} item={item} index={i} />
+                    {notices.map((item, i) => (
+                      <NoticeRow key={item.pblancId} item={item} index={i} />
                     ))}
                   </div>
                 )}
@@ -216,9 +211,17 @@ export default function NoticePage() {
   );
 }
 
-// 기업마당 공고 행 — 클릭 시 내부에서 요약 펼침 (외부 링크 X)
-function BizInfoRow({ item, index }: { item: BizInfoItem; index: number }) {
+// Airtable 공고 행 — 리라이팅된 제목 + 요약 펼침
+function NoticeRow({ item, index }: { item: NoticeItem; index: number }) {
   const [open, setOpen] = useState(false);
+
+  const categoryColor: Record<string, string> = {
+    기술: "bg-blue-50/10 text-blue-600",
+    경영: "bg-green-50/10 text-green-600",
+    인력: "bg-orange-50/10 text-orange-600",
+    금융: "bg-purple-50/10 text-purple-600",
+    공고: "bg-primary-5 text-primary-60",
+  };
 
   return (
     <div>
@@ -227,15 +230,15 @@ function BizInfoRow({ item, index }: { item: BizInfoItem; index: number }) {
         className="w-full flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors text-left"
       >
         <span
-          className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${index === 0 ? "bg-red-50 text-point-50" : "bg-primary-5 text-primary-60"}`}
+          className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${index === 0 ? "bg-red-50 text-point-50" : categoryColor[item.category] || "bg-primary-5 text-primary-60"}`}
         >
-          {index === 0 ? "신규" : getTag(item.pldirSportRealmLclasCodeNm)}
+          {index === 0 ? "신규" : item.category}
         </span>
         <span className="flex-1 text-gray-80 font-medium truncate">
-          {item.pblancNm}
+          {item.title}
         </span>
         <span className="flex-shrink-0 text-sm text-gray-40">
-          {formatDate(item.creatPnttm)}
+          {item.publishDate}
         </span>
         <svg
           className={`w-4 h-4 text-gray-40 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
@@ -261,9 +264,13 @@ function BizInfoRow({ item, index }: { item: BizInfoItem; index: number }) {
             className="overflow-hidden"
           >
             <div className="px-5 pb-4 pt-1">
-              <p className="text-sm text-gray-60 leading-relaxed mb-3">
-                {item.bsnsSumryCn || item.pblancNm}
+              <p className="text-sm text-gray-60 leading-relaxed mb-2">
+                {item.summary}
               </p>
+              <div className="flex items-center gap-3 text-xs text-gray-40 mb-3">
+                <span>{item.source}</span>
+                <span>접수: {item.applyPeriod}</span>
+              </div>
               <div className="flex gap-2">
                 <Link
                   href="/contact"

@@ -12,6 +12,7 @@ interface BannerItem {
   postedAt?: string;
   likes: number;
   colorOverlay: string;
+  image?: string;
 }
 
 const mockBanners: BannerItem[] = [
@@ -24,6 +25,8 @@ const mockBanners: BannerItem[] = [
     postedAt: "2026-03-21 09:00",
     likes: 45,
     colorOverlay: "#1A56A8",
+    image:
+      "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/instagram/insta-01-export.webp",
   },
   {
     id: "IG-002",
@@ -34,6 +37,8 @@ const mockBanners: BannerItem[] = [
     postedAt: "2026-03-19 09:00",
     likes: 32,
     colorOverlay: "#059669",
+    image:
+      "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/instagram/insta-02-document.webp",
   },
   {
     id: "IG-003",
@@ -44,6 +49,8 @@ const mockBanners: BannerItem[] = [
     scheduledAt: "2026-03-23 09:00",
     likes: 0,
     colorOverlay: "#7c3aed",
+    image:
+      "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/images/instagram/insta-03-newfund.webp",
   },
   {
     id: "IG-004",
@@ -75,7 +82,7 @@ export default function AdminInstagramPage() {
   return (
     <div className="space-y-6">
       {/* Account Info */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f09433] via-[#e6683c] to-[#bc1888] flex items-center justify-center">
@@ -91,7 +98,7 @@ export default function AdminInstagramPage() {
             </div>
             <div>
               <p className="font-medium text-gray-900 text-sm">@kpec77</p>
-              <p className="text-xs text-gray-400">kpec_fund</p>
+              <p className="text-xs text-[#0e2a5c]/50">kpec_fund</p>
             </div>
           </div>
           <div className="flex gap-6 text-center">
@@ -99,19 +106,19 @@ export default function AdminInstagramPage() {
               <p className="text-lg font-bold text-gray-900">
                 {mockBanners.filter((b) => b.status === "posted").length}
               </p>
-              <p className="text-xs text-gray-400">게시물</p>
+              <p className="text-xs text-[#0e2a5c]/50">게시물</p>
             </div>
             <div>
               <p className="text-lg font-bold text-gray-900">
                 {mockBanners.filter((b) => b.status === "scheduled").length}
               </p>
-              <p className="text-xs text-gray-400">예약</p>
+              <p className="text-xs text-[#0e2a5c]/50">예약</p>
             </div>
             <div>
               <p className="text-lg font-bold text-gray-900">
                 {mockBanners.filter((b) => b.status === "draft").length}
               </p>
-              <p className="text-xs text-gray-400">대기</p>
+              <p className="text-xs text-[#0e2a5c]/50">대기</p>
             </div>
           </div>
         </div>
@@ -160,33 +167,46 @@ export default function AdminInstagramPage() {
         {filtered.map((banner) => (
           <div
             key={banner.id}
-            className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors"
+            className="bg-white rounded-xl border border-[#1A56A8]/15 overflow-hidden hover:border-[#1A56A8]/25 transition-colors"
           >
             {/* Banner Preview */}
             <div
-              className="aspect-square relative flex items-center justify-center p-6"
+              className="aspect-square relative flex items-center justify-center p-6 overflow-hidden"
               style={{ backgroundColor: banner.colorOverlay + "15" }}
             >
-              <div className="text-center">
-                <div
-                  className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center"
-                  style={{ backgroundColor: banner.colorOverlay + "20" }}
-                >
-                  <span
-                    className="text-xl font-black"
+              {banner.image ? (
+                <>
+                  <img
+                    src={banner.image}
+                    alt={banner.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/10" />
+                </>
+              ) : (
+                <div className="text-center">
+                  <div
+                    className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center"
+                    style={{ backgroundColor: banner.colorOverlay + "20" }}
+                  >
+                    <span
+                      className="text-xl font-black"
+                      style={{ color: banner.colorOverlay }}
+                    >
+                      K
+                    </span>
+                  </div>
+                  <p
+                    className="text-sm font-bold line-clamp-2"
                     style={{ color: banner.colorOverlay }}
                   >
-                    K
-                  </span>
+                    {banner.title}
+                  </p>
+                  <p className="text-xs text-[#0e2a5c]/50 mt-2">
+                    KPEC 정책자금
+                  </p>
                 </div>
-                <p
-                  className="text-sm font-bold line-clamp-2"
-                  style={{ color: banner.colorOverlay }}
-                >
-                  {banner.title}
-                </p>
-                <p className="text-xs text-gray-400 mt-2">KPEC 정책자금</p>
-              </div>
+              )}
 
               {/* Status overlay */}
               <div className="absolute top-3 right-3">
@@ -196,11 +216,11 @@ export default function AdminInstagramPage() {
 
             {/* Info */}
             <div className="p-4">
-              <p className="text-xs text-gray-500 line-clamp-2 mb-3">
+              <p className="text-xs text-[#0e2a5c]/60 line-clamp-2 mb-3">
                 {banner.caption}
               </p>
               <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-[#0e2a5c]/50">
                   {banner.postedAt && <span>게재: {banner.postedAt}</span>}
                   {banner.scheduledAt && (
                     <span>예약: {banner.scheduledAt}</span>
@@ -210,7 +230,7 @@ export default function AdminInstagramPage() {
                   )}
                 </div>
                 {banner.likes > 0 && (
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <span className="text-xs text-[#0e2a5c]/50 flex items-center gap-1">
                     <svg
                       width="12"
                       height="12"
@@ -235,7 +255,7 @@ export default function AdminInstagramPage() {
                     즉시 게재
                   </button>
                 )}
-                <button className="px-2.5 py-1.5 text-xs font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors">
+                <button className="px-2.5 py-1.5 text-xs font-medium text-white bg-[#1A56A8] hover:bg-[#134A8A] rounded-md transition-colors">
                   편집
                 </button>
               </div>
@@ -245,7 +265,7 @@ export default function AdminInstagramPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 py-12 text-center text-gray-400">
+        <div className="bg-white rounded-xl border border-[#1A56A8]/15 py-12 text-center text-[#0e2a5c]/50">
           배너가 없습니다.
         </div>
       )}

@@ -12,7 +12,6 @@ const periods = [
   { label: "90일", days: 90 },
 ];
 
-// 목업 데이터
 const mockAnalyticsStats = {
   visitors: 1243,
   pageviews: 3891,
@@ -77,7 +76,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="space-y-6">
       {/* Period Filter */}
-      <div className="bg-white rounded-xl border border-gray-100 p-4">
+      <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex gap-2">
             {periods.map((p) => (
@@ -87,14 +86,14 @@ export default function AdminAnalyticsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   activePeriod === p.days
                     ? "bg-[#1A56A8] text-white"
-                    : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                    : "border border-[#1A56A8]/30 text-[#0e2a5c] hover:bg-[#E8EEF6]"
                 }`}
               >
                 {p.label}
               </button>
             ))}
           </div>
-          <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
+          <button className="flex items-center gap-2 px-3 py-2 text-sm text-[#1A56A8] hover:bg-[#E8EEF6] rounded-lg transition-colors">
             <svg
               width="16"
               height="16"
@@ -213,17 +212,17 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Trend Chart */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+      <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-bold text-gray-900">트렌드</h3>
+            <h3 className="font-bold text-[#0e2a5c]">트렌드</h3>
             <div className="flex items-center gap-4 mt-1">
-              <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <span className="flex items-center gap-1.5 text-xs text-[#1A56A8]">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#1A56A8]" />
                 방문자
               </span>
-              <span className="flex items-center gap-1.5 text-xs text-gray-500">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
+              <span className="flex items-center gap-1.5 text-xs text-emerald-600">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                 페이지뷰
               </span>
             </div>
@@ -235,8 +234,8 @@ export default function AdminAnalyticsPage() {
       {/* Analysis Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Traffic Sources */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h3 className="font-bold text-gray-900 mb-4">트래픽 소스</h3>
+        <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-6">
+          <h3 className="font-bold text-[#0e2a5c] mb-4">트래픽 소스</h3>
           <div className="space-y-3">
             {mockTrafficSources.map((src) => (
               <div key={src.name} className="flex items-center justify-between">
@@ -245,10 +244,10 @@ export default function AdminAnalyticsPage() {
                     className="w-3 h-3 rounded-full shrink-0"
                     style={{ backgroundColor: src.color }}
                   />
-                  <span className="text-sm text-gray-700">{src.name}</span>
+                  <span className="text-sm text-[#0e2a5c]">{src.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-24 h-1.5 bg-[#E8EEF6] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full"
                       style={{
@@ -257,7 +256,7 @@ export default function AdminAnalyticsPage() {
                       }}
                     />
                   </div>
-                  <span className="text-sm font-medium text-gray-900 w-10 text-right">
+                  <span className="text-sm font-bold text-[#0e2a5c] w-10 text-right">
                     {src.value}%
                   </span>
                 </div>
@@ -267,18 +266,18 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Referrers */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h3 className="font-bold text-gray-900 mb-4">유입 경로</h3>
+        <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-6">
+          <h3 className="font-bold text-[#0e2a5c] mb-4">유입 경로</h3>
           <div className="space-y-3">
             {mockReferrers.map((ref, i) => (
               <div key={ref.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                  <span className="w-6 h-6 rounded-full bg-[#1A56A8] flex items-center justify-center text-xs font-bold text-white">
                     {i + 1}
                   </span>
-                  <span className="text-sm text-gray-700">{ref.name}</span>
+                  <span className="text-sm text-[#0e2a5c]">{ref.name}</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-bold text-[#1A56A8]">
                   {ref.value.toLocaleString()}
                 </span>
               </div>
@@ -287,8 +286,8 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Devices */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h3 className="font-bold text-gray-900 mb-4">기기별 사용자</h3>
+        <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-6">
+          <h3 className="font-bold text-[#0e2a5c] mb-4">기기별 사용자</h3>
           <div className="space-y-3">
             {mockDevices.map((device) => (
               <div
@@ -300,10 +299,10 @@ export default function AdminAnalyticsPage() {
                     className="w-3 h-3 rounded-full shrink-0"
                     style={{ backgroundColor: device.color }}
                   />
-                  <span className="text-sm text-gray-700">{device.name}</span>
+                  <span className="text-sm text-[#0e2a5c]">{device.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-24 h-1.5 bg-[#E8EEF6] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full"
                       style={{
@@ -312,7 +311,7 @@ export default function AdminAnalyticsPage() {
                       }}
                     />
                   </div>
-                  <span className="text-sm font-medium text-gray-900 w-10 text-right">
+                  <span className="text-sm font-bold text-[#0e2a5c] w-10 text-right">
                     {device.value}%
                   </span>
                 </div>
@@ -322,24 +321,24 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Top Pages */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h3 className="font-bold text-gray-900 mb-4">인기 페이지</h3>
+        <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-6">
+          <h3 className="font-bold text-[#0e2a5c] mb-4">인기 페이지</h3>
           <div className="space-y-3">
             {mockTopPages.map((page, i) => (
               <div key={page.name} className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
+                <span className="w-6 h-6 rounded-full bg-[#1A56A8] flex items-center justify-center text-xs font-bold text-white shrink-0">
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-700 truncate">
+                    <span className="text-sm text-[#0e2a5c] truncate">
                       {page.name}
                     </span>
-                    <span className="text-xs text-gray-400 ml-2 shrink-0">
+                    <span className="text-xs text-[#1A56A8] font-semibold ml-2 shrink-0">
                       {page.views.toLocaleString()}
                     </span>
                   </div>
-                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-[#E8EEF6] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-[#1A56A8] rounded-full"
                       style={{ width: `${page.percent}%` }}

@@ -210,33 +210,33 @@ export default function AdminInquiriesPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#1A56A8]/15 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
+              <tr className="border-b border-[#1A56A8] bg-[#1A56A8]">
+                <th className="text-left py-3 px-4 text-white font-semibold">
                   유형
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                <th className="text-left py-3 px-4 text-white font-semibold">
                   접수일
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                <th className="text-left py-3 px-4 text-white font-semibold">
                   상호명
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium hidden sm:table-cell">
+                <th className="text-left py-3 px-4 text-white font-semibold hidden sm:table-cell">
                   이름
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium hidden md:table-cell">
+                <th className="text-left py-3 px-4 text-white font-semibold hidden md:table-cell">
                   연락처
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium hidden lg:table-cell">
+                <th className="text-left py-3 px-4 text-white font-semibold hidden lg:table-cell">
                   지역
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                <th className="text-left py-3 px-4 text-white font-semibold">
                   상태
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                <th className="text-left py-3 px-4 text-white font-semibold">
                   관리
                 </th>
               </tr>
@@ -245,7 +245,7 @@ export default function AdminInquiriesPage() {
               {filtered.map((inq) => (
                 <tr
                   key={inq.id}
-                  className="border-b border-gray-50 hover:bg-gray-50/50 cursor-pointer"
+                  className="border-b border-[#1A56A8]/10 hover:bg-[#E8EEF6]/50 cursor-pointer"
                   onClick={() => setSelectedId(inq.id)}
                 >
                   <td className="py-3 px-4">

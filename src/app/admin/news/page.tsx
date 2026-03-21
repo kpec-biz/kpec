@@ -77,15 +77,15 @@ export default function AdminNewsPage() {
   return (
     <div className="space-y-6">
       {/* Pipeline Info */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-5">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
           <span className="text-sm font-medium text-gray-700">
             뉴스 파이프라인
           </span>
-          <span className="text-xs text-gray-400">주 3회 자동 수집</span>
+          <span className="text-xs text-[#0e2a5c]/50">주 3회 자동 수집</span>
         </div>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-[#0e2a5c]/50">
           언론보도 수집 → Gemini 리라이팅 (출처 명시) → 썸네일 생성 → 게시
         </p>
       </div>
@@ -117,10 +117,10 @@ export default function AdminNewsPage() {
         {filtered.map((news) => (
           <div
             key={news.id}
-            className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:border-gray-200 transition-colors"
+            className="bg-white rounded-xl border border-[#1A56A8]/15 overflow-hidden hover:border-[#1A56A8]/25 transition-colors"
           >
             {/* Thumbnail placeholder */}
-            <div className="h-40 bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center">
+            <div className="h-40 bg-gradient-to-br from-[#E8EEF6] to-[#1A56A8]/10 flex items-center justify-center">
               <svg
                 width="40"
                 height="40"
@@ -128,7 +128,7 @@ export default function AdminNewsPage() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1"
-                className="text-gray-300"
+                className="text-[#1A56A8]/30"
               >
                 <rect x="3" y="3" width="18" height="18" rx="2" />
                 <circle cx="8.5" cy="8.5" r="1.5" />
@@ -138,18 +138,18 @@ export default function AdminNewsPage() {
             <div className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <StatusBadge status={news.status} />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-[#0e2a5c]/50">
                   {news.source} · {news.createdAt}
                 </span>
               </div>
               <h4 className="font-medium text-gray-900 line-clamp-2 text-sm mb-2">
                 {news.title}
               </h4>
-              <p className="text-xs text-gray-500 line-clamp-2 mb-3">
+              <p className="text-xs text-[#0e2a5c]/60 line-clamp-2 mb-3">
                 {news.summary}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-[#0e2a5c]/50">
                   {news.views > 0
                     ? `조회 ${news.views.toLocaleString()}`
                     : "미게시"}
@@ -176,7 +176,7 @@ export default function AdminNewsPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 py-12 text-center text-gray-400">
+        <div className="bg-white rounded-xl border border-[#1A56A8]/15 py-12 text-center text-[#0e2a5c]/50">
           뉴스가 없습니다.
         </div>
       )}

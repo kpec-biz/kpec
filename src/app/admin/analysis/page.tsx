@@ -79,15 +79,15 @@ export default function AdminAnalysisPage() {
   return (
     <div className="space-y-6">
       {/* Pipeline Info */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-[#1A56A8]/15 p-5">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
           <span className="text-sm font-medium text-gray-700">
             분석 파이프라인
           </span>
-          <span className="text-xs text-gray-400">gov-posts 자동 생성</span>
+          <span className="text-xs text-[#0e2a5c]/50">gov-posts 자동 생성</span>
         </div>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-[#0e2a5c]/50">
           기업마당 최신 공고 + 정부 데이터 → Gemini Pro 분석 → 배너 이미지 생성
           → 검토 → 게시
         </p>
@@ -120,7 +120,7 @@ export default function AdminAnalysisPage() {
         {filtered.map((report) => (
           <div
             key={report.id}
-            className="bg-white rounded-xl border border-gray-100 p-5 hover:border-gray-200 transition-colors"
+            className="bg-white rounded-xl border border-[#1A56A8]/15 p-5 hover:border-[#1A56A8]/25 transition-colors"
           >
             <div className="flex items-start gap-4">
               {/* Banner placeholder */}
@@ -141,7 +141,7 @@ export default function AdminAnalysisPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
                   <StatusBadge status={report.status} />
-                  <span className="px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-500">
+                  <span className="px-2 py-0.5 bg-[#1A56A8] text-white rounded text-xs">
                     {report.fundTarget}
                   </span>
                   {report.showOnHome && (
@@ -153,10 +153,10 @@ export default function AdminAnalysisPage() {
                 <h4 className="font-medium text-gray-900 line-clamp-1">
                   {report.title}
                 </h4>
-                <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                <p className="text-xs text-[#0e2a5c]/60 mt-1 line-clamp-1">
                   {report.summary}
                 </p>
-                <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                <div className="flex items-center gap-4 mt-2 text-xs text-[#0e2a5c]/50">
                   <span>{report.createdAt}</span>
                   {report.views > 0 && (
                     <span>조회 {report.views.toLocaleString()}</span>
@@ -170,7 +170,7 @@ export default function AdminAnalysisPage() {
                   className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
                     report.showOnHome
                       ? "text-[#1A56A8] bg-blue-50 hover:bg-blue-100"
-                      : "text-gray-400 bg-gray-50 hover:bg-gray-100"
+                      : "text-[#0e2a5c]/50 bg-[#E8EEF6]/30 hover:bg-[#E8EEF6]/50"
                   }`}
                 >
                   {report.showOnHome ? "홈 노출 ON" : "홈 노출 OFF"}
@@ -180,7 +180,7 @@ export default function AdminAnalysisPage() {
                     게시
                   </button>
                 )}
-                <button className="px-2.5 py-1 text-xs font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors">
+                <button className="px-2.5 py-1 text-xs font-medium text-white bg-[#1A56A8] hover:bg-[#134A8A] rounded-md transition-colors">
                   편집
                 </button>
               </div>
@@ -190,7 +190,7 @@ export default function AdminAnalysisPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 py-12 text-center text-gray-400">
+        <div className="bg-white rounded-xl border border-[#1A56A8]/15 py-12 text-center text-[#0e2a5c]/50">
           분석 리포트가 없습니다.
         </div>
       )}
