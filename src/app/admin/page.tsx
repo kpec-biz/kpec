@@ -5,6 +5,7 @@ import Link from "next/link";
 import StatsCard from "@/components/admin/StatsCard";
 import ChartWrapper from "@/components/admin/ChartWrapper";
 import StatusBadge from "@/components/admin/StatusBadge";
+import { adminPath } from "@/lib/admin-utils";
 
 const mockStats = {
   totalInquiries: 47,
@@ -342,7 +343,7 @@ export default function AdminDashboardPage() {
             ))}
           </div>
           <Link
-            href={"/admin/settings"}
+            href={adminPath("settings")}
             className="block mt-4 text-xs text-[#1A56A8] hover:underline text-center"
           >
             설정 보기
@@ -384,7 +385,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-900">최근 접수</h3>
             <Link
-              href={"/admin/inquiries"}
+              href={adminPath("inquiries")}
               className="text-xs text-[#1A56A8] hover:underline"
             >
               전체보기

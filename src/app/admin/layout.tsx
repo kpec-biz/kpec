@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Sidebar from "@/components/admin/Sidebar";
+import { adminPath } from "@/lib/admin-utils";
 
 export default function AdminLayout({
   children,
@@ -15,7 +16,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
 
-  const isLoginPage = pathname === "/admin/login" || pathname === "/login";
+  const isLoginPage = pathname === adminPath("login") || pathname === "/login";
 
   // 인증 체크
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function AdminLayout({
 
     const token = localStorage.getItem("kpec_admin_token");
     if (!token) {
-      router.replace("/admin/login");
+      router.replace(adminPath("login"));
       return;
     }
 
@@ -34,13 +35,13 @@ export default function AdminLayout({
       const payload = JSON.parse(atob(token));
       if (payload.exp && payload.exp < Date.now()) {
         localStorage.removeItem("kpec_admin_token");
-        router.replace("/admin/login");
+        router.replace(adminPath("login"));
         return;
       }
       setIsAuthenticated(true);
     } catch {
       localStorage.removeItem("kpec_admin_token");
-      router.replace("/admin/login");
+      router.replace(adminPath("login"));
       return;
     }
 
@@ -90,19 +91,19 @@ export default function AdminLayout({
 
   const handleLogout = () => {
     localStorage.removeItem("kpec_admin_token");
-    router.replace("/admin/login");
+    router.replace(adminPath("login"));
   };
 
   const pageTitleMap: Record<string, string> = {
-    "/admin": "대시보드",
-    "/admin/inquiries": "접수 관리",
-    "/admin/notices": "공고 관리",
-    "/admin/news": "뉴스 관리",
-    "/admin/analysis": "분석 관리",
-    "/admin/instagram": "인스타그램",
-    "/admin/board": "게시판 관리",
-    "/admin/analytics": "방문통계",
-    "/admin/settings": "설정",
+    [adminPath("")]: "대시보드",
+    [adminPath("inquiries")]: "접수 관리",
+    [adminPath("notices")]: "공고 관리",
+    [adminPath("news")]: "뉴스 관리",
+    [adminPath("analysis")]: "분석 관리",
+    [adminPath("instagram")]: "인스타그램",
+    [adminPath("board")]: "게시판 관리",
+    [adminPath("analytics")]: "방문통계",
+    [adminPath("settings")]: "설정",
   };
   const pageTitle = pageTitleMap[pathname] || "관리자";
 
@@ -151,22 +152,22 @@ export default function AdminLayout({
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex lg:hidden z-30 safe-area-bottom">
         {[
           {
-            href: "/admin",
+            href: adminPath(""),
             label: "대시보드",
             icon: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z",
           },
           {
-            href: "/admin/inquiries",
+            href: adminPath("inquiries"),
             label: "접수",
             icon: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9z",
           },
           {
-            href: "/admin/notices",
+            href: adminPath("notices"),
             label: "공고",
             icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6",
           },
           {
-            href: "/admin/analytics",
+            href: adminPath("analytics"),
             label: "통계",
             icon: "M18 20V10M12 20V4M6 20v-6",
           },

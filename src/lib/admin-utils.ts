@@ -1,37 +1,11 @@
-/**
- * admin 서브도메인에서는 /admin prefix 없이 라우팅
- * 메인 도메인에서는 /admin prefix 사용
- */
-export function isAdminSubdomain(): boolean {
-  if (typeof window === "undefined") return false;
-  const host = window.location.hostname;
-  return host.startsWith("admin.");
-}
+// 빌드 타임에 결정 — SSR/클라이언트 동일값 → hydration mismatch 없음
+// admin 프로젝트: "" (슬러그 없음) / 메인 프로젝트: "/admin"
+const PREFIX = process.env.NEXT_PUBLIC_ADMIN_PREFIX ?? "/admin";
 
-/**
- * admin 경로를 현재 환경에 맞게 변환
- * /admin/inquiries → 서브도메인이면 /inquiries, 아니면 /admin/inquiries
- */
-export function adminHref(path: string): string {
-  if (isAdminSubdomain()) {
-    // /admin → /
-    // /admin/inquiries → /inquiries
-    return path.replace(/^\/admin/, "") || "/";
-  }
-  return path;
-}
-
-/**
- * 현재 pathname이 admin 경로에 매칭되는지 확인
- * 서브도메인: /inquiries === /admin/inquiries
- * 메인도메인: /admin/inquiries === /admin/inquiries
- */
-export function isAdminActive(pathname: string, href: string): boolean {
-  const normalizedHref = href.replace(/^\/admin/, "");
-  const normalizedPath = pathname.replace(/^\/admin/, "");
-
-  if (normalizedHref === "" || normalizedHref === "/") {
-    return normalizedPath === "" || normalizedPath === "/";
-  }
-  return normalizedPath.startsWith(normalizedHref);
+/** admin 경로 href 생성 */
+export function adminPath(path: string): string {
+  // path: "inquiries" | "/inquiries" | "/admin/inquiries"
+  const clean = path.replace(/^\/admin/, "").replace(/^\//, "");
+  if (!clean) return PREFIX || "/";
+  return `${PREFIX}/${clean}`;
 }

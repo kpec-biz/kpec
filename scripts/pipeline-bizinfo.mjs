@@ -3,12 +3,13 @@
  *
  * Usage: node scripts/pipeline-bizinfo.mjs [--pages=3] [--dry-run]
  */
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { config } from "dotenv";
 config();
 
 const BIZINFO_API = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do";
 const AIRTABLE_API = "https://api.airtable.com/v0";
-const TABLE_NAME = "정책자금공고";
+const TABLE_ID = "tblWouy3TNdywzkpw"; // 정책자금공고
 
 const env = {
   BIZINFO_API_KEY: process.env.BIZINFO_API_KEY,
@@ -17,6 +18,18 @@ const env = {
   AIRTABLE_PAT: process.env.AIRTABLE_PAT,
   AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID,
 };
+
+// S3/R2 client
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_S3_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+  },
+});
+const R2_BUCKET = "kpecr2";
+const R2_PUBLIC = process.env.R2_PUBLIC_URL;
 
 // CLI args
 const args = process.argv.slice(2);
@@ -34,7 +47,7 @@ async function fetchBizinfo(page = 1, size = 10) {
 
 // ── 2. Check if already in Airtable ──
 async function getExistingIds() {
-  const url = `${AIRTABLE_API}/${env.AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}?fields%5B%5D=pblancId`;
+  const url = `${AIRTABLE_API}/${env.AIRTABLE_BASE_ID}/${TABLE_ID}?fields%5B%5D=pblancId`;
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${env.AIRTABLE_PAT}` },
   });
@@ -127,7 +140,7 @@ async function uploadToAirtable(records) {
 
   for (const batch of batches) {
     const res = await fetch(
-      `${AIRTABLE_API}/${env.AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}`,
+      `${AIRTABLE_API}/${env.AIRTABLE_BASE_ID}/${TABLE_ID}`,
       {
         method: "POST",
         headers: {
@@ -201,12 +214,23 @@ async function main() {
     try {
       const rewritten = await rewriteWithGemini(item);
 
+      // Upload content JSON to R2
+      const contentKey = `posts/${item.pblancId}.json`;
+      await s3.send(new PutObjectCommand({
+        Bucket: R2_BUCKET,
+        Key: contentKey,
+        Body: JSON.stringify(rewritten.content),
+        ContentType: "application/json",
+        CacheControl: "public, max-age=86400",
+      }));
+      const contentUrl = `${R2_PUBLIC}/${contentKey}`;
+
       const record = {
         pblancId: item.pblancId,
         title: rewritten.title,
         originalTitle: item.pblancNm,
         summary: rewritten.summary,
-        content: JSON.stringify(rewritten.content),
+        content: contentUrl,
         category: getCategory(item.pldirSportRealmLclasCodeNm),
         source: item.jrsdInsttNm,
         applyPeriod: item.reqstBeginEndDe,
