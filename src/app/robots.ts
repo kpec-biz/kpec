@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/_next/"],
       },
     ],
-    sitemap: "https://www.jsbizfunding.kr/sitemap.xml",
+    sitemap: "https://jsbizfunding.kr/sitemap.xml",
   };
 }

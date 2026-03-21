@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 
-const SITE_URL = "https://www.jsbizfunding.kr";
+const SITE_URL = "https://jsbizfunding.kr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
