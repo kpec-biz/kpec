@@ -10,6 +10,7 @@ import CaseCards from "@/components/CaseCards";
 import ProcessSteps from "@/components/ProcessSteps";
 import CtaSection from "@/components/CtaSection";
 import HomeSidebar from "@/components/HomeSidebar";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export default function Home() {
   return (
@@ -19,16 +20,36 @@ export default function Home() {
 
       {/* 본문 + 사이드바 영역 */}
       <div className="max-w-[1200px] mx-auto px-6 relative">
-        <QuickService />
-        <FundDiagnosis />
-        <ServiceCards />
-        <GovBanner />
-        <Stats />
-        <GovNewsBanner />
-        <NoticeBoard />
-        <CaseCards />
-        <ProcessSteps />
-        <CtaSection />
+        <ScrollReveal>
+          <QuickService />
+        </ScrollReveal>
+        <ScrollReveal>
+          <FundDiagnosis />
+        </ScrollReveal>
+        <ScrollReveal delay={0.1}>
+          <ServiceCards />
+        </ScrollReveal>
+        <ScrollReveal>
+          <GovBanner />
+        </ScrollReveal>
+        <ScrollReveal>
+          <Stats />
+        </ScrollReveal>
+        <ScrollReveal>
+          <GovNewsBanner />
+        </ScrollReveal>
+        <ScrollReveal>
+          <NoticeBoard />
+        </ScrollReveal>
+        <ScrollReveal>
+          <CaseCards />
+        </ScrollReveal>
+        <ScrollReveal>
+          <ProcessSteps />
+        </ScrollReveal>
+        <ScrollReveal>
+          <CtaSection />
+        </ScrollReveal>
 
         {/* 사이드바 - 본문 오른쪽 바깥, 퀵서비스 아래부터 시작 */}
         <aside className="hidden xl:block absolute top-[45px] left-[calc(100%+1px)] w-[280px]">

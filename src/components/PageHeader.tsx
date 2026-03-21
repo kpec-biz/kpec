@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { r2 } from "@/lib/r2-images";
 
 interface PageHeaderProps {
@@ -36,17 +37,27 @@ export default function PageHeader({
       />
       <div className="absolute inset-0 bg-primary-80/85" />
       <div className="relative max-w-[1200px] mx-auto px-6">
-        <h1
-          className={`text-4xl sm:text-5xl font-bold text-white mb-4 ${loaded ? "animate-fade-in" : ""}`}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={loaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          className="text-4xl sm:text-5xl font-bold text-white mb-4"
         >
           {title}
-        </h1>
+        </motion.h1>
         {subtitle && (
-          <p
-            className={`text-white/60 text-lg max-w-2xl mx-auto ${loaded ? "animate-fade-in" : ""}`}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={loaded ? { opacity: 1, y: 0 } : {}}
+            transition={{
+              duration: 0.6,
+              delay: 0.15,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            className="text-white/60 text-lg max-w-2xl mx-auto"
           >
             {subtitle}
-          </p>
+          </motion.p>
         )}
       </div>
     </section>
