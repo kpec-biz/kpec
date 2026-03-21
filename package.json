@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.1",
     "@remotion/cli": "^4.0.438",
     "@remotion/player": "^4.0.438",
     "framer-motion": "^12.38.0",
