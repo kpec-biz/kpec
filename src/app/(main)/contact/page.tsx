@@ -204,7 +204,9 @@ export default function ContactPage() {
                   후불 성공보수제
                 </p>
                 <p className="text-xs text-primary-60 leading-relaxed">
-                  자금 승인 전까지 비용 없음. 승인 이후에만 수수료 발생.
+                  자금 승인 전까지 비용 없음.
+                  <br />
+                  승인 이후에만 수수료 발생.
                 </p>
               </div>
             </div>
