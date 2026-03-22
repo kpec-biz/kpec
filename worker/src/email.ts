@@ -200,7 +200,7 @@ function matchingSection(goal: string): string {
   const rows = funds
     .map(
       (f, i) =>
-        `<tr${i > 0 ? ` style="border-top:1px solid ${C.gray5};"` : ""}><td style="padding:5px 0;font-weight:600;">${f.name}</td><td style="padding:5px 0;color:${C.gray40};">${f.rate} · ${f.limit}</td><td style="padding:5px 0;text-align:right;"><span style="font-size:9px;background:${f.level === "높음" ? C.primary5 : C.gray5};color:${f.level === "높음" ? C.primary60 : C.gray50};padding:2px 6px;">${f.level}</span></td></tr>`,
+        `<tr${i > 0 ? ` style="border-top:1px solid ${C.gray5};"` : ""}><td style="padding:5px 0;font-weight:600;">${f.name}</td><td style="padding:5px 0;text-align:right;color:${C.gray40};">${f.rate} · ${f.limit} <span style="font-size:9px;background:${f.level === "높음" ? C.primary5 : C.gray5};color:${f.level === "높음" ? C.primary60 : C.gray50};padding:2px 6px;margin-left:4px;">${f.level}</span></td></tr>`,
     )
     .join("");
 
@@ -280,7 +280,7 @@ function diagnosisAdminEmail(
     </div>
     ${divider()}
     ${matchingSection(f.fundTypes)}
-    <div style="background:${C.gray5};padding:10px 24px;font-size:10px;color:${C.gray50};">${f.message}</div>`;
+    ${f.message ? `<div style="background:${C.gray5};padding:10px 24px;font-size:10px;color:${C.gray50};"><span style="color:${C.gray40};">메모</span> ${f.message}</div>` : ""}`;
 
   return baseWrap(adminHeader(ref, ts), body, "");
 }
