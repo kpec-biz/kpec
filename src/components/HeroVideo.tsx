@@ -88,7 +88,7 @@ export default function HeroVideo() {
             {[
               { value: "4.4조", label: "총 예산" },
               { value: "2.5%~", label: "기본금리" },
-              { value: "15년+", label: "컨설팅 경력" },
+              { value: "1억원", label: "기업당 최대융자한도" },
             ].map((stat) => (
               <div
                 key={stat.label}
