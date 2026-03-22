@@ -291,27 +291,17 @@ export async function GET(req: NextRequest) {
     try {
       const instaId = `INSTA_${today.toISOString().slice(0, 10).replace(/-/g, "")}`;
       if (!existingIds.has(instaId)) {
-        const recentRes = await fetch(
-          `${AIRTABLE_API}/${process.env.AIRTABLE_BASE_ID}/${TABLE_ID}?sort%5B0%5D%5Bfield%5D=publishDate&sort%5B0%5D%5Bdirection%5D=desc&maxRecords=1&filterByFormula=OR({category}="뉴스",{category}="분석")`,
-          { headers: { Authorization: `Bearer ${process.env.AIRTABLE_PAT}` } },
-        );
-        const recentData = await recentRes.json();
-        const recentPost = recentData.records?.[0]?.fields;
+        {
+          // 독립적인 정책자금 주제 생성 (분석/뉴스에서 가져오지 않음)
+          const bannerText = await geminiInstaBannerText("", "");
 
-        if (recentPost) {
-          // Gemini로 뱃지/타이틀/서브텍스트 생성
-          const bannerText = await geminiInstaBannerText(
-            recentPost.title,
-            recentPost.summary,
-          );
-
-          // Sharp SVG 합성 배너 생성
+          // HCTI API 합성 배너 생성
           const bannerImg = await compositeInstaBanner(bannerText);
 
           // 캡션 생성
           const caption = await geminiInstaCaption(
-            recentPost.title,
-            recentPost.summary,
+            bannerText.title,
+            bannerText.sub,
           );
 
           if (bannerImg) {
@@ -331,7 +321,7 @@ export async function GET(req: NextRequest) {
 
             await airtableCreate({
               pblancId: instaId,
-              title: recentPost.title,
+              title: bannerText.title.replace("\\n", " "),
               originalTitle: "Instagram Auto Post",
               summary: caption,
               contentUrl: imgUrl,
@@ -594,36 +584,38 @@ interface BannerText {
 }
 
 async function geminiInstaBannerText(
-  title: string,
-  summary: string,
+  _title: string,
+  _summary: string,
 ): Promise<BannerText> {
   const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const dayIndex = new Date().getDate() % OVERLAY_COLORS.length;
   try {
+    const todayStr = new Date().toISOString().slice(0, 10);
     const result = await geminiCall(
       model,
-      `인스타그램 배너용 텍스트 생성.
-원본 제목: ${title}
-원본 요약: ${summary}
+      `KPEC 기업정책자금센터 인스타그램 배너용 텍스트를 생성하세요.
+오늘 날짜: ${todayStr}
+
+주제 범위 (매일 다른 주제를 랜덤 선택):
+운전자금, 시설자금, 벤처인증, 이노비즈, 메인비즈, ISO인증, 금리우대, 수출지원, 창업자금, 긴급자금, R&D자금, 성공보수, 자금진단, 서류지원, DX·ESG, 소상공인, 정책뉴스
 
 규칙:
-- badge: 1줄, 4자 이내 카테고리 (예: 정책자금, 운전자금, 벤처인증, 금리우대, 분석리포트)
-- title: 최대 2줄, 줄당 10자 이내. 핵심 메시지만. 줄바꿈은 \\n으로 표시
-- sub: 최대 2줄, 줄당 14자 이내. 부연 설명. 줄바꿈은 \\n으로 표시
-출력: {"badge":"...","title":"...","sub":"..."}`,
+- badge: 1줄, 2~4자 카테고리 (예: 운전자금, 벤처인증, 금리우대)
+- title: 정확히 2줄, 줄당 8~10자. 핵심 메시지. 줄바꿈은 \\n으로 표시
+- sub: 정확히 2줄, 줄당 10~14자. 부연 설명. 줄바꿈은 \\n으로 표시
+출력: {"badge":"...","title":"1줄\\n2줄","sub":"1줄\\n2줄"}`,
     );
-    const dayIndex = new Date().getDate() % OVERLAY_COLORS.length;
     return {
       badge: result.badge || "정책자금",
-      title: result.title || title.slice(0, 20),
-      sub: result.sub || summary.slice(0, 28),
+      title: result.title || "정부정책자금\\n지금 확인하세요",
+      sub: result.sub || "후불 성공보수제\\n승인 전 비용 0원",
       accentColor: OVERLAY_COLORS[dayIndex],
     };
   } catch {
-    const dayIndex = new Date().getDate() % OVERLAY_COLORS.length;
     return {
       badge: "정책자금",
-      title: title.length > 20 ? title.slice(0, 20) : title,
-      sub: summary.slice(0, 28),
+      title: "정부정책자금\\n지금 확인하세요",
+      sub: "후불 성공보수제\\n승인 전 비용 0원",
       accentColor: OVERLAY_COLORS[dayIndex],
     };
   }
@@ -647,7 +639,7 @@ async function compositeInstaBanner(b: BannerText): Promise<Buffer | null> {
 
     const html = `<div style="width:1080px;height:1440px;position:relative;overflow:hidden;background:#000;">
   <img src="${photoUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-  <div style="position:absolute;inset:0;background:${b.accentColor};opacity:0.3;"></div>
+  <div style="position:absolute;inset:0;background:${b.accentColor};opacity:0.8;"></div>
   <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:450px;text-align:center;z-index:1;">
     <span style="display:inline-block;background:#ED2939;color:#fff;font-size:28px;font-weight:700;padding:12px 32px;border-radius:50px;letter-spacing:2px;">${escXml(b.badge)}</span>
     <div style="width:80px;height:4px;background:#ED2939;border-radius:2px;margin:32px 0;"></div>
