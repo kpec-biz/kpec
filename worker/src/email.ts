@@ -1,66 +1,20 @@
 import { Env } from "./airtable";
 
-// --- JWT for Google Service Account ---
-async function createJWT(env: Env): Promise<string> {
-  const header = { alg: "RS256", typ: "JWT" };
-  const now = Math.floor(Date.now() / 1000);
-  const claim = {
-    iss: env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    sub: env.GMAIL_SENDER, // impersonate
-    scope: "https://www.googleapis.com/auth/gmail.send",
-    aud: "https://oauth2.googleapis.com/token",
-    iat: now,
-    exp: now + 3600,
-  };
-
-  const enc = (obj: unknown) =>
-    btoa(JSON.stringify(obj))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
-
-  const input = `${enc(header)}.${enc(claim)}`;
-
-  // Import private key
-  const pem = env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n");
-  const pemBody = pem
-    .replace("-----BEGIN PRIVATE KEY-----", "")
-    .replace("-----END PRIVATE KEY-----", "")
-    .replace(/\s/g, "");
-  const binaryKey = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
-
-  const key = await crypto.subtle.importKey(
-    "pkcs8",
-    binaryKey,
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-
-  const signature = await crypto.subtle.sign(
-    "RSASSA-PKCS1-v1_5",
-    key,
-    new TextEncoder().encode(input),
-  );
-
-  const sig = btoa(String.fromCharCode(...new Uint8Array(signature)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-
-  return `${input}.${sig}`;
-}
-
+// --- Gmail OAuth2 Refresh Token ---
 async function getAccessToken(env: Env): Promise<string> {
-  const jwt = await createJWT(env);
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
+    body: new URLSearchParams({
+      client_id: env.GMAIL_CLIENT_ID,
+      client_secret: env.GMAIL_CLIENT_SECRET,
+      refresh_token: env.GMAIL_REFRESH_TOKEN,
+      grant_type: "refresh_token",
+    }).toString(),
   });
   const data = (await res.json()) as { access_token?: string; error?: string };
   if (!data.access_token) {
-    throw new Error(`Google OAuth error: ${JSON.stringify(data)}`);
+    throw new Error(`Gmail OAuth error: ${JSON.stringify(data)}`);
   }
   return data.access_token;
 }

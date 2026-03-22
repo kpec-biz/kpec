@@ -6,8 +6,9 @@ export interface Env {
   ADMIN_EMAIL: string;
   CORS_ORIGIN: string;
   CRON_SECRET: string;
-  GOOGLE_SERVICE_ACCOUNT_EMAIL: string;
-  GOOGLE_PRIVATE_KEY: string;
+  GMAIL_CLIENT_ID: string;
+  GMAIL_CLIENT_SECRET: string;
+  GMAIL_REFRESH_TOKEN: string;
   GMAIL_SENDER: string;
 }
 
