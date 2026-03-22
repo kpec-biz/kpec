@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const HERO_VIDEO = "/videos/hero/hero-6.mp4";
+const HERO_VIDEO =
+  "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/videos/hero/hero-6.mp4";
 
 export default function HeroVideo() {
   const [videoLoaded, setVideoLoaded] = useState(false);
