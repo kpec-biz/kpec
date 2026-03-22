@@ -652,7 +652,7 @@ function buildBannerSVG(b: BannerText): string {
   const line = `<rect x="${(W - 80) / 2}" y="500" width="80" height="4" rx="2" fill="${b.accentColor}"/>`;
 
   // 타이틀
-  let titleY = 570;
+  const titleY = 570;
   const titleSvg = titleLines
     .map(
       (l, i) =>
