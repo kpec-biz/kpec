@@ -164,7 +164,6 @@ export default function DiagnosisPage() {
     email: "",
     company: "",
   });
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const results = getResults(
@@ -489,50 +488,38 @@ export default function DiagnosisPage() {
                     />
                   </div>
                   <button
-                    onClick={async () => {
+                    onClick={() => {
                       if (!contact.name || !contact.phone || !contact.company)
                         return;
-                      setSubmitting(true);
-                      try {
-                        const workerUrl =
-                          process.env.NEXT_PUBLIC_WORKER_URL || "";
-                        await fetch(`${workerUrl}/api/inquiry`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            name: contact.name,
-                            phone: contact.phone,
-                            email: contact.email,
-                            company: contact.company,
-                            industry: selected.industry,
-                            location: selected.location,
-                            operationYear: selected.year,
-                            revenue: selected.revenue,
-                            fundTypes: selected.goal,
-                            amount: selected.goal,
-                            type: "diagnosis",
-                            source: "diagnosis-wizard",
-                            message: `[자금진단] ${selected.industry} / ${selected.goal} / ${selected.location} / 업력 ${selected.year} / 매출 ${selected.revenue}`,
-                          }),
-                        });
-                        setSubmitted(true);
-                      } catch {
-                        alert(
-                          "접수 중 오류가 발생했습니다. 다시 시도해주세요.",
-                        );
-                      } finally {
-                        setSubmitting(false);
-                      }
+                      setSubmitted(true);
+                      const workerUrl =
+                        process.env.NEXT_PUBLIC_WORKER_URL || "";
+                      fetch(`${workerUrl}/api/inquiry`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          name: contact.name,
+                          phone: contact.phone,
+                          email: contact.email,
+                          company: contact.company,
+                          industry: selected.industry,
+                          location: selected.location,
+                          operationYear: selected.year,
+                          revenue: selected.revenue,
+                          fundTypes: selected.goal,
+                          amount: selected.goal,
+                          type: "diagnosis",
+                          source: "diagnosis-wizard",
+                          message: `[자금진단] ${selected.industry} / ${selected.goal} / ${selected.location} / 업력 ${selected.year} / 매출 ${selected.revenue}`,
+                        }),
+                      }).catch(() => {});
                     }}
                     disabled={
-                      !contact.name ||
-                      !contact.phone ||
-                      !contact.company ||
-                      submitting
+                      !contact.name || !contact.phone || !contact.company
                     }
                     className="w-full bg-primary-60 hover:bg-primary-70 disabled:bg-gray-20 disabled:text-gray-40 text-white font-semibold py-3 rounded-lg text-sm transition-colors mt-5"
                   >
-                    {submitting ? "접수 중..." : "상담 접수하기"}
+                    상담 접수하기
                   </button>
                   <div className="flex gap-3 mt-2">
                     <button
