@@ -397,7 +397,7 @@ export async function sendInquiryEmails(
   const ref = refNumber(f.type);
   const ts = timestamp();
   const isDiag = f.type === "diagnosis";
-  const adminEmail = env.ADMIN_EMAIL;
+  const adminEmail = "mkt@polarad.co.kr";
 
   const subject = isDiag
     ? `[KPEC] 자금진단 접수완료 — ${f.company}`
