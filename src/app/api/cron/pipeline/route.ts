@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { sendPipelineLog } from "@/lib/telegram";
+import sharp from "sharp";
 
 const BIZINFO_API = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do";
 const AIRTABLE_API = "https://api.airtable.com/v0";
@@ -287,11 +288,10 @@ export async function GET(req: NextRequest) {
       await sendPipelineLog("error", "분석", "파이프라인 실패", String(e));
     }
 
-    // ═══ 4. 인스타그램 배너 (매일) ═══
+    // ═══ 4. 인스타그램 배너 (매일) — Unsplash + Sharp SVG 합성 ═══
     try {
       const instaId = `INSTA_${today.toISOString().slice(0, 10).replace(/-/g, "")}`;
       if (!existingIds.has(instaId)) {
-        // 최근 분석/뉴스에서 주제 가져오기
         const recentRes = await fetch(
           `${AIRTABLE_API}/${process.env.AIRTABLE_BASE_ID}/${TABLE_ID}?sort%5B0%5D%5Bfield%5D=publishDate&sort%5B0%5D%5Bdirection%5D=desc&maxRecords=1&filterByFormula=OR({category}="뉴스",{category}="분석")`,
           { headers: { Authorization: `Bearer ${process.env.AIRTABLE_PAT}` } },
@@ -300,15 +300,19 @@ export async function GET(req: NextRequest) {
         const recentPost = recentData.records?.[0]?.fields;
 
         if (recentPost) {
-          const caption = await geminiInstaCaption(
+          // Gemini로 뱃지/타이틀/서브텍스트 생성
+          const bannerText = await geminiInstaBannerText(
             recentPost.title,
             recentPost.summary,
           );
 
-          // Unsplash 무료 이미지 기반 배너 생성 (Gemini로 오버레이 대신 R2에 저장)
-          const bannerImg = await geminiRealisticImage(
+          // Sharp SVG 합성 배너 생성
+          const bannerImg = await compositeInstaBanner(bannerText);
+
+          // 캡션 생성
+          const caption = await geminiInstaCaption(
             recentPost.title,
-            "instagram",
+            recentPost.summary,
           );
 
           if (bannerImg) {
@@ -324,7 +328,6 @@ export async function GET(req: NextRequest) {
             );
             const imgUrl = `${process.env.R2_PUBLIC_URL}/${imgKey}`;
 
-            // Instagram Graph API 게시
             const igPosted = await postToInstagram(imgUrl, caption);
 
             await airtableCreate({
@@ -558,6 +561,172 @@ async function geminiInstaCaption(title: string, summary: string) {
     result.caption ||
     `${title}\n\n자세한 내용은 프로필 링크에서 확인하세요.\n#정책자금 #중소기업 #KPEC`
   );
+}
+
+// ── Instagram 배너 합성 (Unsplash + Sharp SVG) ──
+
+const UNSPLASH_PHOTOS = [
+  "photo-1486406146926-c627a92ad1ab", // 빌딩
+  "photo-1497366216548-37526070297c", // 오피스
+  "photo-1554224155-6726b3ff858f", // 금융
+  "photo-1560472354-b33ff0c44a43", // 도시
+  "photo-1507003211169-0a1dd7228f2d", // 비즈니스
+  "photo-1573164713714-d95e436ab8d6", // 서울
+  "photo-1551836022-d5d88e9218df", // 회의실
+  "photo-1504384308090-c894fdcc538d", // 테크
+];
+
+const OVERLAY_COLORS = [
+  "#1A56A8",
+  "#0e2a5c",
+  "#ED2939",
+  "#7c3aed",
+  "#059669",
+  "#d97706",
+];
+
+interface BannerText {
+  badge: string;
+  title: string;
+  sub: string;
+  accentColor: string;
+}
+
+async function geminiInstaBannerText(
+  title: string,
+  summary: string,
+): Promise<BannerText> {
+  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  try {
+    const result = await geminiCall(
+      model,
+      `인스타그램 배너용 텍스트 생성.
+원본 제목: ${title}
+원본 요약: ${summary}
+
+규칙:
+- badge: 1줄, 4자 이내 카테고리 (예: 정책자금, 운전자금, 벤처인증, 금리우대, 분석리포트)
+- title: 최대 2줄, 줄당 10자 이내. 핵심 메시지만. 줄바꿈은 \\n으로 표시
+- sub: 최대 2줄, 줄당 14자 이내. 부연 설명. 줄바꿈은 \\n으로 표시
+출력: {"badge":"...","title":"...","sub":"..."}`,
+    );
+    const dayIndex = new Date().getDate() % OVERLAY_COLORS.length;
+    return {
+      badge: result.badge || "정책자금",
+      title: result.title || title.slice(0, 20),
+      sub: result.sub || summary.slice(0, 28),
+      accentColor: OVERLAY_COLORS[dayIndex],
+    };
+  } catch {
+    const dayIndex = new Date().getDate() % OVERLAY_COLORS.length;
+    return {
+      badge: "정책자금",
+      title: title.length > 20 ? title.slice(0, 20) : title,
+      sub: summary.slice(0, 28),
+      accentColor: OVERLAY_COLORS[dayIndex],
+    };
+  }
+}
+
+function escXml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildBannerSVG(b: BannerText): string {
+  const W = 1080,
+    H = 1440;
+  const titleLines = b.title.split("\\n").slice(0, 2);
+  const subLines = b.sub.split("\\n").slice(0, 2);
+
+  // 뱃지
+  const badgeW = b.badge.length * 32 + 64;
+  const badgeX = (W - badgeW) / 2;
+  const badge = `<rect x="${badgeX}" y="434" width="${badgeW}" height="44" rx="22" fill="${b.accentColor}"/>
+    <text x="${W / 2}" y="463" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="28" fill="white" letter-spacing="2">${escXml(b.badge)}</text>`;
+
+  // accent line
+  const line = `<rect x="${(W - 80) / 2}" y="500" width="80" height="4" rx="2" fill="${b.accentColor}"/>`;
+
+  // 타이틀
+  let titleY = 570;
+  const titleSvg = titleLines
+    .map(
+      (l, i) =>
+        `<text x="${W / 2}" y="${titleY + i * 88}" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="68" fill="white">${escXml(l)}</text>`,
+    )
+    .join("");
+
+  // 서브텍스트
+  const subStartY = titleY + titleLines.length * 88 + 24;
+  const subSvg = subLines
+    .map(
+      (l, i) =>
+        `<text x="${W / 2}" y="${subStartY + i * 52}" text-anchor="middle" font-family="sans-serif" font-weight="400" font-size="32" fill="rgba(255,255,255,0.8)">${escXml(l)}</text>`,
+    )
+    .join("");
+
+  // 로고: bottom 80px
+  const logoY = H - 80;
+  const logo = `<text x="${W / 2 - 60}" y="${logoY}" font-family="sans-serif" font-weight="900" font-size="42" fill="#ED2939">K</text>
+    <text x="${W / 2 - 30}" y="${logoY}" font-family="sans-serif" font-weight="300" font-size="42" fill="white">PEC</text>
+    <text x="${W / 2 + 50}" y="${logoY}" font-family="sans-serif" font-weight="700" font-size="22" fill="white">기업정책자금센터</text>`;
+
+  return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    ${badge}${line}${titleSvg}${subSvg}${logo}
+  </svg>`;
+}
+
+async function compositeInstaBanner(b: BannerText): Promise<Buffer | null> {
+  try {
+    // 1. Unsplash 배경
+    const photoIdx = new Date().getDate() % UNSPLASH_PHOTOS.length;
+    const photoUrl = `https://images.unsplash.com/${UNSPLASH_PHOTOS[photoIdx]}?w=1080&h=1440&fit=crop&q=70`;
+    const bgRes = await fetch(photoUrl);
+    if (!bgRes.ok) return null;
+    const bgBuffer = Buffer.from(await bgRes.arrayBuffer());
+
+    // 2. 1080x1440 리사이즈
+    const bg = await sharp(bgBuffer)
+      .resize(1080, 1440, { fit: "cover" })
+      .toBuffer();
+
+    // 3. 30% 컬러 오버레이
+    const hex = b.accentColor;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const bl = parseInt(hex.slice(5, 7), 16);
+    const overlay = await sharp({
+      create: {
+        width: 1080,
+        height: 1440,
+        channels: 4,
+        background: { r, g, b: bl, alpha: 0.3 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    // 4. SVG 텍스트 레이어
+    const svgText = buildBannerSVG(b);
+    const svgBuffer = Buffer.from(svgText);
+
+    // 5. 합성: bg → overlay → SVG text
+    const result = await sharp(bg)
+      .composite([
+        { input: overlay, blend: "over" },
+        { input: svgBuffer, blend: "over" },
+      ])
+      .png({ quality: 90 })
+      .toBuffer();
+
+    return result;
+  } catch {
+    return null;
+  }
 }
 
 async function postToInstagram(imageUrl: string, caption: string) {
