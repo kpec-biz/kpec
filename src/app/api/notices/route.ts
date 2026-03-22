@@ -35,7 +35,10 @@ export async function GET(req: NextRequest) {
       params.set("filterByFormula", `{pblancId}="${id}"`);
       params.set("maxRecords", "1");
     } else {
-      const filters = [`OR({status}="리라이팅완료",{status}="게시중")`];
+      const filters = [
+        `OR({status}="리라이팅완료",{status}="게시중")`,
+        `{category}!="인스타"`,
+      ];
       if (category) {
         filters.push(`{category}="${category}"`);
       }

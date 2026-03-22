@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { sendPipelineLog } from "@/lib/telegram";
-import sharp from "sharp";
 
 const BIZINFO_API = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do";
 const AIRTABLE_API = "https://api.airtable.com/v0";
@@ -638,94 +637,51 @@ function escXml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function buildBannerSVG(b: BannerText): string {
-  const W = 1080,
-    H = 1440;
-  const titleLines = b.title.split("\\n").slice(0, 2);
-  const subLines = b.sub.split("\\n").slice(0, 2);
-
-  // 뱃지
-  const badgeW = b.badge.length * 32 + 64;
-  const badgeX = (W - badgeW) / 2;
-  const badge = `<rect x="${badgeX}" y="434" width="${badgeW}" height="44" rx="22" fill="${b.accentColor}"/>
-    <text x="${W / 2}" y="463" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="28" fill="white" letter-spacing="2">${escXml(b.badge)}</text>`;
-
-  // accent line
-  const line = `<rect x="${(W - 80) / 2}" y="500" width="80" height="4" rx="2" fill="${b.accentColor}"/>`;
-
-  // 타이틀
-  const titleY = 570;
-  const titleSvg = titleLines
-    .map(
-      (l, i) =>
-        `<text x="${W / 2}" y="${titleY + i * 88}" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="68" fill="white">${escXml(l)}</text>`,
-    )
-    .join("");
-
-  // 서브텍스트
-  const subStartY = titleY + titleLines.length * 88 + 24;
-  const subSvg = subLines
-    .map(
-      (l, i) =>
-        `<text x="${W / 2}" y="${subStartY + i * 52}" text-anchor="middle" font-family="sans-serif" font-weight="400" font-size="32" fill="rgba(255,255,255,0.8)">${escXml(l)}</text>`,
-    )
-    .join("");
-
-  // 로고: bottom 80px
-  const logoY = H - 80;
-  const logo = `<text x="${W / 2 - 60}" y="${logoY}" font-family="sans-serif" font-weight="900" font-size="42" fill="#ED2939">K</text>
-    <text x="${W / 2 - 30}" y="${logoY}" font-family="sans-serif" font-weight="300" font-size="42" fill="white">PEC</text>
-    <text x="${W / 2 + 50}" y="${logoY}" font-family="sans-serif" font-weight="700" font-size="22" fill="white">기업정책자금센터</text>`;
-
-  return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-    ${badge}${line}${titleSvg}${subSvg}${logo}
-  </svg>`;
-}
-
 async function compositeInstaBanner(b: BannerText): Promise<Buffer | null> {
   try {
-    // 1. Unsplash 배경
     const photoIdx = new Date().getDate() % UNSPLASH_PHOTOS.length;
-    const photoUrl = `https://images.unsplash.com/${UNSPLASH_PHOTOS[photoIdx]}?w=1080&h=1440&fit=crop&q=70`;
-    const bgRes = await fetch(photoUrl);
-    if (!bgRes.ok) return null;
-    const bgBuffer = Buffer.from(await bgRes.arrayBuffer());
+    const photoUrl = `https://images.unsplash.com/${UNSPLASH_PHOTOS[photoIdx]}?w=1200&q=70`;
 
-    // 2. 1080x1440 리사이즈
-    const bg = await sharp(bgBuffer)
-      .resize(1080, 1440, { fit: "cover" })
-      .toBuffer();
+    const titleLines = b.title.split("\\n").slice(0, 2);
+    const subLines = b.sub.split("\\n").slice(0, 2);
 
-    // 3. 30% 컬러 오버레이
-    const hex = b.accentColor;
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const bl = parseInt(hex.slice(5, 7), 16);
-    const overlay = await sharp({
-      create: {
-        width: 1080,
-        height: 1440,
-        channels: 4,
-        background: { r, g, b: bl, alpha: 0.3 },
+    const html = `<div style="width:1080px;height:1440px;position:relative;overflow:hidden;background:#000;">
+  <img src="${photoUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+  <div style="position:absolute;inset:0;background:${b.accentColor};opacity:0.3;"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:450px;text-align:center;z-index:1;">
+    <span style="display:inline-block;background:#ED2939;color:#fff;font-size:28px;font-weight:700;padding:12px 32px;border-radius:50px;letter-spacing:2px;">${escXml(b.badge)}</span>
+    <div style="width:80px;height:4px;background:#ED2939;border-radius:2px;margin:32px 0;"></div>
+    <div style="font-size:68px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:24px;">${titleLines.map((l) => escXml(l)).join("<br>")}</div>
+    <div style="font-size:32px;color:rgba(255,255,255,0.8);line-height:1.6;">${subLines.map((l) => escXml(l)).join("<br>")}</div>
+  </div>
+  <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;z-index:1;">
+    <span style="font-size:42px;font-weight:900;color:#ED2939;">K</span><span style="font-size:42px;font-weight:300;color:#fff;">PEC</span><span style="font-size:22px;color:#fff;margin-left:10px;font-weight:700;">기업정책자금센터</span>
+  </div>
+</div>`;
+
+    const css =
+      "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap'); * { font-family: 'Noto Sans KR', sans-serif; margin:0; padding:0; box-sizing:border-box; }";
+
+    const res = await fetch("https://hcti.io/v1/image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${Buffer.from(`${process.env.HCTI_API_USER_ID}:${process.env.HCTI_API_KEY}`).toString("base64")}`,
       },
-    })
-      .png()
-      .toBuffer();
+      body: JSON.stringify({
+        html,
+        css,
+        viewport_width: 1080,
+        viewport_height: 1440,
+      }),
+    });
 
-    // 4. SVG 텍스트 레이어
-    const svgText = buildBannerSVG(b);
-    const svgBuffer = Buffer.from(svgText);
+    const data = (await res.json()) as { url?: string };
+    if (!data.url) return null;
 
-    // 5. 합성: bg → overlay → SVG text
-    const result = await sharp(bg)
-      .composite([
-        { input: overlay, blend: "over" },
-        { input: svgBuffer, blend: "over" },
-      ])
-      .png({ quality: 90 })
-      .toBuffer();
-
-    return result;
+    const imgRes = await fetch(data.url);
+    if (!imgRes.ok) return null;
+    return Buffer.from(await imgRes.arrayBuffer());
   } catch {
     return null;
   }
