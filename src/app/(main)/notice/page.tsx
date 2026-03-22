@@ -62,6 +62,9 @@ export default function NoticePage() {
   const [newsData, setNewsData] = useState<NoticeItem[]>([]);
   const [analysisData, setAnalysisData] = useState<NoticeItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+  const [showAllNews, setShowAllNews] = useState(false);
+  const [showAllAnalysis, setShowAllAnalysis] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -89,12 +92,12 @@ export default function NoticePage() {
       <section className="py-12 bg-gray-5 min-h-[60vh]">
         <div className="max-w-[1200px] mx-auto px-6">
           {/* 탭 */}
-          <div className="flex gap-1 mb-8 border-b-2 border-gray-10">
+          <div className="flex gap-0.5 sm:gap-1 mb-6 sm:mb-8 border-b-2 border-gray-10 overflow-x-auto scrollbar-hide">
             {tabs.map((tab, i) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(i)}
-                className={`px-5 py-3 text-sm font-semibold transition-colors relative ${
+                className={`px-3 sm:px-5 py-2.5 sm:py-3 text-[13px] sm:text-sm font-semibold transition-colors relative whitespace-nowrap flex-shrink-0 ${
                   activeTab === i
                     ? "text-primary-60"
                     : "text-gray-50 hover:text-gray-80"
@@ -135,14 +138,30 @@ export default function NoticePage() {
                     공고를 불러오지 못했습니다
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-10">
-                    {notices.map((item, i) => (
-                      <NoticeRow key={item.pblancId} item={item} index={i} />
-                    ))}
-                  </div>
+                  <>
+                    <div className="divide-y divide-gray-10">
+                      {(showAll ? notices : notices.slice(0, 10)).map(
+                        (item, i) => (
+                          <NoticeRow
+                            key={item.pblancId}
+                            item={item}
+                            index={i}
+                          />
+                        ),
+                      )}
+                    </div>
+                    {!showAll && notices.length > 10 && (
+                      <button
+                        onClick={() => setShowAll(true)}
+                        className="w-full py-3 text-[13px] font-semibold text-primary-60 hover:bg-gray-5 transition-colors border-t border-gray-10"
+                      >
+                        더보기 ({notices.length - 10}건)
+                      </button>
+                    )}
+                  </>
                 )}
-                <div className="px-5 py-3 border-t border-gray-10 text-right">
-                  <span className="text-xs text-gray-40">
+                <div className="px-4 sm:px-5 py-2.5 sm:py-3 border-t border-gray-10 text-right">
+                  <span className="text-[10px] sm:text-xs text-gray-40">
                     출처: 기업마당(bizinfo.go.kr) · 매일 09시 업데이트
                   </span>
                 </div>
@@ -169,11 +188,23 @@ export default function NoticePage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {newsData.map((item) => (
-                      <ContentCard key={item.pblancId} item={item} />
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-4">
+                      {(showAllNews ? newsData : newsData.slice(0, 4)).map(
+                        (item) => (
+                          <ContentCard key={item.pblancId} item={item} />
+                        ),
+                      )}
+                    </div>
+                    {!showAllNews && newsData.length > 4 && (
+                      <button
+                        onClick={() => setShowAllNews(true)}
+                        className="w-full mt-3 py-2.5 text-[13px] font-semibold text-primary-60 bg-white border border-gray-10 rounded-lg hover:bg-gray-5 transition-colors"
+                      >
+                        더보기 ({newsData.length - 4}건)
+                      </button>
+                    )}
+                  </>
                 )}
               </motion.div>
             )}
@@ -182,15 +213,15 @@ export default function NoticePage() {
             {activeTab === 2 && (
               <motion.div key="tab-2" {...tabMotion}>
                 {analysisData.length === 0 ? (
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-4">
                     {[1, 2].map((i) => (
                       <div
                         key={i}
                         className="bg-white rounded-xl border border-gray-100 overflow-hidden"
                       >
-                        <Skeleton className="h-44 w-full rounded-none" />
-                        <div className="p-5 space-y-3">
-                          <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-32 sm:h-44 w-full rounded-none" />
+                        <div className="p-3 sm:p-5 space-y-2 sm:space-y-3">
+                          <Skeleton className="h-4 sm:h-5 w-3/4" />
                           <Skeleton className="h-3 w-full" />
                           <Skeleton className="h-3 w-2/3" />
                         </div>
@@ -198,11 +229,24 @@ export default function NoticePage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {analysisData.map((item) => (
-                      <ContentCard key={item.pblancId} item={item} />
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-4">
+                      {(showAllAnalysis
+                        ? analysisData
+                        : analysisData.slice(0, 4)
+                      ).map((item) => (
+                        <ContentCard key={item.pblancId} item={item} />
+                      ))}
+                    </div>
+                    {!showAllAnalysis && analysisData.length > 4 && (
+                      <button
+                        onClick={() => setShowAllAnalysis(true)}
+                        className="w-full mt-3 py-2.5 text-[13px] font-semibold text-primary-60 bg-white border border-gray-10 rounded-lg hover:bg-gray-5 transition-colors"
+                      >
+                        더보기 ({analysisData.length - 4}건)
+                      </button>
+                    )}
+                  </>
                 )}
               </motion.div>
             )}
@@ -246,23 +290,23 @@ function ContentCard({ item }: { item: NoticeItem }) {
           </span>
         </div>
       )}
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         <span
-          className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2 ${
+          className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-1.5 sm:mb-2 ${
             item.category === "분석"
               ? "bg-point-50/10 text-point-50"
               : "bg-success/10 text-success"
           }`}
         >
-          {item.category === "분석" ? "정부정책자금 분석" : "정책자금 뉴스"}
+          {item.category === "분석" ? "정책자금 분석" : "정책자금 뉴스"}
         </span>
-        <h3 className="text-sm font-bold text-gray-90 mb-2 line-clamp-2 leading-snug group-hover:text-primary-60 transition-colors">
+        <h3 className="text-[11px] sm:text-sm font-bold text-gray-90 mb-1 sm:mb-2 line-clamp-2 leading-snug group-hover:text-primary-60 transition-colors">
           {item.title}
         </h3>
-        <p className="text-xs text-gray-50 line-clamp-2 leading-relaxed mb-3">
+        <p className="text-[10px] sm:text-xs text-gray-50 line-clamp-2 leading-relaxed mb-1.5 sm:mb-3 hidden sm:block">
           {item.summary}
         </p>
-        <div className="text-[11px] text-gray-40">
+        <div className="text-[10px] sm:text-[11px] text-gray-40">
           {item.source} · {item.publishDate}
         </div>
       </div>
@@ -285,21 +329,21 @@ function NoticeRow({ item, index }: { item: NoticeItem; index: number }) {
   return (
     <Link
       href={`/notice/${item.pblancId}`}
-      className="flex items-center gap-4 py-4 px-5 hover:bg-gray-5 transition-colors"
+      className="flex items-center gap-2 sm:gap-4 py-3 sm:py-4 px-4 sm:px-5 hover:bg-gray-5 transition-colors"
     >
       <span
-        className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${index === 0 ? "bg-red-50 text-point-50" : categoryColor[item.category] || "bg-primary-5 text-primary-60"}`}
+        className={`flex-shrink-0 text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full ${index === 0 ? "bg-red-50 text-point-50" : categoryColor[item.category] || "bg-primary-5 text-primary-60"}`}
       >
         {index === 0 ? "신규" : item.category}
       </span>
-      <span className="flex-1 text-gray-80 font-medium truncate">
+      <span className="flex-1 text-[12px] sm:text-base text-gray-80 font-medium truncate">
         {item.title}
       </span>
-      <span className="flex-shrink-0 text-sm text-gray-40">
+      <span className="flex-shrink-0 text-[11px] sm:text-sm text-gray-40 hidden sm:inline">
         {item.publishDate}
       </span>
       <svg
-        className="w-4 h-4 text-gray-30 flex-shrink-0"
+        className="w-4 h-4 text-gray-30 flex-shrink-0 hidden sm:block"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -317,9 +361,11 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     <div className="border border-gray-10 rounded-lg overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 text-left bg-white hover:bg-gray-5 transition-colors"
+        className="w-full flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 text-left bg-white hover:bg-gray-5 transition-colors"
       >
-        <span className="font-semibold text-gray-90">{q}</span>
+        <span className="text-[13px] sm:text-base font-semibold text-gray-90">
+          {q}
+        </span>
         <svg
           className={`w-5 h-5 text-gray-50 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
@@ -343,7 +389,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-6 py-4 bg-gray-5 text-gray-70 leading-relaxed border-t border-gray-10">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-5 text-[13px] sm:text-base text-gray-70 leading-relaxed border-t border-gray-10">
               {a}
             </div>
           </motion.div>

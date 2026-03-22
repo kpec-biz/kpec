@@ -41,7 +41,7 @@ export default function PageHeader({
           initial={{ opacity: 0, y: 20 }}
           animate={loaded ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-4xl sm:text-5xl font-bold text-white mb-4"
+          className="text-2xl sm:text-5xl font-bold text-white mb-3 sm:mb-4"
         >
           {title}
         </motion.h1>
@@ -54,7 +54,7 @@ export default function PageHeader({
               delay: 0.15,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            className="text-white/60 text-lg max-w-2xl mx-auto"
+            className="text-white/60 text-[13px] sm:text-lg max-w-2xl mx-auto [text-wrap:balance]"
           >
             {subtitle}
           </motion.p>

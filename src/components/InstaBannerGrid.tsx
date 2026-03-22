@@ -56,7 +56,29 @@ export default function InstaBannerGrid() {
           </a>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Mobile: 4개만 2x2 */}
+        <div className="grid grid-cols-2 gap-3 md:hidden">
+          {banners.slice(0, 4).map((b, i) => (
+            <a
+              key={i}
+              href="https://www.instagram.com/kpec77/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all"
+            >
+              <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
+                <img
+                  src={r2(b.src)}
+                  alt={b.alt}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </div>
+            </a>
+          ))}
+        </div>
+        {/* Desktop: infinite scroll */}
+        <div className="hidden md:grid grid-cols-4 gap-3">
           {banners.slice(0, count).map((b, i) => (
             <a
               key={i}

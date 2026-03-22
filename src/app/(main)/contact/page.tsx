@@ -97,7 +97,18 @@ export default function ContactPage() {
       alert("개인정보 수집·이용 동의가 필요합니다.");
       return;
     }
+    // 즉시 완료 화면 → 백그라운드 저장
     setSubmitted(true);
+    const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL || "";
+    fetch(`${workerUrl}/api/inquiry`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...form,
+        type: "general",
+        source: "contact-wizard",
+      }),
+    }).catch(() => {});
   };
 
   if (submitted) {

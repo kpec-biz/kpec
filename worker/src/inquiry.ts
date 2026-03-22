@@ -13,8 +13,6 @@ export async function handleInquiry(
     const type = url.searchParams.get("type");
 
     const params: Record<string, string> = {
-      "sort[0][field]": "Created",
-      "sort[0][direction]": "desc",
       pageSize: "100",
     };
 

@@ -38,7 +38,7 @@ export default function NoticeBoard() {
           <span className="inline-block bg-primary-5 text-primary-60 text-xs font-semibold px-3 py-1 rounded-full mb-2">
             알림·자료
           </span>
-          <h2 className="text-heading-md font-bold text-gray-90">
+          <h2 className="text-[20px] sm:text-heading-md font-bold text-gray-90 [text-wrap:balance]">
             정책자금 공고와 뉴스
           </h2>
         </div>
@@ -86,27 +86,34 @@ export default function NoticeBoard() {
                 공고를 불러오지 못했습니다
               </div>
             ) : (
-              notices.map((item, i) => (
-                <Link
-                  key={item.pblancId}
-                  href="/notice"
-                  className="flex items-center justify-between px-5 py-3 border-b border-gray-10 last:border-b-0 hover:bg-gray-5 transition-colors text-sm"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span
-                      className={`flex-shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${i === 0 ? "bg-red-50 text-point-50" : "bg-primary-5 text-primary-60"}`}
-                    >
-                      {i === 0 ? "신규" : item.category}
+              notices
+                .slice(
+                  0,
+                  typeof window !== "undefined" && window.innerWidth < 640
+                    ? 3
+                    : 5,
+                )
+                .map((item, i) => (
+                  <Link
+                    key={item.pblancId}
+                    href="/notice"
+                    className="flex items-center justify-between px-4 sm:px-5 py-2.5 sm:py-3 border-b border-gray-10 last:border-b-0 hover:bg-gray-5 transition-colors text-[13px] sm:text-sm"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className={`flex-shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${i === 0 ? "bg-red-50 text-point-50" : "bg-primary-5 text-primary-60"}`}
+                      >
+                        {i === 0 ? "신규" : item.category}
+                      </span>
+                      <span className="text-gray-80 font-medium truncate">
+                        {item.title}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-40 flex-shrink-0 ml-3 hidden sm:inline">
+                      {item.publishDate}
                     </span>
-                    <span className="text-gray-80 font-medium truncate">
-                      {item.title}
-                    </span>
-                  </div>
-                  <span className="text-xs text-gray-40 flex-shrink-0 ml-3">
-                    {item.publishDate}
-                  </span>
-                </Link>
-              ))
+                  </Link>
+                ))
             )}
           </div>
 

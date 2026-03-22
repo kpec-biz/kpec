@@ -82,14 +82,14 @@ export default function ProcessPage() {
             </h2>
             <div className="relative">
               {/* 세로 라인 */}
-              <div className="absolute left-[39px] top-4 bottom-4 w-0.5 bg-primary-20" />
-              <div className="space-y-8">
+              <div className="absolute left-[27px] sm:left-[39px] top-4 bottom-4 w-0.5 bg-primary-20" />
+              <div className="space-y-5 sm:space-y-8">
                 {steps.map((step, i) => (
-                  <div key={step.num} className="flex gap-6">
+                  <div key={step.num} className="flex gap-3 sm:gap-6">
                     {/* 원형 넘버 */}
                     <div className="relative flex-shrink-0">
                       <div
-                        className={`w-20 h-20 rounded-full flex items-center justify-center font-bold text-lg border-2 ${
+                        className={`w-14 h-14 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg border-2 ${
                           i < 4
                             ? "bg-primary-60 border-primary-60 text-white"
                             : "bg-white border-primary-40 text-primary-60"
@@ -99,14 +99,14 @@ export default function ProcessPage() {
                       </div>
                     </div>
                     {/* 카드 */}
-                    <div className="flex-1 bg-gray-5 rounded-xl p-5 border border-gray-10">
-                      <h3 className="font-bold text-gray-90 mb-2">
+                    <div className="flex-1 bg-gray-5 rounded-xl p-4 sm:p-5 border border-gray-10">
+                      <h3 className="text-[14px] sm:text-base font-bold text-gray-90 mb-1 sm:mb-2">
                         {step.title}
                       </h3>
-                      <p className="text-sm text-gray-60 leading-relaxed mb-3">
+                      <p className="text-[12px] sm:text-sm text-gray-60 leading-relaxed mb-2 sm:mb-3">
                         {step.desc}
                       </p>
-                      <span className="inline-block bg-primary-5 text-primary-60 text-xs font-semibold px-3 py-1 rounded-full">
+                      <span className="inline-block bg-primary-5 text-primary-60 text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full">
                         {step.detail}
                       </span>
                     </div>
@@ -124,13 +124,12 @@ export default function ProcessPage() {
             <span className="inline-block bg-point-50 text-white text-sm font-bold px-4 py-1.5 rounded-full mb-4">
               KPEC 차별점
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            <h2 className="text-xl sm:text-3xl font-bold text-white mb-4 [text-wrap:balance]">
               후불 성공보수제 운영
             </h2>
-            <p className="text-white/70 leading-relaxed max-w-xl mx-auto">
+            <p className="text-[13px] sm:text-base text-white/70 leading-relaxed max-w-xl mx-auto [text-wrap:balance]">
               정책자금 신청 결과가 나오기 전에는 어떠한 비용도 청구하지
-              않습니다.
-              <br />
+              않습니다.{" "}
               <strong className="text-white">
                 자금 승인 이후에만 수수료가 발생
               </strong>
@@ -165,7 +164,9 @@ export default function ProcessPage() {
                         />
                       </svg>
                     </span>
-                    <span className="text-gray-70">{item}</span>
+                    <span className="text-[13px] sm:text-base text-gray-70">
+                      {item}
+                    </span>
                   </li>
                 ))}
               </ul>

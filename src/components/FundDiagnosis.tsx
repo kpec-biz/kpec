@@ -15,15 +15,15 @@ export default function FundDiagnosis() {
       }}
     >
       <div className="max-w-[800px] mx-auto">
-        <h2 className="text-[22px] sm:text-[26px] font-bold text-white mb-2">
+        <h2 className="text-[20px] sm:text-[26px] font-bold text-white mb-2 [text-wrap:balance]">
           귀사에 적합한 정책자금, 지금 확인하세요
         </h2>
-        <p className="text-sm text-white/60 mb-7">
+        <p className="text-[13px] sm:text-sm text-white/60 mb-7 [text-wrap:balance]">
           업종·규모·자금용도에 따라 신청 가능한 정책자금이 달라집니다
         </p>
 
         {/* Steps */}
-        <div className="flex items-center justify-center gap-5 mb-8 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 mb-8">
           {steps.map((step, i) => (
             <div key={step.num} className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-white/80 text-sm">
@@ -34,6 +34,7 @@ export default function FundDiagnosis() {
               </div>
               {i < steps.length - 1 && (
                 <svg
+                  className="hidden sm:block"
                   width="16"
                   height="16"
                   viewBox="0 0 24 24"

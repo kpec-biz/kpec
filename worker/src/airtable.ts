@@ -5,6 +5,7 @@ export interface Env {
   TELEGRAM_CHAT_ID: string;
   ADMIN_EMAIL: string;
   CORS_ORIGIN: string;
+  CRON_SECRET: string;
 }
 
 const AIRTABLE_API = "https://api.airtable.com/v0";

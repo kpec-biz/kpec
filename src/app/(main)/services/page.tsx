@@ -28,15 +28,109 @@ const faqData = [
   },
 ];
 
+const certTypes = [
+  {
+    name: "벤처기업",
+    items: [
+      { label: "핵심 요건", value: "투자금 5천만원 이상 또는 기술평가" },
+      { label: "업력 요건", value: "제한 없음" },
+      { label: "유효기간", value: "3년" },
+      { label: "세제 혜택", value: "법인세·소득세 50% 감면 (5년)" },
+      { label: "정책자금", value: "우선 배정·가점" },
+      { label: "보증 우대", value: "기보 보증 우대" },
+      { label: "기타", value: "병역특례, 스톡옵션 확대" },
+    ],
+  },
+  {
+    name: "이노비즈",
+    items: [
+      { label: "핵심 요건", value: "기술혁신역량 700점 이상" },
+      { label: "업력 요건", value: "3년 이상 (벤처 1년)" },
+      { label: "유효기간", value: "3년" },
+      { label: "세제 혜택", value: "없음" },
+      { label: "정책자금", value: "우선 배정" },
+      { label: "보증 우대", value: "보증료 -0.2%p" },
+      { label: "기타", value: "공공조달 가점" },
+    ],
+  },
+  {
+    name: "메인비즈",
+    items: [
+      { label: "핵심 요건", value: "경영혁신 700점 이상" },
+      { label: "업력 요건", value: "3년 이상" },
+      { label: "유효기간", value: "3년" },
+      { label: "세제 혜택", value: "없음" },
+      { label: "정책자금", value: "융자한도 70억" },
+      { label: "보증 우대", value: "보증료 -0.1%p" },
+      { label: "기타", value: "컨설팅·판로 지원" },
+    ],
+  },
+  {
+    name: "ISO",
+    items: [
+      { label: "핵심 요건", value: "품질/환경경영시스템 구축" },
+      { label: "업력 요건", value: "제한 없음" },
+      { label: "유효기간", value: "3년 (매년 사후심사)" },
+      { label: "세제 혜택", value: "없음" },
+      { label: "정책자금", value: "일부 가점" },
+      { label: "보증 우대", value: "해당 없음" },
+      { label: "기타", value: "공공입찰 가점" },
+    ],
+  },
+];
+
+function CertCardsMobile() {
+  const [active, setActive] = useState(0);
+  const cert = certTypes[active];
+
+  return (
+    <div className="md:hidden">
+      {/* 탭 뱃지 */}
+      <div className="grid grid-cols-4 gap-1.5 mb-3">
+        {certTypes.map((c, i) => (
+          <button
+            key={c.name}
+            onClick={() => setActive(i)}
+            className={`py-2 px-1 rounded-lg text-[12px] font-semibold text-center transition-all ${
+              active === i
+                ? "bg-primary-60 text-white"
+                : "bg-white border border-gray-10 text-gray-60"
+            }`}
+          >
+            {c.name}
+          </button>
+        ))}
+      </div>
+
+      {/* 상세 카드 */}
+      <div className="bg-white border border-gray-10 rounded-xl overflow-hidden">
+        {cert.items.map((item, i) => (
+          <div
+            key={item.label}
+            className={`flex items-start gap-3 px-4 py-2.5 ${i % 2 === 1 ? "bg-gray-5" : ""}`}
+          >
+            <span className="text-[11px] font-semibold text-gray-50 w-16 flex-shrink-0 pt-0.5">
+              {item.label}
+            </span>
+            <span className="text-[13px] text-gray-80">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border border-gray-10 rounded-lg overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 text-left bg-white hover:bg-gray-5 transition-colors"
+        className="w-full flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 text-left bg-white hover:bg-gray-5 transition-colors"
       >
-        <span className="font-semibold text-gray-90">{q}</span>
+        <span className="text-[13px] sm:text-base font-semibold text-gray-90">
+          {q}
+        </span>
         <svg
           className={`w-5 h-5 text-gray-50 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
@@ -52,7 +146,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         </svg>
       </button>
       {open && (
-        <div className="px-6 py-4 bg-gray-5 text-gray-70 leading-relaxed border-t border-gray-10">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-5 text-[13px] sm:text-base text-gray-70 leading-relaxed border-t border-gray-10">
           {a}
         </div>
       )}
@@ -121,7 +215,7 @@ export default function ServicesPage() {
                 </tbody>
               </table>
             </div>
-            <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="mt-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {[
                 {
                   name: "혁신창업사업화자금",
@@ -156,10 +250,12 @@ export default function ServicesPage() {
               ].map((p) => (
                 <div
                   key={p.name}
-                  className="bg-primary-5 rounded-lg p-4 border border-primary-10"
+                  className="bg-primary-5 rounded-lg p-3 sm:p-4 border border-primary-10"
                 >
-                  <p className="font-semibold text-primary-70 mb-1">{p.name}</p>
-                  <p className="text-xs text-gray-60">
+                  <p className="text-[12px] sm:text-base font-semibold text-primary-70 mb-0.5 sm:mb-1">
+                    {p.name}
+                  </p>
+                  <p className="text-[10px] sm:text-xs text-gray-60">
                     {p.target} · {p.budget}
                   </p>
                 </div>
@@ -248,11 +344,13 @@ export default function ServicesPage() {
               <h2 className="text-2xl font-bold text-gray-90 mb-2">
                 기업인증 컨설팅
               </h2>
-              <p className="text-gray-50">
-                인증 취득으로 정책자금 우선 배정 및 세제 혜택을 누리세요
+              <p className="text-[13px] sm:text-base text-gray-50">
+                인증 취득으로 정책자금 우선배정
+                <br className="sm:hidden" />및 세제 혜택을 누리세요
               </p>
             </div>
-            <div className="overflow-x-auto rounded-xl border border-gray-10">
+            {/* Desktop: 기존 표 */}
+            <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-10">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-primary-80 text-white">
@@ -337,6 +435,9 @@ export default function ServicesPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile: 탭 카드형 */}
+            <CertCardsMobile />
           </div>
         </section>
       </ScrollReveal>

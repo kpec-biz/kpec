@@ -6,11 +6,11 @@ export default function FloatingMenu() {
   };
 
   return (
-    <div className="fixed right-5 bottom-5 flex flex-col gap-2 z-50">
+    <div className="fixed right-3 sm:right-5 bottom-[72px] sm:bottom-5 flex flex-col gap-2 z-50">
       {/* 전화상담 */}
       <a
         href="tel:01020205312"
-        className="flex items-center justify-center w-12 h-12 bg-primary-60 hover:bg-primary-50 text-white rounded-full shadow-lg transition-transform hover:scale-110"
+        className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 bg-primary-60 hover:bg-primary-50 text-white rounded-full shadow-lg transition-transform hover:scale-110"
         aria-label="전화상담"
       >
         <svg
@@ -31,7 +31,7 @@ export default function FloatingMenu() {
       {/* TOP */}
       <button
         onClick={scrollToTop}
-        className="flex items-center justify-center w-12 h-12 bg-white border border-gray-10 text-gray-60 rounded-full shadow-lg transition-transform hover:scale-110"
+        className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 bg-white border border-gray-10 text-gray-60 rounded-full shadow-lg transition-transform hover:scale-110"
         aria-label="맨 위로 이동"
       >
         <svg

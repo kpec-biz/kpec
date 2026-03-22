@@ -46,8 +46,10 @@ const stats = [
     prefix: "",
     suffix: "억",
     display: null,
-    label: "2026년 정책자금 총 규모",
+    label: "정책자금 총 규모",
+    mobileLabel: "총 규모",
     sub: "4조 4,313억",
+    mobileSub: "4.4조",
   },
   {
     value: null,
@@ -55,7 +57,9 @@ const stats = [
     suffix: "",
     display: "연 2.5%~",
     label: "정책자금 기본 금리",
+    mobileLabel: "기본 금리",
     sub: null,
+    mobileSub: null,
   },
   {
     value: 60,
@@ -63,26 +67,31 @@ const stats = [
     suffix: "억원",
     display: null,
     label: "기업당 최대 융자한도",
+    mobileLabel: "최대 융자한도",
     sub: null,
+    mobileSub: null,
   },
   {
     value: 508,
     prefix: "",
     suffix: "개",
     display: null,
-    label: "2026년 지원사업 수",
+    label: "지원사업 수",
+    mobileLabel: "지원사업 수",
     sub: null,
+    mobileSub: null,
   },
 ];
 
 export default function Stats() {
   return (
-    <section className="bg-primary-70 py-10">
+    <section className="bg-primary-70 py-8 sm:py-10">
       <div className="max-w-[1200px] mx-auto px-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 text-center">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 text-center">
           {stats.map((stat, i) => (
             <div key={i}>
-              <div className="text-4xl font-bold text-white mb-1">
+              {/* Desktop */}
+              <div className="hidden sm:block text-4xl font-bold text-white mb-1">
                 {stat.display ? (
                   <span>{stat.display}</span>
                 ) : stat.sub ? (
@@ -94,11 +103,27 @@ export default function Stats() {
                   </span>
                 )}
               </div>
+              {/* Mobile */}
+              <div className="sm:hidden text-[22px] font-bold text-white mb-0.5 whitespace-nowrap">
+                {stat.display ? (
+                  <span>{stat.display}</span>
+                ) : stat.mobileSub ? (
+                  <span>{stat.mobileSub}</span>
+                ) : stat.sub ? (
+                  <span>{stat.sub}</span>
+                ) : (
+                  <span>
+                    {stat.prefix}
+                    <CountUp end={stat.value!} suffix={stat.suffix} />
+                  </span>
+                )}
+              </div>
               <div
-                className="text-sm"
+                className="text-[10px] sm:text-sm whitespace-nowrap"
                 style={{ color: "rgba(255,255,255,0.6)" }}
               >
-                {stat.label}
+                <span className="sm:hidden">{stat.mobileLabel}</span>
+                <span className="hidden sm:inline">{stat.label}</span>
               </div>
             </div>
           ))}

@@ -41,7 +41,7 @@ export default function HeroVideo() {
               성공보수 후불제 · 승인 전 비용 0원
             </div>
 
-            <h1 className="text-[28px] sm:text-[34px] lg:text-[40px] font-bold text-white leading-[1.3] mb-4">
+            <h1 className="text-[26px] sm:text-[34px] lg:text-[40px] font-bold text-white leading-[1.3] mb-4 [text-wrap:balance]">
               정책자금, 재무 구조에 맞게
               <br />
               설계해야 승인됩니다
@@ -83,20 +83,20 @@ export default function HeroVideo() {
           </div>
 
           {/* Right: Stats */}
-          <div className="flex lg:flex-col gap-3 flex-wrap">
+          <div className="grid grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-3">
             {[
-              { value: "4.4조", label: "2026년 총 예산" },
-              { value: "2.5%~", label: "정책 기본금리" },
+              { value: "4.4조", label: "총 예산" },
+              { value: "2.5%~", label: "기본금리" },
               { value: "15년+", label: "컨설팅 경력" },
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="bg-white/8 border border-white/10 rounded-xl px-6 py-4 text-center min-w-[110px] backdrop-blur-sm"
+                className="bg-white/8 border border-white/10 rounded-lg sm:rounded-xl px-2 sm:px-6 py-2.5 sm:py-4 text-center min-w-0 sm:min-w-[110px] backdrop-blur-sm"
               >
-                <div className="text-[26px] font-bold text-white leading-none">
+                <div className="text-[17px] sm:text-[26px] font-bold text-white leading-none">
                   {stat.value}
                 </div>
-                <div className="text-[11px] text-white/50 mt-1.5">
+                <div className="text-[9px] sm:text-[11px] text-white/50 mt-0.5 sm:mt-1.5 whitespace-nowrap">
                   {stat.label}
                 </div>
               </div>

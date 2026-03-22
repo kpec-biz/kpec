@@ -7,6 +7,56 @@ import { motion } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
 import DocumentScanner from "@/components/DocumentScanner";
 
+/* Mobile: 표 → 뱃지 카드형 (첫 번째 컬럼이 행 라벨) */
+function MobileTableCards({
+  headers,
+  rows,
+}: {
+  headers: string[];
+  rows: string[][];
+}) {
+  const [active, setActive] = useState(0);
+  const row = rows[active];
+
+  return (
+    <div className="sm:hidden">
+      {/* 뱃지 그리드 - flex-wrap, 선택 상태 강조 + 그림자 */}
+      <div className="flex flex-wrap gap-1.5 mb-0">
+        {rows.map((r, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            className={`px-3 py-2 rounded-t-lg text-[11px] font-semibold transition-all ${
+              active === i
+                ? "bg-primary-60 text-white shadow-md relative z-10 -mb-px"
+                : "bg-gray-5 border border-gray-10 border-b-0 text-gray-50 hover:bg-gray-10"
+            }`}
+          >
+            {r[0]}
+          </button>
+        ))}
+      </div>
+
+      {/* 상세 카드 - 선택된 탭과 연결 */}
+      <div className="bg-white border border-gray-10 rounded-b-xl rounded-tr-xl overflow-hidden shadow-sm">
+        {headers.slice(1).map((h, hi) => (
+          <div
+            key={hi}
+            className={`flex items-start gap-2 px-3.5 py-2 ${hi % 2 === 1 ? "bg-gray-5" : ""}`}
+          >
+            <span className="text-[10px] font-semibold text-gray-50 w-14 flex-shrink-0 pt-0.5">
+              {h}
+            </span>
+            <span className="text-[12px] text-gray-80">
+              {row[hi + 1] || "-"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface NoticeItem {
   pblancId: string;
   title: string;
@@ -137,12 +187,15 @@ export default function NoticeDetailPage() {
       <section className="py-12 bg-gray-5">
         <div className="max-w-[1200px] mx-auto px-6">
           {/* 브레드크럼 */}
-          <nav className="flex items-center gap-1.5 text-xs text-gray-40 mb-5">
-            <Link href="/" className="hover:text-primary-60 transition-colors">
+          <nav className="flex items-center gap-1.5 text-xs text-gray-40 mb-4 sm:mb-5">
+            <Link
+              href="/"
+              className="hover:text-primary-60 transition-colors whitespace-nowrap"
+            >
               홈
             </Link>
             <svg
-              className="w-3 h-3"
+              className="w-3 h-3 flex-shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -156,12 +209,13 @@ export default function NoticeDetailPage() {
             </svg>
             <Link
               href="/notice"
-              className="hover:text-primary-60 transition-colors"
+              className="hover:text-primary-60 transition-colors whitespace-nowrap"
             >
               알림·자료
             </Link>
+            {/* 제목은 PC에서만 브레드크럼에 표시 */}
             <svg
-              className="w-3 h-3"
+              className="w-3 h-3 flex-shrink-0 hidden sm:block"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -173,7 +227,7 @@ export default function NoticeDetailPage() {
                 d="M9 5l7 7-7 7"
               />
             </svg>
-            <span className="text-gray-60 font-medium truncate max-w-[300px]">
+            <span className="text-gray-60 font-medium truncate max-w-[300px] hidden sm:inline">
               {notice.title}
             </span>
           </nav>
@@ -186,7 +240,7 @@ export default function NoticeDetailPage() {
               transition={{ duration: 0.5 }}
               className="bg-white rounded-xl border border-gray-10 overflow-hidden"
             >
-              <div className="p-8">
+              <div className="p-5 sm:p-8">
                 {/* 카테고리 + 접수 상태 */}
                 <div className="flex items-center gap-2 mb-4">
                   <span
@@ -217,12 +271,12 @@ export default function NoticeDetailPage() {
                   )}
 
                 {/* 제목 */}
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-90 mb-3 leading-tight">
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-90 mb-3 leading-tight [text-wrap:balance]">
                   {notice.title}
                 </h1>
 
                 {/* 메타 정보 */}
-                <div className="flex flex-wrap gap-4 text-sm text-gray-50 pb-5 border-b border-gray-10 mb-6">
+                <div className="flex flex-wrap gap-2 sm:gap-4 text-[12px] sm:text-sm text-gray-50 pb-4 sm:pb-5 border-b border-gray-10 mb-4 sm:mb-6">
                   <span>주관: {notice.source}</span>
                   {notice.applyPeriod && (
                     <span>접수: {notice.applyPeriod}</span>
@@ -231,8 +285,8 @@ export default function NoticeDetailPage() {
                 </div>
 
                 {/* 요약 박스 */}
-                <div className="bg-primary-5 border-l-4 border-primary-50 rounded-r-lg px-5 py-4 mb-8">
-                  <p className="text-sm text-primary-70 leading-relaxed">
+                <div className="bg-primary-5 border-l-4 border-primary-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 mb-6 sm:mb-8">
+                  <p className="text-[13px] sm:text-sm text-primary-70 leading-relaxed">
                     {notice.summary.split(/(?<=\.\s)/).map((sentence, si) => (
                       <span key={si}>
                         {sentence}
@@ -252,7 +306,7 @@ export default function NoticeDetailPage() {
                         return (
                           <h2
                             key={i}
-                            className="text-lg font-bold text-gray-90 mt-8 mb-3 flex items-center gap-2"
+                            className="text-base sm:text-lg font-bold text-gray-90 mt-6 sm:mt-8 mb-2 sm:mb-3 flex items-center gap-2"
                           >
                             <span className="w-1 h-5 bg-primary-60 rounded-full" />
                             {block.text}
@@ -263,7 +317,7 @@ export default function NoticeDetailPage() {
                         return (
                           <h3
                             key={i}
-                            className="text-base font-semibold text-gray-80 mt-6 mb-2"
+                            className="text-[14px] sm:text-base font-semibold text-gray-80 mt-4 sm:mt-6 mb-1.5 sm:mb-2"
                           >
                             {block.text}
                           </h3>
@@ -271,7 +325,10 @@ export default function NoticeDetailPage() {
                       }
                       if (block.type === "p") {
                         return (
-                          <p key={i} className="text-gray-60 leading-relaxed">
+                          <p
+                            key={i}
+                            className="text-[13px] sm:text-base text-gray-60 leading-relaxed"
+                          >
                             {block.text}
                           </p>
                         );
@@ -282,7 +339,7 @@ export default function NoticeDetailPage() {
                             {block.items.map((item, j) => (
                               <li
                                 key={j}
-                                className="flex items-start gap-2 text-gray-60"
+                                className="flex items-start gap-2 text-[13px] sm:text-base text-gray-60"
                               >
                                 <span className="w-1.5 h-1.5 rounded-full bg-primary-40 mt-2 flex-shrink-0" />
                                 {item}
@@ -295,7 +352,7 @@ export default function NoticeDetailPage() {
                         return (
                           <div
                             key={i}
-                            className="bg-primary-5 border-l-4 border-primary-40 rounded-r-lg px-5 py-4 text-primary-70 text-sm font-medium"
+                            className="bg-primary-5 border-l-4 border-primary-40 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-primary-70 text-[13px] sm:text-sm font-medium"
                           >
                             {block.text}
                           </div>
@@ -305,7 +362,7 @@ export default function NoticeDetailPage() {
                         return (
                           <div
                             key={i}
-                            className="bg-point-50/10 border-l-4 border-point-50 rounded-r-lg px-5 py-4 text-point-60 text-sm font-medium"
+                            className="bg-point-50/10 border-l-4 border-point-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-point-60 text-[13px] sm:text-sm font-medium"
                           >
                             {block.text}
                           </div>
@@ -315,22 +372,22 @@ export default function NoticeDetailPage() {
                         return (
                           <div
                             key={i}
-                            className="my-6 bg-gray-5 rounded-xl border border-gray-10 p-5"
+                            className="my-4 sm:my-6 bg-gray-5 rounded-xl border border-gray-10 p-4 sm:p-5"
                           >
                             {block.title && (
-                              <h4 className="text-sm font-bold text-gray-80 mb-4">
+                              <h4 className="text-[13px] sm:text-sm font-bold text-gray-80 mb-3 sm:mb-4">
                                 {block.title}
                               </h4>
                             )}
                             {block.chartType === "bar" && block.data && (
-                              <div className="space-y-3">
+                              <div className="space-y-2.5 sm:space-y-3">
                                 {block.data.map((d, di) => {
                                   const maxVal = Math.max(
                                     ...(block.data || []).map((x) => x.value),
                                   );
                                   return (
                                     <div key={di}>
-                                      <div className="flex justify-between text-xs mb-1">
+                                      <div className="flex justify-between text-[11px] sm:text-xs mb-1">
                                         <span className="text-gray-60">
                                           {d.name}
                                         </span>
@@ -338,7 +395,7 @@ export default function NoticeDetailPage() {
                                           {d.value.toLocaleString()}
                                         </span>
                                       </div>
-                                      <div className="h-3 bg-gray-10 rounded-full overflow-hidden">
+                                      <div className="h-2.5 sm:h-3 bg-gray-10 rounded-full overflow-hidden">
                                         <div
                                           className="h-full rounded-full transition-all duration-700"
                                           style={{
@@ -354,19 +411,19 @@ export default function NoticeDetailPage() {
                               </div>
                             )}
                             {block.chartType === "compare" && block.data && (
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                                 {block.data.map((d, di) => (
                                   <div
                                     key={di}
-                                    className="text-center bg-white rounded-lg p-3 border border-gray-10"
+                                    className="text-center bg-white rounded-lg p-2 sm:p-3 border border-gray-10"
                                   >
                                     <div
-                                      className="text-2xl font-bold"
+                                      className="text-[15px] sm:text-2xl font-bold"
                                       style={{ color: d.color || "#0b50d0" }}
                                     >
                                       {d.value}%
                                     </div>
-                                    <div className="text-[11px] text-gray-50 mt-1">
+                                    <div className="text-[9px] sm:text-[11px] text-gray-50 mt-0.5 sm:mt-1">
                                       {d.name}
                                     </div>
                                   </div>
@@ -376,43 +433,51 @@ export default function NoticeDetailPage() {
                             {block.chartType === "table" &&
                               block.headers &&
                               block.rows && (
-                                <div className="overflow-x-auto rounded-lg border border-gray-10">
-                                  <table className="w-full text-sm">
-                                    <thead>
-                                      <tr className="bg-primary-80 text-white">
-                                        {block.headers.map((h, hi) => (
-                                          <th
-                                            key={hi}
-                                            className="px-4 py-2 text-left font-semibold text-xs"
-                                          >
-                                            {h}
-                                          </th>
-                                        ))}
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {block.rows.map((row, ri) => (
-                                        <tr
-                                          key={ri}
-                                          className={
-                                            ri % 2 === 0
-                                              ? "bg-white"
-                                              : "bg-gray-5"
-                                          }
-                                        >
-                                          {row.map((cell, ci) => (
-                                            <td
-                                              key={ci}
-                                              className="px-4 py-2 text-xs text-gray-70"
+                                <>
+                                  {/* PC: 표 */}
+                                  <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-10">
+                                    <table className="w-full text-sm">
+                                      <thead>
+                                        <tr className="bg-primary-80 text-white">
+                                          {block.headers.map((h, hi) => (
+                                            <th
+                                              key={hi}
+                                              className="px-4 py-2 text-left font-semibold text-xs"
                                             >
-                                              {cell}
-                                            </td>
+                                              {h}
+                                            </th>
                                           ))}
                                         </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
+                                      </thead>
+                                      <tbody>
+                                        {block.rows.map((row, ri) => (
+                                          <tr
+                                            key={ri}
+                                            className={
+                                              ri % 2 === 0
+                                                ? "bg-white"
+                                                : "bg-gray-5"
+                                            }
+                                          >
+                                            {row.map((cell, ci) => (
+                                              <td
+                                                key={ci}
+                                                className="px-4 py-2 text-xs text-gray-70"
+                                              >
+                                                {cell}
+                                              </td>
+                                            ))}
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  {/* Mobile: 뱃지 카드형 */}
+                                  <MobileTableCards
+                                    headers={block.headers}
+                                    rows={block.rows}
+                                  />
+                                </>
                               )}
                           </div>
                         );
@@ -424,11 +489,11 @@ export default function NoticeDetailPage() {
 
                 {/* 태그 */}
                 {notice.tags && (
-                  <div className="flex flex-wrap gap-2 mt-10 pt-6 border-t border-gray-10">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-8 sm:mt-10 pt-4 sm:pt-6 border-t border-gray-10">
                     {notice.tags.split(",").map((tag) => (
                       <span
                         key={tag}
-                        className="bg-gray-5 text-gray-60 text-sm px-3 py-1 rounded-full"
+                        className="bg-gray-5 text-gray-60 text-[11px] sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full"
                       >
                         #{tag.trim()}
                       </span>
@@ -437,16 +502,16 @@ export default function NoticeDetailPage() {
                 )}
 
                 {/* CTA 버튼 */}
-                <div className="flex flex-wrap gap-3 mt-6">
+                <div className="flex flex-wrap gap-2 sm:gap-3 mt-5 sm:mt-6">
                   <Link
                     href="/contact"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-60 text-white text-sm font-semibold rounded-lg hover:bg-primary-70 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-primary-60 text-white text-[13px] sm:text-sm font-semibold rounded-lg hover:bg-primary-70 transition-colors"
                   >
                     이 공고로 상담신청
                   </Link>
                   <Link
                     href="/diagnosis"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-20 text-gray-60 text-sm font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 border border-gray-20 text-gray-60 text-[13px] sm:text-sm font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
                   >
                     자금적격 진단
                   </Link>

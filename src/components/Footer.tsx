@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-primary-80">
-      <div className="max-w-[1200px] mx-auto px-6 py-12">
+      <div className="max-w-[1200px] mx-auto px-6 py-6 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Logo & Info */}
           <div>
@@ -25,8 +25,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Service Links */}
-          <div className="flex gap-12">
+          {/* Service Links - PC only */}
+          <div className="hidden md:flex gap-12">
             <div>
               <h4 className="text-white font-semibold mb-3 text-sm">서비스</h4>
               <ul
@@ -104,8 +104,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* CTA */}
-          <div className="md:text-right">
+          {/* CTA - PC only */}
+          <div className="hidden md:block md:text-right">
             <p
               className="text-sm mb-3"
               style={{ color: "rgba(255,255,255,0.6)" }}
@@ -136,7 +136,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div
-          className="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs"
+          className="border-t border-white/10 mt-4 sm:mt-10 pt-4 sm:pt-6 pb-2 sm:pb-0 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 text-xs"
           style={{ color: "rgba(255,255,255,0.6)" }}
         >
           <div className="flex items-center gap-3">

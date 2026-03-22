@@ -111,7 +111,7 @@ JSON만 출력하세요. 다른 텍스트 없이.`;
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.3,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 4096,
           responseMimeType: "application/json",
         },
       }),

@@ -15,10 +15,10 @@ export default function CtaSection() {
       className="bg-primary-5 px-8 py-12 text-center"
       style={{ borderTop: "3px solid #0b50d0" }}
     >
-      <h2 className="text-[22px] font-bold text-gray-90 mb-1.5">
+      <h2 className="text-[20px] sm:text-[22px] font-bold text-gray-90 mb-1.5 [text-wrap:balance]">
         아래 조건에 해당하면 신청 가능합니다
       </h2>
-      <p className="text-sm text-gray-50 mb-6">
+      <p className="text-[13px] sm:text-sm text-gray-50 mb-6 [text-wrap:balance]">
         중소기업기본법상 중소기업이라면 업종·업력 제한 없이 대부분 신청
         가능합니다 (2026년 예산 소진 시 마감)
       </p>

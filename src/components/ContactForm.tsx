@@ -48,7 +48,19 @@ export default function ContactForm() {
       alert("필수 항목을 모두 입력해주세요.");
       return;
     }
+    // 즉시 완료 화면 → 백그라운드 저장
     setSubmitted(true);
+    const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL || "";
+    fetch(`${workerUrl}/api/inquiry`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData,
+        fundTypes: formData.situations,
+        type: "general",
+        source: "contact-form",
+      }),
+    }).catch(() => {});
   };
 
   if (submitted) {
