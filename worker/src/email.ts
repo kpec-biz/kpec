@@ -19,15 +19,22 @@ async function getAccessToken(env: Env): Promise<string> {
   return data.access_token;
 }
 
-// --- UTF-8 Base64url helper ---
-function utf8ToBase64url(str: string): string {
-  const bytes = new TextEncoder().encode(str);
+// --- UTF-8 to base64url (for Gmail API raw field) ---
+function toBase64url(bytes: Uint8Array): string {
   let binary = "";
   for (const b of bytes) binary += String.fromCharCode(b);
   return btoa(binary)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
+}
+
+// --- RFC2047 encode for headers ---
+function encodeHeader(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return `=?UTF-8?B?${btoa(binary)}?=`;
 }
 
 // --- Gmail API Send ---
@@ -40,19 +47,17 @@ async function sendGmail(
   const token = await getAccessToken(env);
   const from = env.GMAIL_SENDER;
 
-  const subjectB64 = utf8ToBase64url(subject);
   const raw = [
-    `From: =?UTF-8?B?${utf8ToBase64url("KPEC 경영컨설팅")}?= <${from}>`,
+    `From: ${encodeHeader("KPEC 경영컨설팅")} <${from}>`,
     `To: ${to}`,
-    `Subject: =?UTF-8?B?${subjectB64}?=`,
+    `Subject: ${encodeHeader(subject)}`,
     "MIME-Version: 1.0",
     "Content-Type: text/html; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
     "",
-    utf8ToBase64url(html),
+    html,
   ].join("\r\n");
 
-  const encoded = utf8ToBase64url(raw);
+  const encoded = toBase64url(new TextEncoder().encode(raw));
 
   const res = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/me/messages/send`,
