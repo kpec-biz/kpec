@@ -1,4 +1,5 @@
 import { Env, airtableFetch } from "./airtable";
+import { sendInquiryEmails } from "./email";
 
 const TABLE = "Inquiries";
 
@@ -112,6 +113,13 @@ export async function handleInquiry(
       );
     } catch {
       /* ignore telegram errors */
+    }
+
+    // 이메일 발송 (고객 + 관리자)
+    try {
+      await sendInquiryEmails(env, fields);
+    } catch {
+      /* ignore email errors — telegram + airtable is enough */
     }
 
     return Response.json({ success: true, id: result.id });

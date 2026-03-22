@@ -357,7 +357,9 @@ export default function DiagnosisPage() {
                     }`}
                   >
                     <span className="font-bold text-gray-90">{goal.label}</span>
-                    <span className="text-xs text-gray-50">{goal.desc}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-50">
+                      {goal.desc}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -486,52 +488,58 @@ export default function DiagnosisPage() {
                       className="w-full px-4 py-3 border border-gray-20 rounded-lg text-sm focus:border-primary-60 focus:outline-none transition-colors"
                     />
                   </div>
-                  <div className="flex gap-3 mt-5">
-                    <button
-                      onClick={async () => {
-                        if (!contact.name || !contact.phone || !contact.company)
-                          return;
-                        setSubmitting(true);
-                        try {
-                          const workerUrl =
-                            process.env.NEXT_PUBLIC_WORKER_URL || "";
-                          await fetch(`${workerUrl}/api/inquiry`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              name: contact.name,
-                              phone: contact.phone,
-                              email: contact.email,
-                              company: contact.company,
-                              industry: selected.industry,
-                              location: selected.location,
-                              operationYear: selected.year,
-                              revenue: selected.revenue,
-                              fundTypes: selected.goal,
-                              amount: selected.goal,
-                              type: "diagnosis",
-                              source: "diagnosis-wizard",
-                              message: `[자금진단] ${selected.industry} / ${selected.goal} / ${selected.location} / 업력 ${selected.year} / 매출 ${selected.revenue}`,
-                            }),
-                          });
-                          setSubmitted(true);
-                        } catch {
-                          alert(
-                            "접수 중 오류가 발생했습니다. 다시 시도해주세요.",
-                          );
-                        } finally {
-                          setSubmitting(false);
-                        }
-                      }}
-                      disabled={
-                        !contact.name ||
-                        !contact.phone ||
-                        !contact.company ||
-                        submitting
+                  <button
+                    onClick={async () => {
+                      if (!contact.name || !contact.phone || !contact.company)
+                        return;
+                      setSubmitting(true);
+                      try {
+                        const workerUrl =
+                          process.env.NEXT_PUBLIC_WORKER_URL || "";
+                        await fetch(`${workerUrl}/api/inquiry`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            name: contact.name,
+                            phone: contact.phone,
+                            email: contact.email,
+                            company: contact.company,
+                            industry: selected.industry,
+                            location: selected.location,
+                            operationYear: selected.year,
+                            revenue: selected.revenue,
+                            fundTypes: selected.goal,
+                            amount: selected.goal,
+                            type: "diagnosis",
+                            source: "diagnosis-wizard",
+                            message: `[자금진단] ${selected.industry} / ${selected.goal} / ${selected.location} / 업력 ${selected.year} / 매출 ${selected.revenue}`,
+                          }),
+                        });
+                        setSubmitted(true);
+                      } catch {
+                        alert(
+                          "접수 중 오류가 발생했습니다. 다시 시도해주세요.",
+                        );
+                      } finally {
+                        setSubmitting(false);
                       }
-                      className="flex-1 bg-primary-60 hover:bg-primary-70 disabled:bg-gray-20 disabled:text-gray-40 text-white font-semibold py-3 rounded-lg text-sm transition-colors"
+                    }}
+                    disabled={
+                      !contact.name ||
+                      !contact.phone ||
+                      !contact.company ||
+                      submitting
+                    }
+                    className="w-full bg-primary-60 hover:bg-primary-70 disabled:bg-gray-20 disabled:text-gray-40 text-white font-semibold py-3 rounded-lg text-sm transition-colors mt-5"
+                  >
+                    {submitting ? "접수 중..." : "상담 접수하기"}
+                  </button>
+                  <div className="flex gap-3 mt-2">
+                    <button
+                      onClick={() => setStep(3)}
+                      className="flex-1 border border-gray-20 text-gray-60 hover:border-gray-40 font-semibold py-2.5 rounded-lg text-sm transition-colors"
                     >
-                      {submitting ? "접수 중..." : "상담 접수하기"}
+                      이전
                     </button>
                     <button
                       onClick={() => {
@@ -550,7 +558,7 @@ export default function DiagnosisPage() {
                           company: "",
                         });
                       }}
-                      className="flex-1 border border-gray-20 text-gray-60 hover:border-gray-40 font-semibold py-3 rounded-lg text-sm transition-colors"
+                      className="flex-1 border border-gray-20 text-gray-60 hover:border-gray-40 font-semibold py-2.5 rounded-lg text-sm transition-colors"
                     >
                       다시 진단하기
                     </button>

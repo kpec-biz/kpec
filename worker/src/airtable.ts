@@ -6,6 +6,9 @@ export interface Env {
   ADMIN_EMAIL: string;
   CORS_ORIGIN: string;
   CRON_SECRET: string;
+  GOOGLE_SERVICE_ACCOUNT_EMAIL: string;
+  GOOGLE_PRIVATE_KEY: string;
+  GMAIL_SENDER: string;
 }
 
 const AIRTABLE_API = "https://api.airtable.com/v0";
