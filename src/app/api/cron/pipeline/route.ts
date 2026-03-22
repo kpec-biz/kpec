@@ -489,7 +489,9 @@ async function geminiAnalysisContent(topic: string) {
 주제: ${topic}
 분량: 2,000~3,000자. h2 4~5개, chart-data 블록 2개 이상(bar/compare/table).
 content 배열의 type은 반드시 "h2", "p", "ul", "info-box", "chart-data" 중 하나만 사용. "text" 타입 사용 금지, 본문은 "p" 사용.
+chart-data 중요: data 배열의 모든 항목에 반드시 숫자 value 값을 포함해야 함. value가 없으면 렌더링 오류 발생.
 chart-data 예시: {"type":"chart-data","chartType":"bar","title":"...","data":[{"name":"...","value":1000}]}
+compare 예시: {"type":"chart-data","chartType":"compare","title":"...","data":[{"name":"업무 효율","value":85},{"name":"정확도","value":92}]}
 "기업평가"→"현황분석". KPEC 전문가 시각 행동 권고 포함.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
   );
@@ -497,9 +499,9 @@ chart-data 예시: {"type":"chart-data","chartType":"bar","title":"...","data":[
 
 async function geminiRealisticImage(title: string, context: string) {
   const sceneMap: Record<string, string> = {
-    news: "Korean business professionals in modern Seoul office discussing documents",
+    news: "Korean business professionals in a modern private office reviewing documents at a desk",
     analysis:
-      "Korean government building or modern conference room with business data presentation",
+      "Modern corporate conference room with large monitor showing charts and graphs, business professionals seated at table",
     instagram:
       "Clean Korean business workspace with laptop and coffee, morning light, vertical 3:4 composition",
   };
@@ -516,7 +518,7 @@ async function geminiRealisticImage(title: string, context: string) {
             {
               parts: [
                 {
-                  text: `Professional editorial photograph related to "${title}". ${scene}. Natural lighting, Canon 5D quality. IMPORTANT: No text, no flags, no logos, no Korean characters, no English text. Realistic photography only, no geometric patterns.`,
+                  text: `Professional editorial photograph related to "${title}". ${scene}. Natural lighting, Canon 5D quality. CRITICAL RESTRICTIONS: Absolutely NO national flags (no Korean flag, no Taegeukgi, no any country flag), NO text of any language, NO logos, NO watermarks, NO signs, NO banners, NO government podiums, NO press briefing rooms. Show only people, furniture, and neutral office interiors. Realistic photography only.`,
                 },
               ],
             },
@@ -544,13 +546,26 @@ async function geminiInstaCaption(title: string, summary: string) {
     `Instagram 캡션 작성.
 제목: ${title}
 내용: ${summary}
-규칙: 200자 이내, 해시태그 5개, 이모지 적절히, CTA "프로필 링크에서 자세히 확인하세요"
-출력: {"caption":"..."}`,
+
+포맷 규칙:
+1. 첫 줄: 이모지 + 핵심 훅 (한 줄로 시선을 끄는 질문이나 문장)
+2. 빈 줄
+3. 본문 3~5줄: 각 줄 앞에 이모지(✅📌💡🔑📊 등) + 핵심 포인트 한 줄씩. 줄바꿈(\\n)으로 구분
+4. 빈 줄
+5. CTA: 👉 자세한 내용은 프로필 링크에서 확인하세요!
+6. 빈 줄
+7. 해시태그 줄: #정책자금 #중소기업 포함 5~7개
+
+레퍼런스 예시:
+"💰 은행 금리의 절반으로 자금 조달이 가능하다고?\\n\\n✅ 정책자금 기본 금리 연 2.5%~\\n📊 시중은행 대비 최대 50% 이자 절감\\n🔑 운전자금·시설자금 최대 60억 한도\\n💡 AX 스프린트 선정 시 추가 금리 우대\\n\\n👉 자세한 내용은 프로필 링크에서 확인하세요!\\n\\n#정책자금 #중소기업 #저금리 #KPEC #기업정책자금센터"
+
+출력: {"caption":"..."}
+caption 안에서 줄바꿈은 반드시 \\n으로 표현`,
     true,
   );
   return (
     result.caption ||
-    `${title}\n\n자세한 내용은 프로필 링크에서 확인하세요.\n#정책자금 #중소기업 #KPEC`
+    `💰 ${title}\n\n${summary}\n\n👉 자세한 내용은 프로필 링크에서 확인하세요!\n\n#정책자금 #중소기업 #KPEC #기업정책자금센터 #정부지원금`
   );
 }
 
@@ -567,13 +582,14 @@ const UNSPLASH_PHOTOS = [
   "photo-1504384308090-c894fdcc538d", // 테크
 ];
 
-const OVERLAY_COLORS = [
-  "#1A56A8",
-  "#0e2a5c",
-  "#ED2939",
-  "#7c3aed",
-  "#059669",
-  "#d97706",
+// Accent keyword highlight colors (cycling per day)
+const ACCENT_COLORS = [
+  "#ED2939", // red
+  "#4ADE80", // green
+  "#FACC15", // yellow
+  "#60A5FA", // blue
+  "#ED2939", // red
+  "#4ADE80", // green
 ];
 
 interface BannerText {
@@ -589,6 +605,7 @@ async function geminiInstaBannerText(
 ): Promise<BannerText> {
   const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
   const dayIndex = new Date().getDate() % OVERLAY_COLORS.length;
+  const reasonNum = String((new Date().getDate() % 12) + 1).padStart(2, "0");
   try {
     const todayStr = new Date().toISOString().slice(0, 10);
     const result = await geminiCall(
@@ -596,27 +613,34 @@ async function geminiInstaBannerText(
       `KPEC 기업정책자금센터 인스타그램 배너용 텍스트를 생성하세요.
 오늘 날짜: ${todayStr}
 
-주제 범위 (매일 다른 주제를 랜덤 선택):
-운전자금, 시설자금, 벤처인증, 이노비즈, 메인비즈, ISO인증, 금리우대, 수출지원, 창업자금, 긴급자금, R&D자금, 성공보수, 자금진단, 서류지원, DX·ESG, 소상공인, 정책뉴스
+주제 범위 (매일 다른 주제):
+운전자금, 시설자금, 벤처인증, 이노비즈, 메인비즈, ISO인증, 금리우대, 수출지원, 창업자금, 긴급자금, R&D자금, 성공보수, 자금진단, 서류지원, DX·ESG, 소상공인
+
+레퍼런스 예시:
+- title1: "최대", accent: "2년", title2: "거치", title3: "부담 없는 상환 구조"
+- title1: "매출 성장의", accent: "첫 번째 발판", title2: ""
+- title1: "기업 신용등급", accent: "UP", title2: "의 지름길"
+- title1: "연간", accent: "10조원", title2: "놓치면 손해입니다"
 
 규칙:
-- badge: 1줄, 2~4자 카테고리 (예: 운전자금, 벤처인증, 금리우대)
-- title: 정확히 2줄, 줄당 8~10자. 핵심 메시지. 줄바꿈은 \\n으로 표시
-- sub: 정확히 2줄, 줄당 10~14자. 부연 설명. 줄바꿈은 \\n으로 표시
-출력: {"badge":"...","title":"1줄\\n2줄","sub":"1줄\\n2줄"}`,
+- title1: 첫 번째 줄 텍스트 (강조 단어 앞부분)
+- accent: 강조 키워드 1~4자 (숫자나 핵심 단어, 다른 색으로 표시됨)
+- title2: 강조 키워드 뒷부분 또는 두 번째 줄 텍스트
+- sub: 정확히 2줄, 줄당 10~14자. 줄바꿈은 \\n으로 표시
+출력: {"title1":"...","accent":"...","title2":"...","sub":"1줄\\n2줄"}`,
     );
     return {
-      badge: result.badge || "정책자금",
-      title: result.title || "정부정책자금\\n지금 확인하세요",
+      badge: `REASON ${reasonNum}`,
+      title: `${result.title1 || "정부정책자금"}|||${result.accent || ""}|||${result.title2 || ""}`,
       sub: result.sub || "후불 성공보수제\\n승인 전 비용 0원",
-      accentColor: OVERLAY_COLORS[dayIndex],
+      accentColor: ACCENT_COLORS[dayIndex],
     };
   } catch {
     return {
-      badge: "정책자금",
-      title: "정부정책자금\\n지금 확인하세요",
+      badge: `REASON ${reasonNum}`,
+      title: "정부정책자금|||지금|||확인하세요",
       sub: "후불 성공보수제\\n승인 전 비용 0원",
-      accentColor: OVERLAY_COLORS[dayIndex],
+      accentColor: ACCENT_COLORS[dayIndex],
     };
   }
 }
@@ -634,20 +658,32 @@ async function compositeInstaBanner(b: BannerText): Promise<Buffer | null> {
     const photoIdx = new Date().getDate() % UNSPLASH_PHOTOS.length;
     const photoUrl = `https://images.unsplash.com/${UNSPLASH_PHOTOS[photoIdx]}?w=1200&q=70`;
 
-    const titleLines = b.title.split("\\n").slice(0, 2);
+    // Parse title: "title1|||accent|||title2"
+    const titleParts = b.title.split("|||");
+    const title1 = escXml(titleParts[0] || "");
+    const accent = escXml(titleParts[1] || "");
+    const title2 = escXml(titleParts[2] || "");
     const subLines = b.sub.split("\\n").slice(0, 2);
+    const accentColor = b.accentColor || "#ED2939";
+
+    // Build title HTML with accent keyword in color
+    let titleHtml = "";
+    if (title1) titleHtml += title1;
+    if (accent)
+      titleHtml += `<br><span style="color:${accentColor};">${accent}</span>`;
+    if (title2) titleHtml += title2;
 
     const html = `<div style="width:1080px;height:1440px;position:relative;overflow:hidden;background:#000;">
   <img src="${photoUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-  <div style="position:absolute;inset:0;background:${b.accentColor};opacity:0.8;"></div>
-  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding-top:450px;text-align:center;z-index:1;">
-    <span style="display:inline-block;background:#ED2939;color:#fff;font-size:28px;font-weight:700;padding:12px 32px;border-radius:50px;letter-spacing:2px;">${escXml(b.badge)}</span>
-    <div style="width:80px;height:4px;background:#ED2939;border-radius:2px;margin:32px 0;"></div>
-    <div style="font-size:68px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:24px;">${titleLines.map((l) => escXml(l)).join("<br>")}</div>
-    <div style="font-size:32px;color:rgba(255,255,255,0.8);line-height:1.6;">${subLines.map((l) => escXml(l)).join("<br>")}</div>
+  <div style="position:absolute;inset:0;background:rgba(10,15,30,0.87);"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:0 80px;z-index:1;">
+    <div style="margin-top:340px;display:inline-flex;align-items:center;justify-content:center;padding:16px 42px;border-radius:50px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.25);color:#fff;font-size:34px;font-weight:700;letter-spacing:3px;">${escXml(b.badge)}</div>
+    <div style="width:60px;height:4px;background:#ED2939;border-radius:2px;margin-top:36px;"></div>
+    <div style="margin-top:48px;text-align:center;font-size:88px;font-weight:900;color:#fff;line-height:1.3;letter-spacing:-1px;word-break:keep-all;">${titleHtml}</div>
+    <div style="margin-top:44px;text-align:center;font-size:38px;font-weight:400;color:rgba(255,255,255,0.7);line-height:1.7;">${subLines.map((l) => escXml(l)).join("<br>")}</div>
   </div>
   <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;z-index:1;">
-    <span style="font-size:42px;font-weight:900;color:#ED2939;">K</span><span style="font-size:42px;font-weight:300;color:#fff;">PEC</span><span style="font-size:22px;color:#fff;margin-left:10px;font-weight:700;">기업정책자금센터</span>
+    <span style="font-size:42px;font-weight:900;letter-spacing:2px;"><span style="color:#ED2939;">K</span><span style="color:#fff;">PEC</span></span><span style="font-size:36px;font-weight:700;color:#fff;margin-left:12px;letter-spacing:1px;">기업정책자금센터</span>
   </div>
 </div>`;
 

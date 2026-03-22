@@ -429,7 +429,7 @@ export default function NoticeDetailPage() {
                                       className="text-[15px] sm:text-2xl font-bold"
                                       style={{ color: d.color || "#0b50d0" }}
                                     >
-                                      {d.value}%
+                                      {d.value != null ? `${d.value}%` : "-"}
                                     </div>
                                     <div className="text-[9px] sm:text-[11px] text-gray-50 mt-0.5 sm:mt-1">
                                       {d.name}
