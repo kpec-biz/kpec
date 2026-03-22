@@ -431,7 +431,7 @@ async function geminiCall(model: string, prompt: string, json = true) {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.3,
-          maxOutputTokens: 8192,
+          maxOutputTokens: 16384,
           ...(json ? { responseMimeType: "application/json" } : {}),
         },
       }),
@@ -562,7 +562,7 @@ async function geminiInstaCaption(title: string, summary: string) {
 
 async function postToInstagram(imageUrl: string, caption: string) {
   const token = process.env.THREADS_SYSTEM_USER_TOKEN;
-  const igUserId = process.env.META_USER_ID;
+  const igUserId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
   if (!token || !igUserId) return false;
 
   try {
