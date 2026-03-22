@@ -122,7 +122,7 @@ export async function handleInquiry(
     try {
       await sendInquiryEmails(env, fields);
     } catch {
-      /* ignore email errors — telegram + airtable is enough */
+      /* ignore email errors */
     }
 
     return Response.json({ success: true, id: result.id });
