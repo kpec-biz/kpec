@@ -604,7 +604,7 @@ async function geminiInstaBannerText(
   _summary: string,
 ): Promise<BannerText> {
   const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
-  const dayIndex = new Date().getDate() % OVERLAY_COLORS.length;
+  const dayIndex = new Date().getDate() % ACCENT_COLORS.length;
   const reasonNum = String((new Date().getDate() % 12) + 1).padStart(2, "0");
   try {
     const todayStr = new Date().toISOString().slice(0, 10);
