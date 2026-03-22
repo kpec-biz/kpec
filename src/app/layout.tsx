@@ -77,6 +77,9 @@ export const metadata: Metadata = {
   verification: {
     // Google Search Console 인증 후 여기에 추가
     // google: "인증코드",
+    other: {
+      "naver-site-verification": "8dbf78d9acd7fa98e9ea3fe8fa5a691f2a3f4021",
+    },
   },
 };
 
