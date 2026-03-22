@@ -97,15 +97,15 @@ function baseWrap(header: string, body: string, footer: string): string {
 }
 
 function customerHeader(refNum: string): string {
-  return `<div style="background:${C.primary70};padding:16px 24px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;font-weight:700;color:#fff;letter-spacing:3px;">KPEC</span><span style="font-size:9px;color:rgba(255,255,255,0.4);">접수번호 ${refNum}</span></div>`;
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="background:${C.primary70};"><tr><td style="padding:16px 24px;font-size:11px;font-weight:700;color:#fff;letter-spacing:3px;">KPEC</td><td style="padding:16px 24px;text-align:right;font-size:9px;color:rgba(255,255,255,0.4);">접수번호 ${refNum}</td></tr></table>`;
 }
 
 function adminHeader(refNum: string, timestamp: string): string {
-  return `<div style="background:${C.primary80};padding:12px 24px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:10px;font-weight:700;color:#fff;letter-spacing:2px;">KPEC ADMIN</span><span style="font-size:9px;color:rgba(255,255,255,0.4);">${refNum} · ${timestamp}</span></div>`;
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="background:${C.primary80};"><tr><td style="padding:12px 24px;font-size:10px;font-weight:700;color:#fff;letter-spacing:2px;">KPEC ADMIN</td><td style="padding:12px 24px;text-align:right;font-size:9px;color:rgba(255,255,255,0.4);">${refNum} · ${timestamp}</td></tr></table>`;
 }
 
 function customerFooter(): string {
-  return `<div style="background:${C.gray5};padding:14px 24px;display:flex;justify-content:space-between;align-items:center;"><div><p style="margin:0;font-size:10px;color:${C.gray50};line-height:1.6;">후불 성공보수제 · 승인 전 비용 없음</p><p style="margin:2px 0 0;font-size:9px;color:${C.gray30};">KPEC 경영컨설팅 · jsbizfunding.kr</p></div><a href="tel:010-2020-5312" style="background:${C.primary60};color:#fff;text-decoration:none;font-size:11px;font-weight:600;padding:10px 18px;white-space:nowrap;border-radius:4px;">010-2020-5312</a></div>`;
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="background:${C.gray5};"><tr><td style="padding:14px 24px;"><p style="margin:0;font-size:10px;color:${C.gray50};line-height:1.6;">후불 성공보수제 · 승인 전 비용 없음</p><p style="margin:2px 0 0;font-size:9px;color:${C.gray30};">KPEC 경영컨설팅 · jsbizfunding.kr</p></td><td style="padding:14px 24px;text-align:right;vertical-align:middle;"><a href="tel:010-2020-5312" style="background:${C.primary60};color:#fff;text-decoration:none;font-size:11px;font-weight:600;padding:10px 18px;white-space:nowrap;border-radius:4px;">010-2020-5312</a></td></tr></table>`;
 }
 
 function divider(): string {
@@ -256,13 +256,15 @@ function diagnosisAdminEmail(
   ts: string,
 ): string {
   const body = `
-    <div style="padding:14px 24px 10px;display:flex;justify-content:space-between;align-items:center;">
-      <div>
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="padding:14px 24px 10px;">
         <p style="margin:0;font-size:14px;font-weight:700;color:${C.gray90};">새 자금진단 접수</p>
         <p style="margin:4px 0 0;font-size:11px;color:${C.gray40};">diagnosis-wizard · 자금적격진단</p>
-      </div>
-      <span style="font-size:10px;font-weight:600;background:${C.primary60};color:#fff;padding:4px 10px;border-radius:4px;">NEW</span>
-    </div>
+      </td>
+      <td style="padding:14px 24px 10px;text-align:right;vertical-align:top;">
+        <span style="font-size:10px;font-weight:600;background:${C.primary60};color:#fff;padding:4px 10px;border-radius:4px;">NEW</span>
+      </td>
+    </tr></table>
     ${divider()}
     <div style="padding:12px 24px;">
       <table style="width:100%;border-collapse:collapse;font-size:11px;color:${C.gray90};">
@@ -314,13 +316,15 @@ function contactCustomerEmail(f: InquiryFields, ref: string): string {
 // 4. 위자드폼 → 내부수신
 function contactAdminEmail(f: InquiryFields, ref: string, ts: string): string {
   const body = `
-    <div style="padding:14px 24px 10px;display:flex;justify-content:space-between;align-items:center;">
-      <div>
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="padding:14px 24px 10px;">
         <p style="margin:0;font-size:14px;font-weight:700;color:${C.gray90};">새 상담 접수</p>
         <p style="margin:4px 0 0;font-size:11px;color:${C.gray40};">contact-wizard · 일반상담</p>
-      </div>
-      <span style="font-size:10px;font-weight:600;background:${C.primary60};color:#fff;padding:4px 10px;border-radius:4px;">NEW</span>
-    </div>
+      </td>
+      <td style="padding:14px 24px 10px;text-align:right;vertical-align:top;">
+        <span style="font-size:10px;font-weight:600;background:${C.primary60};color:#fff;padding:4px 10px;border-radius:4px;">NEW</span>
+      </td>
+    </tr></table>
     ${divider()}
     <div style="padding:12px 24px;">
       <table style="width:100%;border-collapse:collapse;font-size:11px;color:${C.gray90};">
