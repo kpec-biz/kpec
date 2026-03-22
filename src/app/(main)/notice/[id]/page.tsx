@@ -73,7 +73,15 @@ interface NoticeItem {
 }
 
 interface ContentBlock {
-  type: "h2" | "h3" | "p" | "ul" | "info-box" | "warn-box" | "chart-data";
+  type:
+    | "h2"
+    | "h3"
+    | "p"
+    | "text"
+    | "ul"
+    | "info-box"
+    | "warn-box"
+    | "chart-data";
   text?: string;
   items?: string[];
   chartType?: "bar" | "compare" | "table";
@@ -323,7 +331,7 @@ export default function NoticeDetailPage() {
                           </h3>
                         );
                       }
-                      if (block.type === "p") {
+                      if (block.type === "p" || block.type === "text") {
                         return (
                           <p
                             key={i}

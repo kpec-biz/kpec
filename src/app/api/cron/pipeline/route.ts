@@ -485,6 +485,7 @@ async function geminiNewsContent(topic: string) {
     `KPEC 정책자금 뉴스 칼럼 작성.
 주제: ${topic}
 분량: 800~1,200자. 구조: h2 3~4개, p(200~300자), ul(3~5개), info-box.
+content 배열의 type은 반드시 "h2", "p", "ul", "info-box" 중 하나만 사용. "text" 타입 사용 금지.
 "기업평가"→"현황분석", "서류작성대행"→"서류 준비 지원". 구체적 수치 포함.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
   );
@@ -498,6 +499,7 @@ async function geminiAnalysisContent(topic: string) {
     `KPEC 정책자금 심층 분석 리포트 작성.
 주제: ${topic}
 분량: 2,000~3,000자. h2 4~5개, chart-data 블록 2개 이상(bar/compare/table).
+content 배열의 type은 반드시 "h2", "p", "ul", "info-box", "chart-data" 중 하나만 사용. "text" 타입 사용 금지, 본문은 "p" 사용.
 chart-data 예시: {"type":"chart-data","chartType":"bar","title":"...","data":[{"name":"...","value":1000}]}
 "기업평가"→"현황분석". KPEC 전문가 시각 행동 권고 포함.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
