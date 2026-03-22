@@ -95,6 +95,8 @@ export async function handleInquiry(
         fields.fundTypes ? `🎯 자금유형: ${fields.fundTypes}` : "",
         fields.amount ? `💵 희망금액: ${fields.amount}` : "",
         fields.message ? `💬 메모: ${fields.message}` : "",
+        ``,
+        `📎 <a href="https://airtable.com/${env.AIRTABLE_BASE_ID}">접수관리 바로가기</a>`,
       ]
         .filter(Boolean)
         .join("\n");
@@ -108,6 +110,7 @@ export async function handleInquiry(
             chat_id: env.TELEGRAM_CHAT_ID,
             text: tgText,
             parse_mode: "HTML",
+            disable_web_page_preview: true,
           }),
         },
       );
