@@ -96,7 +96,7 @@ export async function handleInquiry(
         fields.amount ? `💵 희망금액: ${fields.amount}` : "",
         fields.message ? `💬 메모: ${fields.message}` : "",
         ``,
-        `📎 <a href="https://airtable.com/${env.AIRTABLE_BASE_ID}">접수관리 바로가기</a>`,
+        `📎 <a href="https://admin.jsbizfunding.kr/inquiries">접수관리 바로가기</a>`,
       ]
         .filter(Boolean)
         .join("\n");
