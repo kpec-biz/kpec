@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 type Step = 1 | 2 | 3 | "result";
 
@@ -159,6 +158,14 @@ export default function DiagnosisPage() {
     location: "",
     goal: "",
   });
+  const [contact, setContact] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    company: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const results = getResults(
     selected.industry,
@@ -410,38 +417,149 @@ export default function DiagnosisPage() {
                 </div>
               ))}
 
-              <div className="bg-white rounded-xl border border-gray-10 p-6 text-center">
-                <p className="font-bold text-gray-90 mb-2">
-                  전문가와 정확히 확인하세요
-                </p>
-                <p className="text-sm text-gray-50 mb-5">
-                  위 결과는 참고용입니다. 정확한 자격 여부와 최적 자금은 상담을
-                  통해 확인하세요.
-                </p>
-                <div className="flex gap-3">
-                  <Link
-                    href="/contact"
-                    className="flex-1 bg-primary-60 hover:bg-primary-70 text-white font-semibold py-3 rounded-lg text-sm transition-colors"
-                  >
-                    무료상담 신청
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setStep(1);
-                      setSelected({
-                        industry: "",
-                        year: "",
-                        revenue: "",
-                        location: "",
-                        goal: "",
-                      });
-                    }}
-                    className="flex-1 border border-gray-20 text-gray-60 hover:border-gray-40 font-semibold py-3 rounded-lg text-sm transition-colors"
-                  >
-                    다시 진단하기
-                  </button>
+              {submitted ? (
+                <div className="bg-success/5 border border-success/20 rounded-xl p-6 text-center">
+                  <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-3">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#16a34a"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <p className="font-bold text-gray-90 mb-1">
+                    접수가 완료되었습니다
+                  </p>
+                  <p className="text-sm text-gray-50">
+                    담당 전문가가 빠르게 연락드리겠습니다.
+                  </p>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-white rounded-xl border border-gray-10 p-6">
+                  <p className="font-bold text-gray-90 mb-1 text-center">
+                    전문가 상담 접수
+                  </p>
+                  <p className="text-sm text-gray-50 mb-5 text-center">
+                    진단 결과를 바탕으로 전문가가 맞춤 상담을 드립니다.
+                  </p>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="이름 *"
+                      value={contact.name}
+                      onChange={(e) =>
+                        setContact({ ...contact, name: e.target.value })
+                      }
+                      className="w-full px-4 py-3 border border-gray-20 rounded-lg text-sm focus:border-primary-60 focus:outline-none transition-colors"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="연락처 *"
+                      value={contact.phone}
+                      onChange={(e) =>
+                        setContact({ ...contact, phone: e.target.value })
+                      }
+                      className="w-full px-4 py-3 border border-gray-20 rounded-lg text-sm focus:border-primary-60 focus:outline-none transition-colors"
+                    />
+                    <input
+                      type="email"
+                      placeholder="이메일"
+                      value={contact.email}
+                      onChange={(e) =>
+                        setContact({ ...contact, email: e.target.value })
+                      }
+                      className="w-full px-4 py-3 border border-gray-20 rounded-lg text-sm focus:border-primary-60 focus:outline-none transition-colors"
+                    />
+                    <input
+                      type="text"
+                      placeholder="상호명 *"
+                      value={contact.company}
+                      onChange={(e) =>
+                        setContact({ ...contact, company: e.target.value })
+                      }
+                      className="w-full px-4 py-3 border border-gray-20 rounded-lg text-sm focus:border-primary-60 focus:outline-none transition-colors"
+                    />
+                  </div>
+                  <div className="flex gap-3 mt-5">
+                    <button
+                      onClick={async () => {
+                        if (!contact.name || !contact.phone || !contact.company)
+                          return;
+                        setSubmitting(true);
+                        try {
+                          const workerUrl =
+                            process.env.NEXT_PUBLIC_WORKER_URL || "";
+                          await fetch(`${workerUrl}/api/inquiry`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              name: contact.name,
+                              phone: contact.phone,
+                              email: contact.email,
+                              company: contact.company,
+                              industry: selected.industry,
+                              location: selected.location,
+                              operationYear: selected.year,
+                              revenue: selected.revenue,
+                              fundTypes: selected.goal,
+                              amount: selected.goal,
+                              type: "diagnosis",
+                              source: "diagnosis-wizard",
+                              message: `[자금진단] ${selected.industry} / ${selected.goal} / ${selected.location} / 업력 ${selected.year} / 매출 ${selected.revenue}`,
+                            }),
+                          });
+                          setSubmitted(true);
+                        } catch {
+                          alert(
+                            "접수 중 오류가 발생했습니다. 다시 시도해주세요.",
+                          );
+                        } finally {
+                          setSubmitting(false);
+                        }
+                      }}
+                      disabled={
+                        !contact.name ||
+                        !contact.phone ||
+                        !contact.company ||
+                        submitting
+                      }
+                      className="flex-1 bg-primary-60 hover:bg-primary-70 disabled:bg-gray-20 disabled:text-gray-40 text-white font-semibold py-3 rounded-lg text-sm transition-colors"
+                    >
+                      {submitting ? "접수 중..." : "상담 접수하기"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setStep(1);
+                        setSelected({
+                          industry: "",
+                          year: "",
+                          revenue: "",
+                          location: "",
+                          goal: "",
+                        });
+                        setContact({
+                          name: "",
+                          phone: "",
+                          email: "",
+                          company: "",
+                        });
+                      }}
+                      className="flex-1 border border-gray-20 text-gray-60 hover:border-gray-40 font-semibold py-3 rounded-lg text-sm transition-colors"
+                    >
+                      다시 진단하기
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-30 mt-3 text-center">
+                    ※ 후불 성공보수제 · 무료상담
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
