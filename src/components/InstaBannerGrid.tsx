@@ -24,7 +24,7 @@ export default function InstaBannerGrid() {
 
   // Airtable에서 인스타 배너 동적 로드
   useEffect(() => {
-    fetch("/api/notices?category=인스타&limit=30")
+    fetch(`/api/notices?category=${encodeURIComponent("인스타")}&limit=30`)
       .then((r) => r.json())
       .then((data) => {
         if (data.records?.length > 0) {
