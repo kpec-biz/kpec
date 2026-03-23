@@ -4,6 +4,13 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "ALLOW-FROM https://polarad.co.kr" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self' https://polarad.co.kr https://*.polarad.co.kr" },
+        ],
+      },
+      {
         source: "/api/:path*",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "*" },

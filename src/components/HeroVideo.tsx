@@ -1,29 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 const HERO_VIDEO =
   "https://pub-d5cd496aa0ad4d72b720f78967753f9f.r2.dev/videos/hero/hero-6.mp4";
 
 export default function HeroVideo() {
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // 3초 타임아웃: 비디오 로드 실패/지연 시 강제로 콘텐츠 표시
+    const timeout = setTimeout(() => {
+      setVideoReady(true);
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const handleVideoReady = () => {
+    setVideoReady(true);
+  };
 
   return (
     <section className="relative z-[5] w-full min-h-[620px] flex items-center overflow-hidden pt-20 pb-16">
-      {/* Skeleton while video loads */}
-      {!videoLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 bg-[length:200%_100%] animate-shimmer z-[1]" />
+      {/* Static fallback background — always visible behind video */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1a2332] via-[#243447] to-[#2d4a5e]" />
+
+      {/* Skeleton shimmer — only while loading, max 3s */}
+      {!videoReady && (
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-300/20 via-gray-200/30 to-gray-300/20 bg-[length:200%_100%] animate-shimmer z-[1]" />
       )}
+
       {/* MP4 Background Video */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
-        onLoadedData={() => setVideoLoaded(true)}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`}
+        onLoadedData={handleVideoReady}
+        onError={handleVideoReady}
       >
         <source src={HERO_VIDEO} type="video/mp4" />
       </video>

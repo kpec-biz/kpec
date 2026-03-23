@@ -129,19 +129,39 @@ export async function handleInquiry(
   }
 
   if (request.method === "PATCH") {
-    // 상태 변경
-    const body = (await request.json()) as { id: string; status: string };
-    if (!body.id || !body.status) {
-      return Response.json(
-        { error: "id and status required" },
-        { status: 400 },
-      );
+    // 상태 변경 또는 메모 업데이트
+    const body = (await request.json()) as {
+      id: string;
+      status?: string;
+      memo?: string;
+    };
+    if (!body.id) {
+      return Response.json({ error: "id required" }, { status: 400 });
     }
+
+    const fields: Record<string, string> = {};
+    if (body.status) fields.status = body.status;
+    if (body.memo !== undefined) fields.memo = body.memo;
 
     await airtableFetch(env, TABLE, {
       method: "PATCH",
       recordId: body.id,
-      body: { fields: { status: body.status } },
+      body: { fields },
+    });
+
+    return Response.json({ success: true });
+  }
+
+  if (request.method === "DELETE") {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+    if (!id) {
+      return Response.json({ error: "id required" }, { status: 400 });
+    }
+
+    await airtableFetch(env, TABLE, {
+      method: "DELETE",
+      recordId: id,
     });
 
     return Response.json({ success: true });
