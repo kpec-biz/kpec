@@ -3,6 +3,8 @@ import { Env } from "./airtable";
 const BIZINFO_API = "https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do";
 const AIRTABLE_API = "https://api.airtable.com/v0";
 const TABLE_ID = "tblqm10vZyVADXMKQ";
+// Gemini API가 한국(Worker 리전)에서 차단되므로 Vercel 프록시 경유
+// Worker → Vercel /api/gemini-proxy → Gemini API (미국 리전)
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const PIPELINE_CHAT_ID = "-1003423266787";
 
@@ -355,22 +357,22 @@ async function geminiCall(
   prompt: string,
   json = true,
 ) {
-  const res = await fetch(
-    `${GEMINI_BASE}/${model}:generateContent?key=${env.GEMINI_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 16384,
-          ...(json ? { responseMimeType: "application/json" } : {}),
-        },
-      }),
+  // Gemini API는 한국 리전에서 차단 → Vercel 프록시 경유
+  const proxyUrl = `${env.CORS_ORIGIN}/api/gemini-proxy`;
+  const res = await fetch(proxyUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${env.CRON_SECRET}`,
     },
-  );
-  if (!res.ok) throw new Error(`Gemini ${model}: ${res.status}`);
+    body: JSON.stringify({ model, prompt, json }),
+  });
+  if (!res.ok) {
+    const errBody = await res.text();
+    throw new Error(
+      `Gemini proxy ${model}: ${res.status} - ${errBody.slice(0, 200)}`,
+    );
+  }
   const data = (await res.json()) as {
     candidates?: { content?: { parts?: { text?: string }[] } }[];
   };
@@ -455,25 +457,19 @@ async function geminiRealisticImage(
   const scene = sceneMap[context] || sceneMap.news;
 
   try {
-    const res = await fetch(
-      `${GEMINI_BASE}/gemini-3-pro-image-preview:generateContent?key=${env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `Professional editorial photograph related to "${title}". ${scene}. Natural lighting, Canon 5D quality. CRITICAL RESTRICTIONS: Absolutely NO national flags (no Korean flag, no Taegeukgi, no any country flag), NO text of any language, NO logos, NO watermarks, NO signs, NO banners, NO government podiums, NO press briefing rooms. Show only people, furniture, and neutral office interiors. Realistic photography only.`,
-                },
-              ],
-            },
-          ],
-          generationConfig: { responseModalities: ["IMAGE", "TEXT"] },
-        }),
+    const proxyUrl = `${env.CORS_ORIGIN}/api/gemini-proxy`;
+    const res = await fetch(proxyUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${env.CRON_SECRET}`,
       },
-    );
+      body: JSON.stringify({
+        model: "gemini-2.0-flash-exp",
+        prompt: `Professional editorial photograph related to "${title}". ${scene}. Natural lighting, Canon 5D quality. CRITICAL RESTRICTIONS: Absolutely NO national flags (no Korean flag, no Taegeukgi, no any country flag), NO text of any language, NO logos, NO watermarks, NO signs, NO banners, NO government podiums, NO press briefing rooms. Show only people, furniture, and neutral office interiors. Realistic photography only.`,
+        image: true,
+      }),
+    });
     if (!res.ok) return null;
     const data = (await res.json()) as {
       candidates?: {
@@ -549,9 +545,10 @@ async function geminiInstaBannerText(env: Env): Promise<BannerText> {
 - title1: "연간", accent: "10조원", title2: "놓치면 손해입니다"
 
 규칙:
-- title1: 첫 번째 줄 텍스트 (강조 단어 앞부분)
+- title1: 첫 번째 줄 텍스트 (최대 8자, 강조 단어 앞부분)
 - accent: 강조 키워드 1~4자 (숫자나 핵심 단어, 다른 색으로 표시됨)
-- title2: 강조 키워드 뒷부분 또는 두 번째 줄 텍스트
+- title2: 두 번째 줄 텍스트 (최대 8자)
+- 중요: title1+accent+title2 합쳐서 최대 16자. 2줄 이내로 렌더링되어야 함
 - sub: 정확히 2줄, 줄당 10~14자. 줄바꿈은 \\n으로 표시
 출력: {"title1":"...","accent":"...","title2":"...","sub":"1줄\\n2줄"}`,
     );
@@ -602,12 +599,12 @@ async function compositeInstaBanner(
 
     const html = `<div style="width:1080px;height:1440px;position:relative;overflow:hidden;background:#000;">
   <img src="${photoUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-  <div style="position:absolute;inset:0;background:rgba(10,15,30,0.87);"></div>
+  <div style="position:absolute;inset:0;background:rgba(10,15,30,0.82);"></div>
   <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:0 80px;z-index:1;">
-    <div style="margin-top:340px;display:inline-flex;align-items:center;justify-content:center;padding:16px 42px;border-radius:50px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.25);color:#fff;font-size:34px;font-weight:700;letter-spacing:3px;">${escXml(b.badge)}</div>
-    <div style="width:60px;height:4px;background:#ED2939;border-radius:2px;margin-top:36px;"></div>
-    <div style="margin-top:48px;text-align:center;font-size:88px;font-weight:900;color:#fff;line-height:1.3;letter-spacing:-1px;word-break:keep-all;">${titleHtml}</div>
-    <div style="margin-top:44px;text-align:center;font-size:38px;font-weight:400;color:rgba(255,255,255,0.7);line-height:1.7;">${subLines.map((l) => escXml(l)).join("<br>")}</div>
+    <div style="margin-top:380px;display:inline-flex;align-items:center;justify-content:center;padding:12px 32px;border-radius:8px;background:${accentColor};color:#fff;font-size:24px;font-weight:700;letter-spacing:2px;">${escXml(b.badge)}</div>
+    <div style="width:50px;height:3px;background:#ED2939;border-radius:2px;margin-top:28px;"></div>
+    <div style="margin-top:36px;text-align:center;font-size:58px;font-weight:900;color:#fff;line-height:1.35;letter-spacing:-1px;word-break:keep-all;">${titleHtml}</div>
+    <div style="margin-top:32px;text-align:center;font-size:26px;font-weight:400;color:rgba(255,255,255,0.7);line-height:1.7;">${subLines.map((l) => escXml(l)).join("<br>")}</div>
   </div>
   <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;z-index:1;">
     <span style="font-size:42px;font-weight:900;letter-spacing:2px;"><span style="color:#ED2939;">K</span><span style="color:#fff;">PEC</span></span><span style="font-size:36px;font-weight:700;color:#fff;margin-left:12px;letter-spacing:1px;">기업정책자금센터</span>

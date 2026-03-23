@@ -2,6 +2,10 @@ name = "kpec"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
+# Gemini API는 한국 리전에서 차단 → Smart Placement로 미국에서 실행
+[placement]
+mode = "smart"
+
 [triggers]
 crons = ["57 22 * * *"]  # UTC 22:57 = KST 07:57 (매일 08시)
 
