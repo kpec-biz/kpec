@@ -317,12 +317,11 @@ export async function GET(req: NextRequest) {
             );
             const imgUrl = `${process.env.R2_PUBLIC_URL}/${imgKey}`;
 
-            const igPosted = await postToInstagram(imgUrl, caption);
-
+            // IG 게시 생략 — 배너 생성 + R2 + Airtable만
             await airtableCreate({
               pblancId: instaId,
               title: bannerText.title.replace("\\n", " "),
-              originalTitle: "Instagram Auto Post",
+              originalTitle: "Instagram Banner",
               summary: caption,
               contentUrl: imgUrl,
               category: "인스타",
@@ -330,16 +329,14 @@ export async function GET(req: NextRequest) {
               applyPeriod: "",
               originalUrl: imgUrl,
               publishDate: today.toISOString().slice(0, 10),
-              status: igPosted ? "게시중" : "리라이팅완료",
-              tags: "인스타그램,자동게시",
+              status: "게시중",
+              tags: "인스타그램,배너",
             });
             results.instagram.success = 1;
             await sendPipelineLog(
-              igPosted ? "success" : "info",
+              "success",
               "인스타",
-              igPosted
-                ? "Instagram 게시 완료"
-                : "이미지 생성 완료 (IG 게시 실패)",
+              "배너 생성 완료 (IG 게시 생략)",
               caption.slice(0, 200),
             );
           }

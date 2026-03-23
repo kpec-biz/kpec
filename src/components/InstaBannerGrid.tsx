@@ -4,15 +4,49 @@ import { useState, useEffect, useRef } from "react";
 import { r2 } from "@/lib/r2-images";
 
 const PER_LOAD = 4;
-const banners = Array.from({ length: 15 }, (_, i) => ({
+
+// 정적 fallback 배너 (파이프라인 데이터 로드 실패 시)
+const staticBanners = Array.from({ length: 15 }, (_, i) => ({
   src: `/images/instagram/insta-${String(i + 1).padStart(2, "0")}.png`,
   alt: `KPEC 정책자금 배너 ${i + 1}`,
 }));
 
+interface BannerItem {
+  src: string;
+  alt: string;
+}
+
 export default function InstaBannerGrid() {
+  const [banners, setBanners] = useState<BannerItem[]>(staticBanners);
   const [count, setCount] = useState(PER_LOAD);
   const loaderRef = useRef<HTMLDivElement>(null);
   const done = count >= banners.length;
+
+  // Airtable에서 인스타 배너 동적 로드
+  useEffect(() => {
+    fetch("/api/notices?category=인스타&limit=30")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.records?.length > 0) {
+          const dynamic: BannerItem[] = data.records
+            .filter(
+              (r: Record<string, string>) => r.originalUrl || r.contentUrl,
+            )
+            .map((r: Record<string, string>) => ({
+              src: r.originalUrl || r.contentUrl,
+              alt: r.title || "KPEC 정책자금 배너",
+            }));
+          if (dynamic.length > 0) {
+            // 동적 배너(최신) + 정적 배너(기존)
+            const combined = [...dynamic, ...staticBanners];
+            setBanners(combined);
+          }
+        }
+      })
+      .catch(() => {
+        // 실패 시 정적 배너 유지
+      });
+  }, []);
 
   useEffect(() => {
     if (done) return;
@@ -29,7 +63,7 @@ export default function InstaBannerGrid() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [done, count]); // count 변경마다 observer 재설정
+  }, [done, count, banners.length]);
 
   return (
     <section className="py-12 bg-white">
@@ -68,7 +102,7 @@ export default function InstaBannerGrid() {
             >
               <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
                 <img
-                  src={r2(b.src)}
+                  src={b.src.startsWith("http") ? b.src : r2(b.src)}
                   alt={b.alt}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
@@ -89,7 +123,7 @@ export default function InstaBannerGrid() {
             >
               <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
                 <img
-                  src={r2(b.src)}
+                  src={b.src.startsWith("http") ? b.src : r2(b.src)}
                   alt={b.alt}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"

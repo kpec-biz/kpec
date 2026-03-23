@@ -35,12 +35,12 @@ export async function GET(req: NextRequest) {
       params.set("filterByFormula", `{pblancId}="${id}"`);
       params.set("maxRecords", "1");
     } else {
-      const filters = [
-        `OR({status}="리라이팅완료",{status}="게시중")`,
-        `{category}!="인스타"`,
-      ];
+      const filters = [`OR({status}="리라이팅완료",{status}="게시중")`];
       if (category) {
         filters.push(`{category}="${category}"`);
+      } else {
+        // 기본: 인스타 제외 (인스타는 category=인스타로 명시 조회)
+        filters.push(`{category}!="인스타"`);
       }
       if (exclude) {
         const cats = exclude.split(",").map((c) => c.trim());
