@@ -305,9 +305,7 @@ function InstagramFeed() {
             <span className="text-[7px] font-light text-primary-60">P</span>
           </div>
         </div>
-        <span className="text-[11px] font-semibold text-gray-80">
-          kpec_fund
-        </span>
+        <span className="text-[11px] font-semibold text-gray-80">kpec77</span>
         <svg
           className="w-3 h-3 text-primary-50 ml-auto"
           viewBox="0 0 24 24"
@@ -339,7 +337,7 @@ function InstagramFeed() {
           </span>
         </div>
         <p className="text-[11px] text-gray-70 leading-relaxed line-clamp-2">
-          <span className="font-semibold text-gray-90">kpec_fund</span>{" "}
+          <span className="font-semibold text-gray-90">kpec77</span>{" "}
           {post.caption}
         </p>
       </div>
