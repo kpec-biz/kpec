@@ -39,58 +39,22 @@ export async function runPipeline(env: Env): Promise<PipelineResults> {
       (existingData.records || []).map((r) => r.fields.pblancId),
     );
 
-    // ═══ 1. 기업마당 공고 (매일) ═══
+    // ═══ 1. 기업마당 공고 (매일) — Vercel 경유 (기업마당이 CF IP 차단) ═══
     try {
-      const items: Record<string, string>[] = [];
-      for (let page = 1; page <= 2; page++) {
-        const res = await fetch(
-          `${BIZINFO_API}?crtfcKey=${env.BIZINFO_API_KEY}&dataType=json&pageUnit=10&pageIndex=${page}`,
-        );
-        const data = (await res.json()) as {
-          jsonArray?: Record<string, string>[];
-        };
-        if (data.jsonArray) items.push(...data.jsonArray);
+      const bizRes = await fetch(`${env.CORS_ORIGIN}/api/cron/bizinfo`, {
+        headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
+      });
+      const bizData = (await bizRes.json()) as {
+        success?: number;
+        message?: string;
+        error?: string;
+      };
+      if (!bizRes.ok) {
+        throw new Error(bizData.error || `HTTP ${bizRes.status}`);
       }
-      const newItems = items.filter((i) => !existingIds.has(i.pblancId));
-
-      if (newItems.length === 0) {
-        results.bizinfo.skipped = true;
-      } else {
-        for (const item of newItems) {
-          try {
-            const rewritten = await geminiRewrite(env, item);
-            const contentKey = `posts/${item.pblancId}.json`;
-            await env.R2.put(contentKey, JSON.stringify(rewritten.content), {
-              httpMetadata: {
-                contentType: "application/json",
-                cacheControl: "public, max-age=86400",
-              },
-            });
-
-            const popupStatus = isPopupKeyword(item.pblancNm)
-              ? "팝업"
-              : "리라이팅완료";
-
-            await airtableCreate(env, {
-              pblancId: item.pblancId,
-              title: rewritten.title,
-              originalTitle: item.pblancNm,
-              summary: rewritten.summary,
-              contentUrl: `${env.R2_PUBLIC_URL}/${contentKey}`,
-              category: getCategory(item.pldirSportRealmLclasCodeNm),
-              source: item.jrsdInsttNm || "기업마당",
-              applyPeriod: item.reqstBeginEndDe || "",
-              originalUrl: item.pblancUrl || "",
-              publishDate: today.toISOString().slice(0, 10),
-              status: popupStatus,
-              tags: rewritten.tags || "",
-            });
-            results.bizinfo.success++;
-          } catch (e) {
-            // 개별 공고 실패는 건너뜀
-            console.error("공고 처리 실패:", item.pblancId, e);
-          }
-        }
+      results.bizinfo.success = bizData.success || 0;
+      results.bizinfo.skipped = bizData.message?.includes("없음") || false;
+      if (results.bizinfo.success > 0) {
         await sendTg(
           env,
           "success",
