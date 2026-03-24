@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 // Worker → Vercel → Gemini API 프록시
 // Worker가 한국 리전에서 실행되어 Gemini API 직접 호출 불가
