@@ -83,12 +83,20 @@ interface ContentBlock {
     | "warn-box"
     | "chart-data";
   text?: string;
+  children?: Array<{ text?: string }>;
   items?: string[];
   chartType?: "bar" | "compare" | "table";
   title?: string;
   data?: Array<{ name: string; value: number; color?: string }>;
   headers?: string[];
   rows?: string[][];
+}
+
+// Gemini 모델마다 text 또는 children 구조로 출력 — 둘 다 처리
+function blockText(block: ContentBlock): string {
+  if (block.text) return block.text;
+  if (block.children) return block.children.map((c) => c.text || "").join("");
+  return "";
 }
 
 export default function NoticeDetailPage() {
@@ -317,7 +325,7 @@ export default function NoticeDetailPage() {
                             className="text-base sm:text-lg font-bold text-gray-90 mt-6 sm:mt-8 mb-2 sm:mb-3 flex items-center gap-2"
                           >
                             <span className="w-1 h-5 bg-primary-60 rounded-full" />
-                            {block.text}
+                            {blockText(block)}
                           </h2>
                         );
                       }
@@ -327,7 +335,7 @@ export default function NoticeDetailPage() {
                             key={i}
                             className="text-[14px] sm:text-base font-semibold text-gray-80 mt-4 sm:mt-6 mb-1.5 sm:mb-2"
                           >
-                            {block.text}
+                            {blockText(block)}
                           </h3>
                         );
                       }
@@ -337,7 +345,7 @@ export default function NoticeDetailPage() {
                             key={i}
                             className="text-[13px] sm:text-base text-gray-60 leading-relaxed"
                           >
-                            {block.text}
+                            {blockText(block)}
                           </p>
                         );
                       }
@@ -362,7 +370,7 @@ export default function NoticeDetailPage() {
                             key={i}
                             className="bg-primary-5 border-l-4 border-primary-40 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-primary-70 text-[13px] sm:text-sm font-medium"
                           >
-                            {block.text}
+                            {blockText(block)}
                           </div>
                         );
                       }
@@ -372,7 +380,7 @@ export default function NoticeDetailPage() {
                             key={i}
                             className="bg-point-50/10 border-l-4 border-point-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-point-60 text-[13px] sm:text-sm font-medium"
                           >
-                            {block.text}
+                            {blockText(block)}
                           </div>
                         );
                       }
