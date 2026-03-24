@@ -435,7 +435,7 @@ async function geminiCall(model: string, prompt: string, json = true) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function geminiRewrite(item: any) {
-  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   return geminiCall(
     model,
     `당신은 KPEC 정책자금 전문 에디터입니다. 아래 기업마당 공고를 리라이팅하세요.
@@ -451,7 +451,7 @@ async function geminiRewrite(item: any) {
 }
 
 async function geminiGenerateTopic(type: string) {
-  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   const today = new Date().toISOString().slice(0, 10);
   const result = await geminiCall(
     model,
@@ -465,7 +465,7 @@ KPEC(기업정책자금센터)의 ${type === "뉴스" ? "정책자금 뉴스 칼
 }
 
 async function geminiNewsContent(topic: string) {
-  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   return geminiCall(
     model,
     `KPEC 정책자금 뉴스 칼럼 작성.
@@ -478,8 +478,7 @@ content 배열의 type은 반드시 "h2", "p", "ul", "info-box" 중 하나만 �
 }
 
 async function geminiAnalysisContent(topic: string) {
-  const model =
-    process.env.GEMINI_MODEL_ANALYSIS || "gemini-2.5-pro-preview-05-06";
+  const model = process.env.GEMINI_MODEL_ANALYSIS || "gemini-2.5-pro";
   return geminiCall(
     model,
     `KPEC 정책자금 심층 분석 리포트 작성.
@@ -537,7 +536,7 @@ async function geminiRealisticImage(title: string, context: string) {
 }
 
 async function geminiInstaCaption(title: string, summary: string) {
-  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   const result = await geminiCall(
     model,
     `Instagram 캡션 작성.
@@ -600,7 +599,7 @@ async function geminiInstaBannerText(
   _title: string,
   _summary: string,
 ): Promise<BannerText> {
-  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = process.env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   const dayIndex = new Date().getDate() % ACCENT_COLORS.length;
   const reasonNum = String((new Date().getDate() % 12) + 1).padStart(2, "0");
   try {

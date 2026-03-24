@@ -400,7 +400,7 @@ async function geminiCall(
 }
 
 async function geminiRewrite(env: Env, item: Record<string, string>) {
-  const model = env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   return geminiCall(
     env,
     model,
@@ -417,7 +417,7 @@ async function geminiRewrite(env: Env, item: Record<string, string>) {
 }
 
 async function geminiGenerateTopic(env: Env, type: string) {
-  const model = env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   const todayStr = new Date().toISOString().slice(0, 10);
   const result = await geminiCall(
     env,
@@ -432,7 +432,7 @@ KPEC(기업정책자금센터)의 ${type === "뉴스" ? "정책자금 뉴스 칼
 }
 
 async function geminiNewsContent(env: Env, topic: string) {
-  const model = env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   return geminiCall(
     env,
     model,
@@ -446,7 +446,7 @@ content 배열의 type은 반드시 "h2", "p", "ul", "info-box" 중 하나만 �
 }
 
 async function geminiAnalysisContent(env: Env, topic: string) {
-  const model = env.GEMINI_MODEL_ANALYSIS || "gemini-2.5-pro-preview-05-06";
+  const model = env.GEMINI_MODEL_ANALYSIS || "gemini-2.5-pro";
   return geminiCall(
     env,
     model,
@@ -483,7 +483,7 @@ async function geminiRealisticImage(
         Authorization: `Bearer ${env.CRON_SECRET}`,
       },
       body: JSON.stringify({
-        model: "gemini-2.0-flash-exp",
+        model: "gemini-3.1-flash-image-preview",
         prompt: `Professional editorial photograph related to "${title}". ${scene}. Natural lighting, Canon 5D quality. CRITICAL RESTRICTIONS: Absolutely NO national flags (no Korean flag, no Taegeukgi, no any country flag), NO text of any language, NO logos, NO watermarks, NO signs, NO banners, NO government podiums, NO press briefing rooms. Show only people, furniture, and neutral office interiors. Realistic photography only.`,
         image: true,
       }),
@@ -542,7 +542,7 @@ interface BannerText {
 }
 
 async function geminiInstaBannerText(env: Env): Promise<BannerText> {
-  const model = env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   const dayIndex = new Date().getDate() % ACCENT_COLORS.length;
   const reasonNum = String((new Date().getDate() % 12) + 1).padStart(2, "0");
   try {
@@ -665,7 +665,7 @@ async function compositeInstaBanner(
 }
 
 async function geminiInstaCaption(env: Env, title: string, summary: string) {
-  const model = env.GEMINI_MODEL_TEXT || "gemini-2.0-flash";
+  const model = env.GEMINI_MODEL_TEXT || "gemini-2.5-flash";
   const result = await geminiCall(
     env,
     model,
