@@ -39,28 +39,82 @@ export async function runPipeline(env: Env): Promise<PipelineResults> {
       (existingData.records || []).map((r) => r.fields.pblancId),
     );
 
-    // ═══ 1. 기업마당 공고 (매일) — Vercel 경유 (기업마당이 CF IP 차단) ═══
+    // ═══ 1. 기업마당 공고 (매일) ═══
+    // Vercel 경유로 목록만 조회 (기업마당이 CF IP 차단) → 리라이팅은 Worker에서 직접
     try {
+      // 1a. Vercel에서 기업마당 목록만 가져오기
       const bizRes = await fetch(`${env.CORS_ORIGIN}/api/cron/bizinfo`, {
         headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
       });
-      const bizData = (await bizRes.json()) as {
-        success?: number;
-        message?: string;
-        error?: string;
-      };
       if (!bizRes.ok) {
-        throw new Error(bizData.error || `HTTP ${bizRes.status}`);
-      }
-      results.bizinfo.success = bizData.success || 0;
-      results.bizinfo.skipped = bizData.message?.includes("없음") || false;
-      if (results.bizinfo.success > 0) {
-        await sendTg(
-          env,
-          "success",
-          "공고",
-          `${results.bizinfo.success}건 등록`,
+        const errText = await bizRes.text().catch(() => "");
+        throw new Error(
+          `bizinfo list: HTTP ${bizRes.status}: ${errText.slice(0, 200)}`,
         );
+      }
+      const bizData = (await bizRes.json()) as {
+        items?: Record<string, string>[];
+        total?: number;
+      };
+      const allItems = bizData.items || [];
+
+      // 1b. 기존 ID와 비교하여 신규만 필터
+      const newItems = allItems.filter(
+        (item) => !existingIds.has(item.pblancId),
+      );
+
+      if (newItems.length === 0) {
+        results.bizinfo.skipped = true;
+      } else {
+        // 1c. Worker에서 직접 리라이팅 + R2 + Airtable
+        for (const item of newItems) {
+          try {
+            const rewritten = await geminiRewrite(env, item);
+
+            // R2에 본문 저장
+            const contentKey = `posts/${item.pblancId}.json`;
+            await env.R2.put(contentKey, JSON.stringify(rewritten.content), {
+              httpMetadata: {
+                contentType: "application/json",
+                cacheControl: "public, max-age=86400",
+              },
+            });
+
+            // Airtable에 메타 저장
+            await airtableCreate(env, {
+              pblancId: item.pblancId,
+              title: rewritten.title,
+              originalTitle: item.pblancNm,
+              summary: rewritten.summary,
+              contentUrl: `${env.R2_PUBLIC_URL}/${contentKey}`,
+              category: getCategory(item.pldirSportRealmLclasCodeNm),
+              source: item.jrsdInsttNm,
+              applyPeriod: item.reqstBeginEndDe,
+              originalUrl: item.pblancUrl,
+              publishDate: item.creatPnttm?.slice(0, 10) || "",
+              status: "리라이팅완료",
+              tags: rewritten.tags || "",
+            });
+
+            results.bizinfo.success++;
+          } catch (itemErr) {
+            await sendTg(
+              env,
+              "error",
+              "공고",
+              `${item.pblancId} 리라이팅 실패`,
+              String(itemErr),
+            );
+          }
+        }
+        if (results.bizinfo.success > 0) {
+          await sendTg(
+            env,
+            "success",
+            "공고",
+            `${results.bizinfo.success}건 등록`,
+          );
+        }
       }
     } catch (e) {
       results.bizinfo.error = String(e);
