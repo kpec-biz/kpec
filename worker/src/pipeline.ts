@@ -140,7 +140,8 @@ export async function runPipeline(env: Env): Promise<PipelineResults> {
 
           let imgUrl = "";
           if (img) {
-            const imgKey = `thumbnails/${newsId}.png`;
+            const ts = Date.now();
+            const imgKey = `thumbnails/${newsId}_${ts}.png`;
             await env.R2.put(imgKey, img, {
               httpMetadata: {
                 contentType: "image/png",
@@ -193,7 +194,8 @@ export async function runPipeline(env: Env): Promise<PipelineResults> {
 
         let imgUrl = "";
         if (img) {
-          const imgKey = `thumbnails/${analysisId}.png`;
+          const ts = Date.now();
+          const imgKey = `thumbnails/${analysisId}_${ts}.png`;
           await env.R2.put(imgKey, img, {
             httpMetadata: {
               contentType: "image/png",
@@ -442,6 +444,7 @@ async function geminiNewsContent(env: Env, topic: string) {
 주제: ${topic}
 분량: 800~1,200자. 구조: h2 3~4개, p(200~300자), ul(3~5개), info-box.
 content 배열의 type은 반드시 "h2", "p", "ul", "info-box" 중 하나만 사용. "text" 타입 사용 금지.
+중요 JSON 형식: h2/p/info-box는 반드시 {"type":"h2","text":"제목"} 형식 사용. children 배열 사용 금지.
 "기업평가"→"현황분석", "서류작성대행"→"서류 준비 지원". 구체적 수치 포함.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
   );
@@ -457,6 +460,7 @@ async function geminiAnalysisContent(env: Env, topic: string) {
 주제: ${topic}
 분량: 2,000~3,000자. h2 4~5개, chart-data 블록 2개 이상(bar/compare/table).
 content 배열의 type은 반드시 "h2", "p", "ul", "info-box", "chart-data" 중 하나만 사용. "text" 타입 사용 금지, 본문은 "p" 사용.
+중요 JSON 형식: h2/p/info-box는 반드시 {"type":"h2","text":"제목"} 형식 사용. children 배열 사용 금지.
 chart-data 중요: data 배열의 모든 항목에 반드시 숫자 value 값을 포함해야 함. value가 없으면 렌더링 오류 발생.
 chart-data 예시: {"type":"chart-data","chartType":"bar","title":"...","data":[{"name":"...","value":1000}]}
 compare 예시: {"type":"chart-data","chartType":"compare","title":"...","data":[{"name":"업무 효율","value":85},{"name":"정확도","value":92}]}
