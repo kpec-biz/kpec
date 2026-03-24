@@ -11,12 +11,11 @@ export default function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // 3초 타임아웃: 비디오 로드 실패/지연 시 강제로 콘텐츠 표시
-    const timeout = setTimeout(() => {
+    // 비디오가 이미 캐시되어 있으면 바로 표시
+    const video = videoRef.current;
+    if (video && video.readyState >= 3) {
       setVideoReady(true);
-    }, 3000);
-
-    return () => clearTimeout(timeout);
+    }
   }, []);
 
   const handleVideoReady = () => {
@@ -28,10 +27,7 @@ export default function HeroVideo() {
       {/* Static fallback background — always visible behind video */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1a2332] via-[#243447] to-[#2d4a5e]" />
 
-      {/* Skeleton shimmer — only while loading, max 3s */}
-      {!videoReady && (
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-300/20 via-gray-200/30 to-gray-300/20 bg-[length:200%_100%] animate-shimmer z-[1]" />
-      )}
+      {/* No shimmer — static gradient background is already visible */}
 
       {/* MP4 Background Video */}
       <video
