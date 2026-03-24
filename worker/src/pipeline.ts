@@ -404,7 +404,7 @@ async function geminiRewrite(env: Env, item: Record<string, string>) {
   return geminiCall(
     env,
     model,
-    `당신은 KPEC 정책자금 전문 에디터입니다. 아래 기업마당 공고를 리라이팅하세요.
+    `당신은 KPEC(한국기업정책자금센터, 민간 경영컨설팅 업체)의 정책자금 전문 에디터입니다. 아래 기업마당 공고를 리라이팅하세요.
 공고명: ${item.pblancNm}
 주관: ${item.jrsdInsttNm} / 수행: ${item.excInsttNm || ""}
 접수: ${item.reqstBeginEndDe} / 분야: ${item.pldirSportRealmLclasCodeNm}
@@ -423,7 +423,8 @@ async function geminiGenerateTopic(env: Env, type: string) {
     env,
     model,
     `오늘은 ${todayStr}입니다.
-KPEC(기업정책자금센터)의 ${type === "뉴스" ? "정책자금 뉴스 칼럼" : "정책자금 심층 분석 리포트"} 주제를 1개 제안하세요.
+KPEC(한국기업정책자금센터, 민간 경영컨설팅 업체)의 ${type === "뉴스" ? "정책자금 뉴스 칼럼" : "정책자금 심층 분석 리포트"} 주제를 1개 제안하세요.
+KPEC는 중소기업의 정부 정책자금 신청을 대행하고 컨설팅하는 회사입니다.
 2026년 중소기업 정책자금(4.4조원), AI 기업 AX 스프린트, DX·ESG 우대, 수출기업화, 벤처/이노비즈/메인비즈 인증, ISO 인증, 소상공인 자금 등 관련 주제.
 기존에 다뤘을 법한 일반적인 주제 말고, 오늘 날짜에 맞는 시의성 있는 구체적 주제.
 출력: {"topic":"주제 제목 (50자 이내)","angle":"작성 방향 200자"}`,
@@ -436,7 +437,8 @@ async function geminiNewsContent(env: Env, topic: string) {
   return geminiCall(
     env,
     model,
-    `KPEC 정책자금 뉴스 칼럼 작성.
+    `KPEC(한국기업정책자금센터) 정책자금 뉴스 칼럼 작성.
+중요: KPEC는 공공기관이 아니라 민간 경영컨설팅 업체입니다. 중소기업의 정부 정책자금 신청을 대행하고 컨설팅하는 회사입니다.
 주제: ${topic}
 분량: 800~1,200자. 구조: h2 3~4개, p(200~300자), ul(3~5개), info-box.
 content 배열의 type은 반드시 "h2", "p", "ul", "info-box" 중 하나만 사용. "text" 타입 사용 금지.
@@ -450,14 +452,15 @@ async function geminiAnalysisContent(env: Env, topic: string) {
   return geminiCall(
     env,
     model,
-    `KPEC 정책자금 심층 분석 리포트 작성.
+    `KPEC(한국기업정책자금센터) 정책자금 심층 분석 리포트 작성.
+중요: KPEC는 공공기관이 아니라 민간 경영컨설팅 업체입니다. 중소기업의 정부 정책자금 신청을 대행하고 컨설팅하는 회사입니다. 후불 성공보수제로 운영됩니다.
 주제: ${topic}
 분량: 2,000~3,000자. h2 4~5개, chart-data 블록 2개 이상(bar/compare/table).
 content 배열의 type은 반드시 "h2", "p", "ul", "info-box", "chart-data" 중 하나만 사용. "text" 타입 사용 금지, 본문은 "p" 사용.
 chart-data 중요: data 배열의 모든 항목에 반드시 숫자 value 값을 포함해야 함. value가 없으면 렌더링 오류 발생.
 chart-data 예시: {"type":"chart-data","chartType":"bar","title":"...","data":[{"name":"...","value":1000}]}
 compare 예시: {"type":"chart-data","chartType":"compare","title":"...","data":[{"name":"업무 효율","value":85},{"name":"정확도","value":92}]}
-"기업평가"→"현황분석". KPEC 전문가 시각 행동 권고 포함.
+"기업평가"→"현황분석", "서류작성대행"→"서류 준비 지원". KPEC 컨설턴트 시각에서 중소기업 대표에게 행동 권고 포함.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
   );
 }
@@ -468,9 +471,9 @@ async function geminiRealisticImage(
   context: string,
 ): Promise<ArrayBuffer | null> {
   const sceneMap: Record<string, string> = {
-    news: "Korean business professionals in a modern private office reviewing documents at a desk",
+    news: "East Asian Korean professionals in a modern Korean office, reviewing documents at a desk, Seoul city visible through window",
     analysis:
-      "Modern corporate conference room with large monitor showing charts and graphs, business professionals seated at table",
+      "East Asian Korean professionals in a Korean corporate conference room with large monitor showing charts, Seoul skyline visible through window",
   };
   const scene = sceneMap[context] || sceneMap.news;
 
@@ -484,7 +487,7 @@ async function geminiRealisticImage(
       },
       body: JSON.stringify({
         model: "gemini-3.1-flash-image-preview",
-        prompt: `Professional editorial photograph related to "${title}". ${scene}. Natural lighting, Canon 5D quality. CRITICAL RESTRICTIONS: Absolutely NO national flags (no Korean flag, no Taegeukgi, no any country flag), NO text of any language, NO logos, NO watermarks, NO signs, NO banners, NO government podiums, NO press briefing rooms. Show only people, furniture, and neutral office interiors. Realistic photography only.`,
+        prompt: `Professional editorial photograph for article: "${title}". ${scene}. CRITICAL: ALL people must be East Asian Korean ethnicity only. Korean office setting in South Korea. Natural lighting, Canon 5D quality. RESTRICTIONS: NO flags, NO text, NO logos, NO watermarks, NO signs, NO banners, NO English or Korean text anywhere in the image. Only show Korean people, furniture, and office interiors. Realistic photography only.`,
         image: true,
       }),
     });
