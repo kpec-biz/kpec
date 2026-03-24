@@ -105,7 +105,7 @@ function adminHeader(refNum: string, timestamp: string): string {
 }
 
 function customerFooter(): string {
-  return `<table width="100%" cellpadding="0" cellspacing="0" style="background:${C.gray5};"><tr><td style="padding:14px 24px;"><p style="margin:0;font-size:10px;color:${C.gray50};line-height:1.6;">후불 성공보수제 · 승인 전 비용 없음</p><p style="margin:2px 0 0;font-size:9px;color:${C.gray30};">KPEC 경영컨설팅 · jsbizfunding.kr</p></td><td style="padding:14px 24px;text-align:right;vertical-align:middle;"><a href="tel:010-2020-5312" style="background:${C.primary60};color:#fff;text-decoration:none;font-size:11px;font-weight:600;padding:10px 18px;white-space:nowrap;border-radius:4px;">010-2020-5312</a></td></tr></table>`;
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="background:${C.gray5};"><tr><td style="padding:14px 24px;"><p style="margin:0;font-size:10px;color:${C.gray50};line-height:1.6;">후불 성공보수제 · 승인 전 비용 없음</p><p style="margin:2px 0 0;font-size:9px;color:${C.gray30};">KPEC 경영컨설팅 · jsbizfunding.kr</p></td><td style="padding:14px 24px;text-align:right;vertical-align:middle;"><a href="tel:0502-6800-4681" style="background:${C.primary60};color:#fff;text-decoration:none;font-size:11px;font-weight:600;padding:10px 18px;white-space:nowrap;border-radius:4px;">0502-6800-4681</a></td></tr></table>`;
 }
 
 function divider(): string {

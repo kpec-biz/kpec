@@ -628,7 +628,7 @@ export default function NoticeDetailPage() {
                   무료상담 신청
                 </Link>
                 <a
-                  href="tel:010-2020-5312"
+                  href="tel:050268004681"
                   className="block w-full mt-2 border border-white/30 text-white font-semibold py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"
                 >
                   전화상담

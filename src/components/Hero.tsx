@@ -56,7 +56,7 @@ export default function Hero() {
               무료상담 신청하기
             </Link>
             <a
-              href="tel:01020205312"
+              href="tel:050268004681"
               className="border-2 border-accent/40 hover:border-accent text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all text-center flex items-center justify-center gap-2"
             >
               <svg
