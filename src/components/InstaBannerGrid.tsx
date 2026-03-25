@@ -17,16 +17,24 @@ interface BannerItem {
 }
 
 export default function InstaBannerGrid() {
-  const [banners, setBanners] = useState<BannerItem[]>(staticBanners);
+  const [banners, setBanners] = useState<BannerItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(PER_LOAD);
   const loaderRef = useRef<HTMLDivElement>(null);
   const done = count >= banners.length;
 
   // Airtable에서 인스타 배너 동적 로드
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      // 3초 타임아웃: 로드 실패 시 정적 배너로 fallback
+      setLoading(false);
+      setBanners((prev) => (prev.length === 0 ? staticBanners : prev));
+    }, 3000);
+
     fetch(`/api/notices?category=${encodeURIComponent("인스타")}&limit=30`)
       .then((r) => r.json())
       .then((data) => {
+        clearTimeout(timeout);
         if (data.records?.length > 0) {
           const dynamic: BannerItem[] = data.records
             .filter(
@@ -37,15 +45,21 @@ export default function InstaBannerGrid() {
               alt: r.title || "KPEC 정책자금 배너",
             }));
           if (dynamic.length > 0) {
-            // 동적 배너(최신) + 정적 배너(기존)
-            const combined = [...dynamic, ...staticBanners];
-            setBanners(combined);
+            setBanners([...dynamic, ...staticBanners]);
+          } else {
+            setBanners(staticBanners);
           }
+        } else {
+          setBanners(staticBanners);
         }
       })
       .catch(() => {
-        // 실패 시 정적 배너 유지
-      });
+        clearTimeout(timeout);
+        setBanners(staticBanners);
+      })
+      .finally(() => setLoading(false));
+
+    return () => clearTimeout(timeout);
   }, []);
 
   useEffect(() => {
@@ -92,45 +106,63 @@ export default function InstaBannerGrid() {
 
         {/* Mobile: 4개만 2x2 */}
         <div className="grid grid-cols-2 gap-3 md:hidden">
-          {banners.slice(0, 4).map((b, i) => (
-            <a
-              key={i}
-              href="https://www.instagram.com/kpec77/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all"
-            >
-              <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
-                <img
-                  src={b.src.startsWith("http") ? b.src : r2(b.src)}
-                  alt={b.alt}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-            </a>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-lg overflow-hidden border border-gray-10"
+                >
+                  <div className="aspect-[3/4] bg-gray-10 animate-pulse" />
+                </div>
+              ))
+            : banners.slice(0, 4).map((b, i) => (
+                <a
+                  key={i}
+                  href="https://www.instagram.com/kpec77/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all"
+                >
+                  <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
+                    <img
+                      src={b.src.startsWith("http") ? b.src : r2(b.src)}
+                      alt={b.alt}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+                </a>
+              ))}
         </div>
         {/* Desktop: infinite scroll */}
         <div className="hidden md:grid grid-cols-4 gap-3">
-          {banners.slice(0, count).map((b, i) => (
-            <a
-              key={i}
-              href="https://www.instagram.com/kpec77/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all"
-            >
-              <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
-                <img
-                  src={b.src.startsWith("http") ? b.src : r2(b.src)}
-                  alt={b.alt}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-            </a>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-lg overflow-hidden border border-gray-10"
+                >
+                  <div className="aspect-[3/4] bg-gray-10 animate-pulse" />
+                </div>
+              ))
+            : banners.slice(0, count).map((b, i) => (
+                <a
+                  key={i}
+                  href="https://www.instagram.com/kpec77/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all"
+                >
+                  <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
+                    <img
+                      src={b.src.startsWith("http") ? b.src : r2(b.src)}
+                      alt={b.alt}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+                </a>
+              ))}
         </div>
 
         {!done && (

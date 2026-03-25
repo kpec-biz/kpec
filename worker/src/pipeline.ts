@@ -581,12 +581,13 @@ async function geminiInstaBannerText(env: Env): Promise<BannerText> {
 - title2: 두 번째 줄 텍스트 (최대 5자)
 - 중요: title1+accent+title2 합쳐서 최대 12자. 짧고 임팩트 있게
 - sub: 정확히 2줄, 줄당 8~12자. 줄바꿈은 \\n으로 표시
-출력: {"title1":"...","accent":"...","title2":"...","sub":"1줄\\n2줄"}`,
+반드시 1개만 출력. 배열 금지. 오직 단일 JSON 객체만: {"title1":"...","accent":"...","title2":"...","sub":"1줄\\n2줄"}`,
     );
+    const item = Array.isArray(result) ? result[0] : result;
     return {
       badge: `REASON ${reasonNum}`,
-      title: `${result.title1 || "정부정책자금"}|||${result.accent || ""}|||${result.title2 || ""}`,
-      sub: result.sub || "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
+      title: `${item.title1 || "정부정책자금"}|||${item.accent || ""}|||${item.title2 || ""}`,
+      sub: item.sub || "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
       accentColor: ACCENT_COLORS[dayIndex],
     };
   } catch {
