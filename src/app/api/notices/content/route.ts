@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(url, {
-      next: { revalidate: 3600 }, // 1시간 캐시
+      next: { revalidate: 300 }, // 5분 캐시
     });
 
     if (!res.ok) {
