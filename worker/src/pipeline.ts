@@ -414,6 +414,7 @@ async function geminiRewrite(env: Env, item: Record<string, string>) {
 
 규칙: 제목 40자 이내, 요약 2~3문장, 본문 JSON(h2/p/ul/info-box), 사업개요→지원대상→지원내용→신청방법 순서.
 "기업평가"→"현황분석", "서류작성대행"→"서류 준비 지원". 태그 5개.
+금지 단어: "대행", "신청대행", "신청 대행" 절대 사용 금지. 대표자 이름(실명) 절대 포함 금지. 전화번호 포함 금지.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
   );
 }
@@ -440,12 +441,14 @@ async function geminiNewsContent(env: Env, topic: string) {
     env,
     model,
     `KPEC(한국기업정책자금센터) 정책자금 뉴스 칼럼 작성.
-중요: KPEC는 공공기관이 아니라 민간 경영컨설팅 업체입니다. 중소기업의 정부 정책자금 신청을 대행하고 컨설팅하는 회사입니다.
+중요: KPEC는 공공기관이 아니라 민간 경영컨설팅 업체입니다. 정책자금 분석, 맞춤진단, 서류 준비 지원을 하는 회사입니다.
 주제: ${topic}
 분량: 800~1,200자. 구조: h2 3~4개, p(200~300자), ul(3~5개), info-box.
 content 배열의 type은 반드시 "h2", "p", "ul", "info-box" 중 하나만 사용. "text" 타입 사용 금지.
 중요 JSON 형식: h2/p/info-box는 반드시 {"type":"h2","text":"제목"} 형식 사용. children 배열 사용 금지.
 "기업평가"→"현황분석", "서류작성대행"→"서류 준비 지원". 구체적 수치 포함.
+금지 단어: "대행", "신청대행", "신청 대행" 절대 사용 금지. 대신 "맞춤 진단", "분석", "컨설팅" 사용.
+금지: 대표자 이름(김재성 등 실명) 절대 포함 금지. 전화번호는 절대 포함하지 마세요.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
   );
 }
@@ -456,7 +459,7 @@ async function geminiAnalysisContent(env: Env, topic: string) {
     env,
     model,
     `KPEC(한국기업정책자금센터) 정책자금 심층 분석 리포트 작성.
-중요: KPEC는 공공기관이 아니라 민간 경영컨설팅 업체입니다. 중소기업의 정부 정책자금 신청을 대행하고 컨설팅하는 회사입니다. 후불 성공보수제로 운영됩니다.
+중요: KPEC는 공공기관이 아니라 민간 경영컨설팅 업체입니다. 정책자금 분석, 맞춤진단, 서류 준비 지원을 하는 회사입니다.
 주제: ${topic}
 분량: 2,000~3,000자. h2 4~5개, chart-data 블록 2개 이상(bar/compare/table).
 content 배열의 type은 반드시 "h2", "p", "ul", "info-box", "chart-data" 중 하나만 사용. "text" 타입 사용 금지, 본문은 "p" 사용.
@@ -465,6 +468,8 @@ chart-data 중요: data 배열의 모든 항목에 반드시 숫자 value 값을
 chart-data 예시: {"type":"chart-data","chartType":"bar","title":"...","data":[{"name":"...","value":1000}]}
 compare 예시: {"type":"chart-data","chartType":"compare","title":"...","data":[{"name":"업무 효율","value":85},{"name":"정확도","value":92}]}
 "기업평가"→"현황분석", "서류작성대행"→"서류 준비 지원". KPEC 컨설턴트 시각에서 중소기업 대표에게 행동 권고 포함.
+금지 단어: "대행", "신청대행", "신청 대행" 절대 사용 금지. 대신 "맞춤 진단", "분석", "컨설팅" 사용.
+금지: 대표자 이름(김재성 등 실명) 절대 포함 금지. 전화번호는 절대 포함하지 마세요.
 출력: {"title":"...","summary":"...","content":[...],"tags":"..."}`,
   );
 }

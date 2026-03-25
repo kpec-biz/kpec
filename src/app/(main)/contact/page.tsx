@@ -168,57 +168,34 @@ export default function ContactPage() {
       <section className="py-12 bg-gray-5">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="grid lg:grid-cols-[260px_1fr_280px] gap-8">
-            {/* 왼쪽: 인물사진 + 카피 + 연락처 */}
+            {/* 왼쪽: 컨셉이미지 + CTA */}
             <div className="hidden lg:flex flex-col">
               <div className="bg-white rounded-xl border border-gray-10 overflow-hidden mb-4">
                 <div className="relative aspect-[3/4] bg-primary-5">
                   <Image
                     src={r2("/images/banners/consultant-portrait.png")}
-                    alt="전문 컨설턴트"
+                    alt="정책자금 상담"
                     fill
                     className="object-cover object-top"
                   />
-                  {/* AI 생성 이미지 안내 */}
-                  {/* consultant-portrait.png: AI-generated professional consultant portrait */}
                 </div>
                 <div className="p-5">
-                  <p className="font-bold text-gray-90">김재성 대표 컨설턴트</p>
-                  <p className="text-sm text-gray-50 mt-1">
-                    정책자금 전문 15년+
+                  <p className="font-bold text-gray-90">
+                    복잡한 서류, 까다로운 조건
                   </p>
-                  <div className="mt-4 space-y-2">
-                    <a
-                      href="tel:010-8417-6800"
-                      className="flex items-center gap-2 text-sm text-primary-60 hover:text-primary-70"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                        />
-                      </svg>
-                      전화상담
-                    </a>
-                    <p className="text-xs text-gray-40">평일 09:00 ~ 18:00</p>
-                  </div>
+                  <p className="text-sm text-gray-50 mt-1">
+                    전문가가 처음부터 끝까지 함께합니다
+                  </p>
+                  <a
+                    href="tel:01084176800"
+                    className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 bg-point-50 text-white rounded-lg font-semibold text-sm hover:bg-point-60 transition-colors"
+                  >
+                    전화상담 010-8417-6800
+                  </a>
+                  <p className="text-xs text-gray-40 text-center mt-2">
+                    평일 09:00 ~ 18:00
+                  </p>
                 </div>
-              </div>
-              <div className="bg-primary-5 rounded-xl p-4 border border-primary-10">
-                <p className="text-sm font-semibold text-primary-70 mb-2">
-                  후불 성공보수제
-                </p>
-                <p className="text-xs text-primary-60 leading-relaxed">
-                  자금 승인 전까지 비용 없음.
-                  <br />
-                  승인 이후에만 수수료 발생.
-                </p>
               </div>
             </div>
 
