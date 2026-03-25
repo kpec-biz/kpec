@@ -1,19 +1,109 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { r2 } from "@/lib/r2-images";
 
 const PER_LOAD = 4;
 
-// 정적 fallback 배너 (파이프라인 데이터 로드 실패 시)
-const staticBanners = Array.from({ length: 15 }, (_, i) => ({
-  src: `/images/instagram/insta-${String(i + 1).padStart(2, "0")}.png`,
-  alt: `KPEC 정책자금 배너 ${i + 1}`,
-}));
+const UNSPLASH_PHOTOS = [
+  "photo-1486406146926-c627a92ad1ab",
+  "photo-1497366216548-37526070297c",
+  "photo-1554224155-6726b3ff858f",
+  "photo-1560472354-b33ff0c44a43",
+  "photo-1507003211169-0a1dd7228f2d",
+  "photo-1573164713714-d95e436ab8d6",
+  "photo-1551836022-d5d88e9218df",
+  "photo-1504384308090-c894fdcc538d",
+];
 
-interface BannerItem {
-  src: string;
-  alt: string;
+const ACCENT_COLORS = [
+  "#ED2939",
+  "#4ADE80",
+  "#FACC15",
+  "#60A5FA",
+  "#ED2939",
+  "#4ADE80",
+];
+
+interface BannerData {
+  title1: string;
+  accent: string;
+  title2: string;
+  sub: string;
+}
+
+interface BannerItem extends BannerData {
+  badge: string;
+  accentColor: string;
+  photoUrl: string;
+}
+
+function BannerCard({ item }: { item: BannerItem }) {
+  const subLines = item.sub.split("\\n");
+  return (
+    <div className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all">
+      <div className="aspect-[3/4] relative overflow-hidden bg-black">
+        {/* 배경 이미지 */}
+        <img
+          src={item.photoUrl}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+        {/* 오버레이 */}
+        <div className="absolute inset-0 bg-[rgba(10,15,30,0.82)]" />
+        {/* 콘텐츠 */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-[7%] z-[1]">
+          {/* 뱃지 */}
+          <span
+            className="px-[3%] py-[1%] rounded text-white text-[2.2cqi] font-bold tracking-wider"
+            style={{ backgroundColor: item.accentColor }}
+          >
+            {item.badge}
+          </span>
+          {/* 구분선 */}
+          <div className="w-[5%] h-[0.3%] bg-[#ED2939] rounded mt-[2.5%]" />
+          {/* 타이틀 */}
+          <div className="mt-[3%] text-center text-white font-black text-[7.6cqi] leading-[1.3] tracking-tight break-keep">
+            {item.title1}
+            {item.accent && (
+              <>
+                <br />
+                <span style={{ color: item.accentColor }}>{item.accent}</span>
+              </>
+            )}
+            {item.title2}
+          </div>
+          {/* 서브텍스트 */}
+          <div className="mt-[3%] text-center text-[3.1cqi] text-white/75 leading-relaxed">
+            {subLines.map((line, i) => (
+              <span key={i}>
+                {line}
+                {i < subLines.length - 1 && <br />}
+              </span>
+            ))}
+          </div>
+        </div>
+        {/* 로고 */}
+        <div className="absolute bottom-[5.5%] left-0 right-0 text-center z-[1]">
+          <span className="text-[3.8cqi] font-black tracking-wider">
+            <span className="text-[#ED2939]">K</span>
+            <span className="text-white">PEC</span>
+          </span>
+          <span className="text-[3.1cqi] font-bold text-white ml-[1%] tracking-wide">
+            기업정책자금센터
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="rounded-lg overflow-hidden border border-gray-10">
+      <div className="aspect-[3/4] bg-gray-10 animate-pulse" />
+    </div>
+  );
 }
 
 export default function InstaBannerGrid() {
@@ -23,12 +113,9 @@ export default function InstaBannerGrid() {
   const loaderRef = useRef<HTMLDivElement>(null);
   const done = count >= banners.length;
 
-  // Airtable에서 인스타 배너 동적 로드
   useEffect(() => {
     const timeout = setTimeout(() => {
-      // 3초 타임아웃: 로드 실패 시 정적 배너로 fallback
       setLoading(false);
-      setBanners((prev) => (prev.length === 0 ? staticBanners : prev));
     }, 3000);
 
     fetch(`/api/notices?category=${encodeURIComponent("인스타")}&limit=30`)
@@ -36,26 +123,79 @@ export default function InstaBannerGrid() {
       .then((data) => {
         clearTimeout(timeout);
         if (data.records?.length > 0) {
-          const dynamic: BannerItem[] = data.records
-            .filter(
-              (r: Record<string, string>) => r.originalUrl || r.contentUrl,
-            )
-            .map((r: Record<string, string>) => ({
-              src: r.originalUrl || r.contentUrl,
-              alt: r.title || "KPEC 정책자금 배너",
-            }));
-          if (dynamic.length > 0) {
-            setBanners([...dynamic, ...staticBanners]);
-          } else {
-            setBanners(staticBanners);
+          const items: BannerItem[] = data.records
+            .map((r: Record<string, string>, idx: number) => {
+              const title = r.title || "";
+              const parts = title.split("|||");
+              return {
+                title1: parts[0] || "",
+                accent: parts[1] || "",
+                title2: parts[2] || "",
+                sub: r.summary?.split("\n")[0]
+                  ? `${parts[0] || "정책자금"} 안내\\n지금 바로 확인하세요`
+                  : "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
+                badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
+                accentColor: ACCENT_COLORS[idx % ACCENT_COLORS.length],
+                photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
+              };
+            })
+            .filter((b: BannerItem) => b.title1 && b.title1 !== "정부정책자금");
+
+          // contentUrl이 JSON이면 파싱해서 사용
+          const enriched: Promise<BannerItem>[] = data.records.map(
+            async (r: Record<string, string>, idx: number) => {
+              if (r.contentUrl?.endsWith(".json")) {
+                try {
+                  const res = await fetch(
+                    `/api/notices/content?url=${encodeURIComponent(r.contentUrl)}`,
+                  );
+                  const json = await res.json();
+                  if (json.title1) {
+                    return {
+                      ...json,
+                      badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
+                      accentColor:
+                        json.accentColor ||
+                        ACCENT_COLORS[idx % ACCENT_COLORS.length],
+                      photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
+                    };
+                  }
+                } catch {
+                  // fallback to title parsing
+                }
+              }
+              // title 파싱 fallback
+              const title = r.title || "";
+              const parts = title.split("|||");
+              return {
+                title1: parts[0] || "",
+                accent: parts[1] || "",
+                title2: parts[2] || "",
+                sub: "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
+                badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
+                accentColor: ACCENT_COLORS[idx % ACCENT_COLORS.length],
+                photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
+              };
+            },
+          );
+
+          Promise.all(enriched).then((results) => {
+            const valid = results.filter(
+              (b) => b.title1 && b.title1 !== "정부정책자금",
+            );
+            if (valid.length > 0) {
+              setBanners(valid);
+            }
+          });
+
+          // 즉시 title 파싱 버전 표시 (JSON fetch 완료 전)
+          if (items.length > 0) {
+            setBanners(items);
           }
-        } else {
-          setBanners(staticBanners);
         }
       })
       .catch(() => {
         clearTimeout(timeout);
-        setBanners(staticBanners);
       })
       .finally(() => setLoading(false));
 
@@ -78,6 +218,8 @@ export default function InstaBannerGrid() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [done, count, banners.length]);
+
+  if (!loading && banners.length === 0) return null;
 
   return (
     <section className="py-12 bg-white">
@@ -105,67 +247,29 @@ export default function InstaBannerGrid() {
         </div>
 
         {/* Mobile: 4개만 2x2 */}
-        <div className="grid grid-cols-2 gap-3 md:hidden">
+        <div
+          className="grid grid-cols-2 gap-3 md:hidden"
+          style={{ containerType: "inline-size" }}
+        >
           {loading
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg overflow-hidden border border-gray-10"
-                >
-                  <div className="aspect-[3/4] bg-gray-10 animate-pulse" />
-                </div>
-              ))
-            : banners.slice(0, 4).map((b, i) => (
-                <a
-                  key={i}
-                  href="https://www.instagram.com/kpec77/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all"
-                >
-                  <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
-                    <img
-                      src={b.src.startsWith("http") ? b.src : r2(b.src)}
-                      alt={b.alt}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                </a>
-              ))}
+            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+            : banners
+                .slice(0, 4)
+                .map((b, i) => <BannerCard key={i} item={b} />)}
         </div>
         {/* Desktop: infinite scroll */}
-        <div className="hidden md:grid grid-cols-4 gap-3">
+        <div
+          className="hidden md:grid grid-cols-4 gap-3"
+          style={{ containerType: "inline-size" }}
+        >
           {loading
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg overflow-hidden border border-gray-10"
-                >
-                  <div className="aspect-[3/4] bg-gray-10 animate-pulse" />
-                </div>
-              ))
-            : banners.slice(0, count).map((b, i) => (
-                <a
-                  key={i}
-                  href="https://www.instagram.com/kpec77/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all"
-                >
-                  <div className="aspect-[3/4] relative overflow-hidden bg-gray-5">
-                    <img
-                      src={b.src.startsWith("http") ? b.src : r2(b.src)}
-                      alt={b.alt}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                </a>
-              ))}
+            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+            : banners
+                .slice(0, count)
+                .map((b, i) => <BannerCard key={i} item={b} />)}
         </div>
 
-        {!done && (
+        {!done && !loading && (
           <div ref={loaderRef} className="flex justify-center py-6">
             <div className="w-6 h-6 border-2 border-gray-20 border-t-primary-50 rounded-full animate-spin" />
           </div>

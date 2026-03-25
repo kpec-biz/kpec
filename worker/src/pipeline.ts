@@ -227,58 +227,52 @@ export async function runPipeline(env: Env): Promise<PipelineResults> {
       await sendTg(env, "error", "분석", "파이프라인 실패", String(e));
     }
 
-    // ═══ 4. 인스타그램 배너 (매일) — 생성만, IG 게시 안 함 ═══
+    // ═══ 4. 인스타그램 배너 (매일) — 텍스트풀 기반, 프론트엔드 HTML 렌더링 ═══
     try {
       const instaId = `INSTA_${today.toISOString().slice(0, 10).replace(/-/g, "")}`;
       if (!existingIds.has(instaId)) {
-        const bannerText = await geminiInstaBannerText(env);
-        const bannerImg = await compositeInstaBanner(env, bannerText);
-        const caption = await geminiInstaCaption(
+        const bannerText = geminiInstaBannerText();
+        const caption = `💰 ${bannerText.title.replace(/\|\|\|/g, " ").trim()}\n\n${bannerText.sub.replace(/\\n/g, "\n")}\n\n👉 자세한 내용은 프로필 링크에서 확인하세요!\n\n#정책자금 #중소기업 #KPEC #기업정책자금센터 #정부지원금`;
+
+        // contentUrl에 텍스트 데이터를 JSON으로 저장 (프론트엔드에서 HTML 렌더링)
+        const bannerData = JSON.stringify({
+          badge: bannerText.badge,
+          title1: bannerText.title.split("|||")[0] || "",
+          accent: bannerText.title.split("|||")[1] || "",
+          title2: bannerText.title.split("|||")[2] || "",
+          sub: bannerText.sub,
+          accentColor: bannerText.accentColor,
+        });
+        const contentKey = `instagram/${instaId}.json`;
+        await env.R2.put(contentKey, bannerData, {
+          httpMetadata: {
+            contentType: "application/json",
+            cacheControl: "public, max-age=86400",
+          },
+        });
+
+        await airtableCreate(env, {
+          pblancId: instaId,
+          title: bannerText.title,
+          originalTitle: "Instagram Banner",
+          summary: caption,
+          contentUrl: `${env.R2_PUBLIC_URL}/${contentKey}`,
+          category: "인스타",
+          source: "KPEC",
+          applyPeriod: "",
+          originalUrl: "",
+          publishDate: today.toISOString().slice(0, 10),
+          status: "게시중",
+          tags: "인스타그램,배너",
+        });
+        results.instagram.success = 1;
+        await sendTg(
           env,
-          bannerText.title,
-          bannerText.sub,
+          "success",
+          "인스타",
+          "배너 텍스트 등록",
+          bannerText.title.replace(/\|\|\|/g, " "),
         );
-
-        if (!bannerImg) {
-          await sendTg(
-            env,
-            "error",
-            "인스타",
-            "HCTI 배너 이미지 생성 실패 (null 반환)",
-          );
-        } else {
-          const imgKey = `instagram/${instaId}.png`;
-          await env.R2.put(imgKey, bannerImg, {
-            httpMetadata: {
-              contentType: "image/png",
-              cacheControl: "public, max-age=604800",
-            },
-          });
-          const imgUrl = `${env.R2_PUBLIC_URL}/${imgKey}`;
-
-          await airtableCreate(env, {
-            pblancId: instaId,
-            title: bannerText.title.replace("\\n", " "),
-            originalTitle: "Instagram Banner",
-            summary: caption,
-            contentUrl: imgUrl,
-            category: "인스타",
-            source: "KPEC",
-            applyPeriod: "",
-            originalUrl: imgUrl,
-            publishDate: today.toISOString().slice(0, 10),
-            status: "게시중",
-            tags: "인스타그램,배너",
-          });
-          results.instagram.success = 1;
-          await sendTg(
-            env,
-            "success",
-            "인스타",
-            "배너 생성 완료",
-            caption.slice(0, 200),
-          );
-        }
       }
     } catch (e) {
       results.instagram.error = String(e);
@@ -554,154 +548,26 @@ interface BannerText {
   accentColor: string;
 }
 
-async function geminiInstaBannerText(env: Env): Promise<BannerText> {
-  const model = env.GEMINI_MODEL_TEXT || "gemini-3-flash-preview";
-  const dayIndex = new Date().getDate() % ACCENT_COLORS.length;
-  const reasonNum = String((new Date().getDate() % 12) + 1).padStart(2, "0");
-  try {
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const result = await geminiCall(
-      env,
-      model,
-      `KPEC 기업정책자금센터 인스타그램 배너용 텍스트를 생성하세요.
-오늘 날짜: ${todayStr}
+// 텍스트풀 300개 — 날짜 기반 순환 (banner-pool.json)
+import bannerPool from "./banner-pool.json";
 
-주제 범위 (매일 다른 주제):
-운전자금, 시설자금, 벤처인증, 이노비즈, 메인비즈, ISO인증, 금리우대, 수출지원, 창업자금, 긴급자금, R&D자금, 자금진단, 서류지원, DX·ESG, 소상공인
-
-레퍼런스 예시:
-- title1: "최대", accent: "2년", title2: "거치"
-- title1: "매출 성장의", accent: "발판", title2: ""
-- title1: "신용등급", accent: "UP", title2: "지름길"
-- title1: "연", accent: "10조원", title2: "놓치면 손해"
-
-규칙:
-- title1: 첫 번째 줄 앞부분 (최대 5자)
-- accent: 강조 키워드 1~4자 (숫자나 핵심 단어, 다른 색으로 표시됨)
-- title2: 두 번째 줄 텍스트 (최대 5자)
-- 중요: title1+accent+title2 합쳐서 최대 12자. 짧고 임팩트 있게
-- sub: 정확히 2줄, 줄당 8~12자. 줄바꿈은 \\n으로 표시
-반드시 1개만 출력. 배열 금지. 오직 단일 JSON 객체만: {"title1":"...","accent":"...","title2":"...","sub":"1줄\\n2줄"}`,
-    );
-    const item = Array.isArray(result) ? result[0] : result;
-    return {
-      badge: `REASON ${reasonNum}`,
-      title: `${item.title1 || "정부정책자금"}|||${item.accent || ""}|||${item.title2 || ""}`,
-      sub: item.sub || "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
-      accentColor: ACCENT_COLORS[dayIndex],
-    };
-  } catch {
-    return {
-      badge: `REASON ${reasonNum}`,
-      title: "정부정책자금|||지금|||확인하세요",
-      sub: "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
-      accentColor: ACCENT_COLORS[dayIndex],
-    };
-  }
-}
-
-function escXml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-async function compositeInstaBanner(
-  env: Env,
-  b: BannerText,
-): Promise<ArrayBuffer | null> {
-  try {
-    const photoIdx = new Date().getDate() % UNSPLASH_PHOTOS.length;
-    const photoUrl = `https://images.unsplash.com/${UNSPLASH_PHOTOS[photoIdx]}?w=1200&q=70`;
-
-    const titleParts = b.title.split("|||");
-    const title1 = escXml(titleParts[0] || "");
-    const accent = escXml(titleParts[1] || "");
-    const title2 = escXml(titleParts[2] || "");
-    const subLines = b.sub.split("\\n").slice(0, 2);
-    const accentColor = b.accentColor || "#ED2939";
-
-    let titleHtml = "";
-    if (title1) titleHtml += title1;
-    if (accent)
-      titleHtml += `<br><span style="color:${accentColor};">${accent}</span>`;
-    if (title2) titleHtml += title2;
-
-    const html = `<div style="width:1080px;height:1440px;position:relative;overflow:hidden;background:#000;">
-  <img src="${photoUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-  <div style="position:absolute;inset:0;background:rgba(10,15,30,0.82);"></div>
-  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:0 80px;z-index:1;">
-    <div style="margin-top:340px;display:inline-flex;align-items:center;justify-content:center;padding:14px 40px;border-radius:8px;background:${accentColor};color:#fff;font-size:30px;font-weight:700;letter-spacing:2px;">${escXml(b.badge)}</div>
-    <div style="width:60px;height:4px;background:#ED2939;border-radius:2px;margin-top:32px;"></div>
-    <div style="margin-top:40px;text-align:center;font-size:82px;font-weight:900;color:#fff;line-height:1.3;letter-spacing:-2px;word-break:keep-all;">${titleHtml}</div>
-    <div style="margin-top:36px;text-align:center;font-size:34px;font-weight:400;color:rgba(255,255,255,0.75);line-height:1.7;">${subLines.map((l) => escXml(l)).join("<br>")}</div>
-  </div>
-  <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;z-index:1;">
-    <span style="font-size:52px;font-weight:900;letter-spacing:2px;"><span style="color:#ED2939;">K</span><span style="color:#fff;">PEC</span></span><span style="font-size:42px;font-weight:700;color:#fff;margin-left:14px;letter-spacing:1px;">기업정책자금센터</span>
-  </div>
-</div>`;
-
-    const css =
-      "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap'); * { font-family: 'Noto Sans KR', sans-serif; margin:0; padding:0; box-sizing:border-box; }";
-
-    const res = await fetch("https://hcti.io/v1/image", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(`${env.HCTI_API_USER_ID}:${env.HCTI_API_KEY}`)}`,
-      },
-      body: JSON.stringify({
-        html,
-        css,
-        viewport_width: 1080,
-        viewport_height: 1440,
-      }),
-    });
-
-    const data = (await res.json()) as { url?: string; error?: string };
-    if (!data.url) {
-      console.error("HCTI no URL:", JSON.stringify(data).slice(0, 300));
-      return null;
-    }
-
-    const imgRes = await fetch(data.url);
-    if (!imgRes.ok) {
-      console.error("HCTI image fetch failed:", imgRes.status);
-      return null;
-    }
-    return await imgRes.arrayBuffer();
-  } catch (e) {
-    console.error("compositeInstaBanner error:", e);
-    return null;
-  }
-}
-
-async function geminiInstaCaption(env: Env, title: string, summary: string) {
-  const model = env.GEMINI_MODEL_TEXT || "gemini-3-flash-preview";
-  const result = await geminiCall(
-    env,
-    model,
-    `Instagram 캡션 작성.
-제목: ${title}
-내용: ${summary}
-
-포맷 규칙:
-1. 첫 줄: 이모지 + 핵심 훅 (한 줄로 시선을 끄는 질문이나 문장)
-2. 빈 줄
-3. 본문 3~5줄: 각 줄 앞에 이모지(✅📌💡🔑📊 등) + 핵심 포인트 한 줄씩. 줄바꿈(\\n)으로 구분
-4. 빈 줄
-5. CTA: 👉 자세한 내용은 프로필 링크에서 확인하세요!
-6. 빈 줄
-7. 해시태그 줄: #정책자금 #중소기업 포함 5~7개
-
-출력: {"caption":"..."}
-caption 안에서 줄바꿈은 반드시 \\n으로 표현`,
-    true,
+function geminiInstaBannerText(): BannerText {
+  const today = new Date();
+  const startOfYear = new Date(today.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor(
+    (today.getTime() - startOfYear.getTime()) / 86400000,
   );
-  return (
-    result.caption ||
-    `💰 ${title}\n\n${summary}\n\n👉 자세한 내용은 프로필 링크에서 확인하세요!\n\n#정책자금 #중소기업 #KPEC #기업정책자금센터 #정부지원금`
-  );
+  const dayIndex = today.getDate() % ACCENT_COLORS.length;
+  const reasonNum = String((dayOfYear % 12) + 1).padStart(2, "0");
+  const poolIndex = dayOfYear % bannerPool.length;
+  const item = bannerPool[poolIndex];
+
+  return {
+    badge: `REASON ${reasonNum}`,
+    title: `${item.title1}|||${item.accent}|||${item.title2}`,
+    sub: item.sub,
+    accentColor: ACCENT_COLORS[dayIndex],
+  };
 }
+
+// HCTI/geminiInstaCaption 제거 — 프론트엔드 HTML 렌더링으로 전환
