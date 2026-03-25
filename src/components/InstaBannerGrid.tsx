@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import bannerPool from "../../worker/src/banner-pool.json";
 
-const PER_LOAD = 4;
+const PER_LOAD = 8;
 
 const UNSPLASH_PHOTOS = [
   "photo-1486406146926-c627a92ad1ab",
@@ -24,46 +25,54 @@ const ACCENT_COLORS = [
   "#4ADE80",
 ];
 
-interface BannerData {
+interface BannerItem {
   title1: string;
   accent: string;
   title2: string;
   sub: string;
-}
-
-interface BannerItem extends BannerData {
   badge: string;
   accentColor: string;
   photoUrl: string;
 }
 
+// 텍스트풀에서 배너 아이템 생성
+const allBanners: BannerItem[] = bannerPool.map((item, idx) => ({
+  ...item,
+  badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
+  accentColor: ACCENT_COLORS[idx % ACCENT_COLORS.length],
+  photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
+}));
+
 function BannerCard({ item }: { item: BannerItem }) {
   const subLines = item.sub.split("\\n");
   return (
-    <div className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all">
-      <div className="aspect-[3/4] relative overflow-hidden bg-black">
-        {/* 배경 이미지 */}
+    <div className="group block rounded-lg overflow-hidden border border-gray-10 hover:border-primary-40 transition-all cursor-pointer">
+      <div
+        className="aspect-[3/4] relative overflow-hidden bg-black"
+        style={{ containerType: "inline-size" }}
+      >
         <img
           src={item.photoUrl}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
         />
-        {/* 오버레이 */}
         <div className="absolute inset-0 bg-[rgba(10,15,30,0.82)]" />
-        {/* 콘텐츠 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center px-[7%] z-[1]">
-          {/* 뱃지 */}
           <span
-            className="px-[3%] py-[1%] rounded text-white text-[2.2cqi] font-bold tracking-wider"
-            style={{ backgroundColor: item.accentColor }}
+            className="px-[3%] py-[1%] rounded text-white font-bold tracking-wider"
+            style={{
+              backgroundColor: item.accentColor,
+              fontSize: "clamp(8px, 2.2cqi, 30px)",
+            }}
           >
             {item.badge}
           </span>
-          {/* 구분선 */}
           <div className="w-[5%] h-[0.3%] bg-[#ED2939] rounded mt-[2.5%]" />
-          {/* 타이틀 */}
-          <div className="mt-[3%] text-center text-white font-black text-[7.6cqi] leading-[1.3] tracking-tight break-keep">
+          <div
+            className="mt-[3%] text-center text-white font-black leading-[1.3] tracking-tight break-keep"
+            style={{ fontSize: "clamp(18px, 7.6cqi, 82px)" }}
+          >
             {item.title1}
             {item.accent && (
               <>
@@ -73,8 +82,10 @@ function BannerCard({ item }: { item: BannerItem }) {
             )}
             {item.title2}
           </div>
-          {/* 서브텍스트 */}
-          <div className="mt-[3%] text-center text-[3.1cqi] text-white/75 leading-relaxed">
+          <div
+            className="mt-[3%] text-center text-white/75 leading-relaxed"
+            style={{ fontSize: "clamp(10px, 3.1cqi, 34px)" }}
+          >
             {subLines.map((line, i) => (
               <span key={i}>
                 {line}
@@ -83,13 +94,18 @@ function BannerCard({ item }: { item: BannerItem }) {
             ))}
           </div>
         </div>
-        {/* 로고 */}
         <div className="absolute bottom-[5.5%] left-0 right-0 text-center z-[1]">
-          <span className="text-[3.8cqi] font-black tracking-wider">
+          <span
+            className="font-black tracking-wider"
+            style={{ fontSize: "clamp(14px, 3.8cqi, 52px)" }}
+          >
             <span className="text-[#ED2939]">K</span>
             <span className="text-white">PEC</span>
           </span>
-          <span className="text-[3.1cqi] font-bold text-white ml-[1%] tracking-wide">
+          <span
+            className="font-bold text-white ml-[1%] tracking-wide"
+            style={{ fontSize: "clamp(11px, 3.1cqi, 42px)" }}
+          >
             기업정책자금센터
           </span>
         </div>
@@ -98,109 +114,10 @@ function BannerCard({ item }: { item: BannerItem }) {
   );
 }
 
-function SkeletonCard() {
-  return (
-    <div className="rounded-lg overflow-hidden border border-gray-10">
-      <div className="aspect-[3/4] bg-gray-10 animate-pulse" />
-    </div>
-  );
-}
-
 export default function InstaBannerGrid() {
-  const [banners, setBanners] = useState<BannerItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(PER_LOAD);
   const loaderRef = useRef<HTMLDivElement>(null);
-  const done = count >= banners.length;
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-
-    fetch(`/api/notices?category=${encodeURIComponent("인스타")}&limit=30`)
-      .then((r) => r.json())
-      .then((data) => {
-        clearTimeout(timeout);
-        if (data.records?.length > 0) {
-          const items: BannerItem[] = data.records
-            .map((r: Record<string, string>, idx: number) => {
-              const title = r.title || "";
-              const parts = title.split("|||");
-              return {
-                title1: parts[0] || "",
-                accent: parts[1] || "",
-                title2: parts[2] || "",
-                sub: r.summary?.split("\n")[0]
-                  ? `${parts[0] || "정책자금"} 안내\\n지금 바로 확인하세요`
-                  : "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
-                badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
-                accentColor: ACCENT_COLORS[idx % ACCENT_COLORS.length],
-                photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
-              };
-            })
-            .filter((b: BannerItem) => b.title1 && b.title1 !== "정부정책자금");
-
-          // contentUrl이 JSON이면 파싱해서 사용
-          const enriched: Promise<BannerItem>[] = data.records.map(
-            async (r: Record<string, string>, idx: number) => {
-              if (r.contentUrl?.endsWith(".json")) {
-                try {
-                  const res = await fetch(
-                    `/api/notices/content?url=${encodeURIComponent(r.contentUrl)}`,
-                  );
-                  const json = await res.json();
-                  if (json.title1) {
-                    return {
-                      ...json,
-                      badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
-                      accentColor:
-                        json.accentColor ||
-                        ACCENT_COLORS[idx % ACCENT_COLORS.length],
-                      photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
-                    };
-                  }
-                } catch {
-                  // fallback to title parsing
-                }
-              }
-              // title 파싱 fallback
-              const title = r.title || "";
-              const parts = title.split("|||");
-              return {
-                title1: parts[0] || "",
-                accent: parts[1] || "",
-                title2: parts[2] || "",
-                sub: "중소기업 맞춤 자금설계\\n지금 바로 확인하세요",
-                badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
-                accentColor: ACCENT_COLORS[idx % ACCENT_COLORS.length],
-                photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
-              };
-            },
-          );
-
-          Promise.all(enriched).then((results) => {
-            const valid = results.filter(
-              (b) => b.title1 && b.title1 !== "정부정책자금",
-            );
-            if (valid.length > 0) {
-              setBanners(valid);
-            }
-          });
-
-          // 즉시 title 파싱 버전 표시 (JSON fetch 완료 전)
-          if (items.length > 0) {
-            setBanners(items);
-          }
-        }
-      })
-      .catch(() => {
-        clearTimeout(timeout);
-      })
-      .finally(() => setLoading(false));
-
-    return () => clearTimeout(timeout);
-  }, []);
+  const done = count >= allBanners.length;
 
   useEffect(() => {
     if (done) return;
@@ -210,16 +127,14 @@ export default function InstaBannerGrid() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setCount((c) => Math.min(c + PER_LOAD, banners.length));
+          setCount((c) => Math.min(c + PER_LOAD, allBanners.length));
         }
       },
       { threshold: 0 },
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [done, count, banners.length]);
-
-  if (!loading && banners.length === 0) return null;
+  }, [done, count]);
 
   return (
     <section className="py-12 bg-white">
@@ -247,29 +162,19 @@ export default function InstaBannerGrid() {
         </div>
 
         {/* Mobile: 4개만 2x2 */}
-        <div
-          className="grid grid-cols-2 gap-3 md:hidden"
-          style={{ containerType: "inline-size" }}
-        >
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-            : banners
-                .slice(0, 4)
-                .map((b, i) => <BannerCard key={i} item={b} />)}
+        <div className="grid grid-cols-2 gap-3 md:hidden">
+          {allBanners.slice(0, 4).map((b, i) => (
+            <BannerCard key={i} item={b} />
+          ))}
         </div>
         {/* Desktop: infinite scroll */}
-        <div
-          className="hidden md:grid grid-cols-4 gap-3"
-          style={{ containerType: "inline-size" }}
-        >
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-            : banners
-                .slice(0, count)
-                .map((b, i) => <BannerCard key={i} item={b} />)}
+        <div className="hidden md:grid grid-cols-4 gap-3">
+          {allBanners.slice(0, count).map((b, i) => (
+            <BannerCard key={i} item={b} />
+          ))}
         </div>
 
-        {!done && !loading && (
+        {!done && (
           <div ref={loaderRef} className="flex justify-center py-6">
             <div className="w-6 h-6 border-2 border-gray-20 border-t-primary-50 rounded-full animate-spin" />
           </div>
