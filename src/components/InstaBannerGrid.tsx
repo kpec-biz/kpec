@@ -57,7 +57,7 @@ function BannerCard({ item }: { item: BannerItem }) {
           className="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-[rgba(10,15,30,0.82)]" />
+        <div className="absolute inset-0 bg-[rgba(10,15,30,0.90)]" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-[7%] z-[1]">
           <span
             className="px-[3%] py-[1%] rounded text-white font-bold tracking-wider"
@@ -71,7 +71,7 @@ function BannerCard({ item }: { item: BannerItem }) {
           <div className="w-[5%] h-[0.3%] bg-[#ED2939] rounded mt-[2.5%]" />
           <div
             className="mt-[3%] text-center text-white font-black leading-[1.3] tracking-tight break-keep"
-            style={{ fontSize: "clamp(18px, 7.6cqi, 82px)" }}
+            style={{ fontSize: "clamp(20px, 9cqi, 96px)" }}
           >
             {item.title1}
             {item.accent && (
