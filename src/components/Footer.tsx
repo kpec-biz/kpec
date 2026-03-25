@@ -22,7 +22,7 @@ export default function Footer() {
               style={{ color: "rgba(255,255,255,0.6)" }}
             >
               <p>인천 연수구 인천타워대로 301 센텀하이브 A동</p>
-              <p>연락처: 0502-6800-4681</p>
+              <p>연락처: 010-8417-6800</p>
             </div>
           </div>
 
@@ -114,7 +114,7 @@ export default function Footer() {
               지금 바로 전화 상담받으세요
             </p>
             <a
-              href="tel:050268004681"
+              href="tel:01084176800"
               className="inline-flex items-center gap-2 bg-primary-60 hover:bg-primary-50 text-white px-6 py-3 rounded-md font-semibold transition-colors text-sm"
             >
               <svg

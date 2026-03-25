@@ -79,7 +79,7 @@ export default function HeroVideo() {
                 무료상담 신청
               </Link>
               <a
-                href="tel:050268004681"
+                href="tel:01084176800"
                 className="inline-flex items-center justify-center border border-white/50 text-white font-semibold text-sm px-6 py-3 rounded-lg hover:border-white hover:bg-white/10 transition-colors gap-2"
               >
                 <svg

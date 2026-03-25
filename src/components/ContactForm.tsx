@@ -94,7 +94,7 @@ export default function ContactForm() {
               전문 컨설턴트가 빠른 시간 내에 연락드리겠습니다.
             </p>
             <a
-              href="tel:050268004681"
+              href="tel:01084176800"
               className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors"
             >
               <svg

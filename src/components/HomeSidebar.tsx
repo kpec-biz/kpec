@@ -89,7 +89,7 @@ const quickLinks = [
     ),
   },
   {
-    href: "tel:050268004681",
+    href: "tel:01084176800",
     label: "전화상담",
     icon: (
       <svg

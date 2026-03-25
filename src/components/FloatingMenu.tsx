@@ -9,7 +9,7 @@ export default function FloatingMenu() {
     <div className="fixed right-3 sm:right-5 bottom-[72px] sm:bottom-5 flex flex-col gap-2 z-50">
       {/* 전화상담 */}
       <a
-        href="tel:050268004681"
+        href="tel:01084176800"
         className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 bg-primary-60 hover:bg-primary-50 text-white rounded-full shadow-lg transition-transform hover:scale-110"
         aria-label="전화상담"
       >

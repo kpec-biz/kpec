@@ -148,7 +148,7 @@ export default function ContactPage() {
                 영업일 기준 1~2일 내 연락드리겠습니다.
               </p>
               <p className="mt-4 text-sm text-primary-60 font-semibold">
-                📞 0502-6800-4681
+                📞 010-8417-6800
               </p>
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function ContactPage() {
                   </p>
                   <div className="mt-4 space-y-2">
                     <a
-                      href="tel:0502-6800-4681"
+                      href="tel:010-8417-6800"
                       className="flex items-center gap-2 text-sm text-primary-60 hover:text-primary-70"
                     >
                       <svg

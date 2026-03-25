@@ -196,7 +196,7 @@ export default function ProcessPage() {
                 무료상담 신청
               </Link>
               <a
-                href="tel:050268004681"
+                href="tel:01084176800"
                 className="border border-primary-40 text-primary-60 hover:bg-primary-5 font-semibold px-8 py-3 rounded-lg transition-colors"
               >
                 전화상담

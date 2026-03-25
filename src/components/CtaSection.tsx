@@ -55,7 +55,7 @@ export default function CtaSection() {
           무료상담 신청하기
         </Link>
         <a
-          href="tel:050268004681"
+          href="tel:01084176800"
           className="bg-point-50 text-white px-8 py-3 rounded-md text-sm font-bold no-underline hover:bg-point-60 transition-colors"
         >
           전화상담
