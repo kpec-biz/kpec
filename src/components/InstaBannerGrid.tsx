@@ -35,13 +35,23 @@ interface BannerItem {
   photoUrl: string;
 }
 
-// 텍스트풀에서 배너 아이템 생성
-const allBanners: BannerItem[] = bannerPool.map((item, idx) => ({
-  ...item,
-  badge: `REASON ${String((idx % 12) + 1).padStart(2, "0")}`,
-  accentColor: ACCENT_COLORS[idx % ACCENT_COLORS.length],
-  photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[idx % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
-}));
+// 텍스트풀에서 오늘 날짜 기준 12개만 선택 (매일 다른 세트)
+const today = new Date();
+const startIdx = (today.getMonth() * 31 + today.getDate()) % bannerPool.length;
+const DISPLAY_COUNT = 12;
+const allBanners: BannerItem[] = Array.from(
+  { length: DISPLAY_COUNT },
+  (_, i) => {
+    const idx = (startIdx + i) % bannerPool.length;
+    const item = bannerPool[idx];
+    return {
+      ...item,
+      badge: `REASON ${String((i % 12) + 1).padStart(2, "0")}`,
+      accentColor: ACCENT_COLORS[i % ACCENT_COLORS.length],
+      photoUrl: `https://images.unsplash.com/${UNSPLASH_PHOTOS[i % UNSPLASH_PHOTOS.length]}?w=600&q=70`,
+    };
+  },
+);
 
 function BannerCard({ item }: { item: BannerItem }) {
   const subLines = item.sub.split("\\n");

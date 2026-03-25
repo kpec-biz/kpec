@@ -12,7 +12,6 @@ interface PipelineResults {
   bizinfo: { success: number; skipped: boolean; error: string };
   news: { success: number; skipped: boolean; error: string };
   analysis: { success: number; skipped: boolean; error: string };
-  instagram: { success: number; skipped: boolean; error: string };
 }
 
 export async function runPipeline(env: Env): Promise<PipelineResults> {
@@ -20,7 +19,6 @@ export async function runPipeline(env: Env): Promise<PipelineResults> {
     bizinfo: { success: 0, skipped: false, error: "" },
     news: { success: 0, skipped: false, error: "" },
     analysis: { success: 0, skipped: false, error: "" },
-    instagram: { success: 0, skipped: false, error: "" },
   };
 
   const today = new Date();
@@ -227,64 +225,13 @@ export async function runPipeline(env: Env): Promise<PipelineResults> {
       await sendTg(env, "error", "분석", "파이프라인 실패", String(e));
     }
 
-    // ═══ 4. 인스타그램 배너 (매일) — 텍스트풀 기반, 프론트엔드 HTML 렌더링 ═══
-    try {
-      const instaId = `INSTA_${today.toISOString().slice(0, 10).replace(/-/g, "")}`;
-      if (!existingIds.has(instaId)) {
-        const bannerText = geminiInstaBannerText();
-        const caption = `💰 ${bannerText.title.replace(/\|\|\|/g, " ").trim()}\n\n${bannerText.sub.replace(/\\n/g, "\n")}\n\n👉 자세한 내용은 프로필 링크에서 확인하세요!\n\n#정책자금 #중소기업 #KPEC #기업정책자금센터 #정부지원금`;
-
-        // contentUrl에 텍스트 데이터를 JSON으로 저장 (프론트엔드에서 HTML 렌더링)
-        const bannerData = JSON.stringify({
-          badge: bannerText.badge,
-          title1: bannerText.title.split("|||")[0] || "",
-          accent: bannerText.title.split("|||")[1] || "",
-          title2: bannerText.title.split("|||")[2] || "",
-          sub: bannerText.sub,
-          accentColor: bannerText.accentColor,
-        });
-        const contentKey = `instagram/${instaId}.json`;
-        await env.R2.put(contentKey, bannerData, {
-          httpMetadata: {
-            contentType: "application/json",
-            cacheControl: "public, max-age=86400",
-          },
-        });
-
-        await airtableCreate(env, {
-          pblancId: instaId,
-          title: bannerText.title,
-          originalTitle: "Instagram Banner",
-          summary: caption,
-          contentUrl: `${env.R2_PUBLIC_URL}/${contentKey}`,
-          category: "인스타",
-          source: "KPEC",
-          applyPeriod: "",
-          originalUrl: "",
-          publishDate: today.toISOString().slice(0, 10),
-          status: "게시중",
-          tags: "인스타그램,배너",
-        });
-        results.instagram.success = 1;
-        await sendTg(
-          env,
-          "success",
-          "인스타",
-          "배너 텍스트 등록",
-          bannerText.title.replace(/\|\|\|/g, " "),
-        );
-      }
-    } catch (e) {
-      results.instagram.error = String(e);
-      await sendTg(env, "error", "인스타", "파이프라인 실패", String(e));
-    }
+    // 인스타 배너는 프론트엔드 텍스트풀 렌더링으로 전환 — 파이프라인에서 제외
 
     // 전체 요약
     const summary = [
       `공고: ${results.bizinfo.skipped ? "신규 없음" : results.bizinfo.success + "건"}`,
       `뉴스: ${results.news.skipped ? "오늘 아님(월수금)" : results.news.success + "건"}`,
       `분석: ${results.analysis.success}건`,
-      `인스타: ${results.instagram.success}건`,
     ].join(" | ");
     await sendTg(env, "info", "파이프라인 요약", summary);
   } catch (e) {
@@ -519,55 +466,4 @@ async function geminiRealisticImage(
   }
 }
 
-// ── Instagram Banner ──
-
-const UNSPLASH_PHOTOS = [
-  "photo-1486406146926-c627a92ad1ab",
-  "photo-1497366216548-37526070297c",
-  "photo-1554224155-6726b3ff858f",
-  "photo-1560472354-b33ff0c44a43",
-  "photo-1507003211169-0a1dd7228f2d",
-  "photo-1573164713714-d95e436ab8d6",
-  "photo-1551836022-d5d88e9218df",
-  "photo-1504384308090-c894fdcc538d",
-];
-
-const ACCENT_COLORS = [
-  "#ED2939",
-  "#4ADE80",
-  "#FACC15",
-  "#60A5FA",
-  "#ED2939",
-  "#4ADE80",
-];
-
-interface BannerText {
-  badge: string;
-  title: string;
-  sub: string;
-  accentColor: string;
-}
-
-// 텍스트풀 300개 — 날짜 기반 순환 (banner-pool.json)
-import bannerPool from "./banner-pool.json";
-
-function geminiInstaBannerText(): BannerText {
-  const today = new Date();
-  const startOfYear = new Date(today.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor(
-    (today.getTime() - startOfYear.getTime()) / 86400000,
-  );
-  const dayIndex = today.getDate() % ACCENT_COLORS.length;
-  const reasonNum = String((dayOfYear % 12) + 1).padStart(2, "0");
-  const poolIndex = dayOfYear % bannerPool.length;
-  const item = bannerPool[poolIndex];
-
-  return {
-    badge: `REASON ${reasonNum}`,
-    title: `${item.title1}|||${item.accent}|||${item.title2}`,
-    sub: item.sub,
-    accentColor: ACCENT_COLORS[dayIndex],
-  };
-}
-
-// HCTI/geminiInstaCaption 제거 — 프론트엔드 HTML 렌더링으로 전환
+// 인스타 배너: 프론트엔드 텍스트풀 렌더링으로 전환 — Worker 코드 제거됨
