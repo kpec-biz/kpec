@@ -10,13 +10,6 @@ export interface Env {
   GMAIL_CLIENT_SECRET: string;
   GMAIL_REFRESH_TOKEN: string;
   GMAIL_SENDER: string;
-  // Pipeline
-  BIZINFO_API_KEY: string;
-  GEMINI_API_KEY: string;
-  GEMINI_MODEL_TEXT: string;
-  GEMINI_MODEL_ANALYSIS: string;
-  HCTI_API_USER_ID: string;
-  HCTI_API_KEY: string;
   R2_PUBLIC_URL: string;
   R2: R2Bucket;
 }

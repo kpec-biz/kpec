@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "@/components/PageHeader";
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "정책자금 컨설팅 비용은 얼마인가요?",
-    a: "KPEC는 후불 성공보수제로 운영됩니다. 자금 승인 전까지 어떠한 비용도 청구하지 않으며, 자금 실행 이후에만 성공 보수가 발생합니다.",
+    a: "기업정책자금센터는 후불 성공보수제로 운영됩니다. 자금 승인 전까지 어떠한 비용도 청구하지 않으며, 자금 실행 이후에만 성공 보수가 발생합니다.",
   },
   {
     q: "운전자금과 시설자금을 동시에 신청할 수 있나요?",
@@ -56,30 +56,91 @@ const tabMotion = {
   transition: { duration: 0.25, ease: [0, 0, 0.2, 1] as const },
 };
 
+const PAGE_SIZE = 20;
+
 export default function NoticePage() {
   const [activeTab, setActiveTab] = useState(0);
   const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [newsData, setNewsData] = useState<NoticeItem[]>([]);
   const [analysisData, setAnalysisData] = useState<NoticeItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAll, setShowAll] = useState(false);
-  const [showAllNews, setShowAllNews] = useState(false);
-  const [showAllAnalysis, setShowAllAnalysis] = useState(false);
+
+  // 페이지네이션 커서
+  const [noticeOffset, setNoticeOffset] = useState<string | null>(null);
+  const [newsOffset, setNewsOffset] = useState<string | null>(null);
+  const [analysisOffset, setAnalysisOffset] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/notices?exclude=뉴스,분석&limit=30").then((r) => r.json()),
-      fetch("/api/notices?category=뉴스&limit=10").then((r) => r.json()),
-      fetch("/api/notices?category=분석&limit=10").then((r) => r.json()),
+      fetch(`/api/notices?exclude=뉴스,분석&limit=${PAGE_SIZE}`).then((r) =>
+        r.json(),
+      ),
+      fetch(`/api/notices?category=뉴스&limit=${PAGE_SIZE}`).then((r) =>
+        r.json(),
+      ),
+      fetch(`/api/notices?category=분석&limit=${PAGE_SIZE}`).then((r) =>
+        r.json(),
+      ),
     ])
       .then(([noticeRes, newsRes, analysisRes]) => {
         setNotices(noticeRes.records || []);
+        setNoticeOffset(noticeRes.offset || null);
         setNewsData(newsRes.records || []);
+        setNewsOffset(newsRes.offset || null);
         setAnalysisData(analysisRes.records || []);
+        setAnalysisOffset(analysisRes.offset || null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const loadMore = useCallback(
+    async (type: "notice" | "news" | "analysis") => {
+      const offset =
+        type === "notice"
+          ? noticeOffset
+          : type === "news"
+            ? newsOffset
+            : analysisOffset;
+      if (!offset || loadingMore) return;
+
+      setLoadingMore(true);
+      try {
+        const params = new URLSearchParams({
+          limit: String(PAGE_SIZE),
+          offset,
+        });
+        if (type === "notice") {
+          params.set("exclude", "뉴스,분석");
+        } else if (type === "news") {
+          params.set("category", "뉴스");
+        } else {
+          params.set("category", "분석");
+        }
+
+        const res = await fetch(`/api/notices?${params.toString()}`);
+        const data = await res.json();
+        const newRecords = data.records || [];
+
+        if (type === "notice") {
+          setNotices((prev) => [...prev, ...newRecords]);
+          setNoticeOffset(data.offset || null);
+        } else if (type === "news") {
+          setNewsData((prev) => [...prev, ...newRecords]);
+          setNewsOffset(data.offset || null);
+        } else {
+          setAnalysisData((prev) => [...prev, ...newRecords]);
+          setAnalysisOffset(data.offset || null);
+        }
+      } catch {
+        /* ignore */
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    [noticeOffset, newsOffset, analysisOffset, loadingMore],
+  );
 
   return (
     <>
@@ -140,22 +201,17 @@ export default function NoticePage() {
                 ) : (
                   <>
                     <div className="divide-y divide-gray-10">
-                      {(showAll ? notices : notices.slice(0, 10)).map(
-                        (item, i) => (
-                          <NoticeRow
-                            key={item.pblancId}
-                            item={item}
-                            index={i}
-                          />
-                        ),
-                      )}
+                      {notices.map((item, i) => (
+                        <NoticeRow key={item.pblancId} item={item} index={i} />
+                      ))}
                     </div>
-                    {!showAll && notices.length > 10 && (
+                    {noticeOffset && (
                       <button
-                        onClick={() => setShowAll(true)}
-                        className="w-full py-3 text-[13px] font-semibold text-primary-60 hover:bg-gray-5 transition-colors border-t border-gray-10"
+                        onClick={() => loadMore("notice")}
+                        disabled={loadingMore}
+                        className="w-full py-3 text-[13px] font-semibold text-primary-60 hover:bg-gray-5 transition-colors border-t border-gray-10 disabled:opacity-50"
                       >
-                        더보기 ({notices.length - 10}건)
+                        {loadingMore ? "불러오는 중..." : "더 불러오기"}
                       </button>
                     )}
                   </>
@@ -171,7 +227,7 @@ export default function NoticePage() {
             {/* 탭 2: 정책자금 뉴스 */}
             {activeTab === 1 && (
               <motion.div key="tab-1" {...tabMotion}>
-                {newsData.length === 0 ? (
+                {loading ? (
                   <div className="grid md:grid-cols-2 gap-4">
                     {[1, 2].map((i) => (
                       <div
@@ -187,21 +243,24 @@ export default function NoticePage() {
                       </div>
                     ))}
                   </div>
+                ) : newsData.length === 0 ? (
+                  <div className="py-12 text-center text-gray-40">
+                    뉴스를 불러오지 못했습니다
+                  </div>
                 ) : (
                   <>
                     <div className="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-4">
-                      {(showAllNews ? newsData : newsData.slice(0, 4)).map(
-                        (item) => (
-                          <ContentCard key={item.pblancId} item={item} />
-                        ),
-                      )}
+                      {newsData.map((item) => (
+                        <ContentCard key={item.pblancId} item={item} />
+                      ))}
                     </div>
-                    {!showAllNews && newsData.length > 4 && (
+                    {newsOffset && (
                       <button
-                        onClick={() => setShowAllNews(true)}
-                        className="w-full mt-3 py-2.5 text-[13px] font-semibold text-primary-60 bg-white border border-gray-10 rounded-lg hover:bg-gray-5 transition-colors"
+                        onClick={() => loadMore("news")}
+                        disabled={loadingMore}
+                        className="w-full mt-3 py-2.5 text-[13px] font-semibold text-primary-60 bg-white border border-gray-10 rounded-lg hover:bg-gray-5 transition-colors disabled:opacity-50"
                       >
-                        더보기 ({newsData.length - 4}건)
+                        {loadingMore ? "불러오는 중..." : "더 불러오기"}
                       </button>
                     )}
                   </>
@@ -212,7 +271,7 @@ export default function NoticePage() {
             {/* 탭 3: 정책자금 분석 */}
             {activeTab === 2 && (
               <motion.div key="tab-2" {...tabMotion}>
-                {analysisData.length === 0 ? (
+                {loading ? (
                   <div className="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-4">
                     {[1, 2].map((i) => (
                       <div
@@ -228,22 +287,24 @@ export default function NoticePage() {
                       </div>
                     ))}
                   </div>
+                ) : analysisData.length === 0 ? (
+                  <div className="py-12 text-center text-gray-40">
+                    분석 리포트를 불러오지 못했습니다
+                  </div>
                 ) : (
                   <>
                     <div className="grid grid-cols-2 md:grid-cols-2 gap-2.5 sm:gap-4">
-                      {(showAllAnalysis
-                        ? analysisData
-                        : analysisData.slice(0, 4)
-                      ).map((item) => (
+                      {analysisData.map((item) => (
                         <ContentCard key={item.pblancId} item={item} />
                       ))}
                     </div>
-                    {!showAllAnalysis && analysisData.length > 4 && (
+                    {analysisOffset && (
                       <button
-                        onClick={() => setShowAllAnalysis(true)}
-                        className="w-full mt-3 py-2.5 text-[13px] font-semibold text-primary-60 bg-white border border-gray-10 rounded-lg hover:bg-gray-5 transition-colors"
+                        onClick={() => loadMore("analysis")}
+                        disabled={loadingMore}
+                        className="w-full mt-3 py-2.5 text-[13px] font-semibold text-primary-60 bg-white border border-gray-10 rounded-lg hover:bg-gray-5 transition-colors disabled:opacity-50"
                       >
-                        더보기 ({analysisData.length - 4}건)
+                        {loadingMore ? "불러오는 중..." : "더 불러오기"}
                       </button>
                     )}
                   </>
@@ -307,7 +368,7 @@ function ContentCard({ item }: { item: NoticeItem }) {
           {item.summary}
         </p>
         <div className="text-[10px] sm:text-[11px] text-gray-40">
-          {item.source} · {item.publishDate}
+          기업정책자금센터 · {item.publishDate}
         </div>
       </div>
     </Link>

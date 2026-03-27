@@ -3,22 +3,6 @@ import { handleAuthRequest, handleAuthVerify } from "./auth";
 import { handleBoard } from "./board";
 import { handleAnalytics } from "./analytics";
 import { handleInquiry } from "./inquiry";
-import { runPipeline } from "./pipeline";
-
-async function sendTg(env: Env, chatId: string, text: string) {
-  try {
-    await fetch(
-      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
-      },
-    );
-  } catch {
-    /* ignore */
-  }
-}
 
 function corsHeaders(env: Env): Record<string, string> {
   return {
@@ -42,22 +26,6 @@ function withCors(response: Response, env: Env): Response {
 }
 
 export default {
-  // 매일 08:00 KST (UTC 22:57) — 콘텐츠 파이프라인 직접 실행
-  async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
-    const chatId = "-1003423266787";
-    try {
-      await sendTg(env, chatId, "🚀 [Worker Cron] 파이프라인 시작");
-      const results = await runPipeline(env);
-      console.log("Pipeline results:", JSON.stringify(results));
-    } catch (e) {
-      await sendTg(
-        env,
-        chatId,
-        `❌ [Worker Cron] 파이프라인 실패\n${String(e).slice(0, 300)}`,
-      );
-    }
-  },
-
   async fetch(request: Request, env: Env): Promise<Response> {
     // CORS preflight
     if (request.method === "OPTIONS") {
@@ -80,15 +48,6 @@ export default {
         response = await handleInquiry(request, env);
       } else if (path === "/api/analytics") {
         response = await handleAnalytics(request, env);
-      } else if (path === "/api/pipeline" && request.method === "POST") {
-        // 수동 파이프라인 트리거 (CRON_SECRET 인증)
-        const auth = request.headers.get("authorization");
-        if (auth !== `Bearer ${env.CRON_SECRET}`) {
-          response = Response.json({ error: "Unauthorized" }, { status: 401 });
-        } else {
-          const results = await runPipeline(env);
-          response = Response.json({ message: "Pipeline complete", results });
-        }
       } else if (path === "/api/health") {
         response = Response.json({
           status: "ok",

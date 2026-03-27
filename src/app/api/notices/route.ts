@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get("category"); // 분석, 뉴스
     const exclude = searchParams.get("exclude"); // 뉴스,분석
     const popup = searchParams.get("popup"); // 팝업 배너 조회
+    const offset = searchParams.get("offset"); // 페이지네이션 커서
 
     let url = `${AIRTABLE_API}/${baseId}/${TABLE_ID}`;
     const params = new URLSearchParams();
@@ -50,9 +51,12 @@ export async function GET(req: NextRequest) {
         "filterByFormula",
         filters.length > 1 ? `AND(${filters.join(",")})` : filters[0],
       );
-      params.set("maxRecords", limit);
+      params.set("pageSize", limit);
       params.set("sort[0][field]", "publishDate");
       params.set("sort[0][direction]", "desc");
+      if (offset) {
+        params.set("offset", offset);
+      }
     }
 
     url += `?${params.toString()}`;
@@ -74,7 +78,11 @@ export async function GET(req: NextRequest) {
       }),
     );
 
-    return NextResponse.json({ records, total: records.length });
+    return NextResponse.json({
+      records,
+      total: records.length,
+      ...(data.offset ? { offset: data.offset } : {}),
+    });
   } catch {
     return NextResponse.json(
       { error: "공고 데이터를 불러오지 못했습니다." },

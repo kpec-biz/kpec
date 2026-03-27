@@ -81,7 +81,8 @@ interface ContentBlock {
     | "ul"
     | "info-box"
     | "warn-box"
-    | "chart-data";
+    | "chart-data"
+    | "card";
   text?: string;
   children?: Array<{ text?: string }>;
   items?: string[];
@@ -90,6 +91,14 @@ interface ContentBlock {
   data?: Array<{ name: string; value: number; color?: string }>;
   headers?: string[];
   rows?: string[][];
+  // card 타입 전용 필드
+  id?: string;
+  category?: string;
+  target?: string;
+  amount?: string;
+  deadline?: string;
+  summary?: string;
+  tags?: string;
 }
 
 // Gemini 모델마다 text 또는 children 구조로 출력 — 둘 다 처리
@@ -293,7 +302,11 @@ export default function NoticeDetailPage() {
 
                 {/* 메타 정보 */}
                 <div className="flex flex-wrap gap-2 sm:gap-4 text-[12px] sm:text-sm text-gray-50 pb-4 sm:pb-5 border-b border-gray-10 mb-4 sm:mb-6">
-                  <span>주관: {notice.source}</span>
+                  {["뉴스", "분석"].includes(notice.category) ? (
+                    <span>제공: 기업정책자금센터</span>
+                  ) : (
+                    <span>주관: {notice.source}</span>
+                  )}
                   {notice.applyPeriod && (
                     <span>접수: {notice.applyPeriod}</span>
                   )}
@@ -317,189 +330,376 @@ export default function NoticeDetailPage() {
                 {/* 본문 렌더링 (R2 JSON) */}
                 {content.length > 0 && (
                   <div className="prose-content space-y-5">
-                    {content.map((block, i) => {
-                      if (block.type === "h2") {
-                        return (
-                          <h2
-                            key={i}
-                            className="text-base sm:text-lg font-bold text-gray-90 mt-6 sm:mt-8 mb-2 sm:mb-3 flex items-center gap-2"
-                          >
-                            <span className="w-1 h-5 bg-primary-60 rounded-full" />
-                            {blockText(block)}
-                          </h2>
-                        );
-                      }
-                      if (block.type === "h3") {
-                        return (
-                          <h3
-                            key={i}
-                            className="text-[14px] sm:text-base font-semibold text-gray-80 mt-4 sm:mt-6 mb-1.5 sm:mb-2"
-                          >
-                            {blockText(block)}
-                          </h3>
-                        );
-                      }
-                      if (block.type === "p" || block.type === "text") {
-                        return (
-                          <p
-                            key={i}
-                            className="text-[13px] sm:text-base text-gray-60 leading-relaxed"
-                          >
-                            {blockText(block)}
-                          </p>
-                        );
-                      }
-                      if (block.type === "ul" && block.items) {
-                        return (
-                          <ul key={i} className="space-y-2">
-                            {block.items.map((item, j) => (
-                              <li
-                                key={j}
-                                className="flex items-start gap-2 text-[13px] sm:text-base text-gray-60"
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary-40 mt-2 flex-shrink-0" />
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                        );
-                      }
-                      if (block.type === "info-box") {
-                        return (
-                          <div
-                            key={i}
-                            className="bg-primary-5 border-l-4 border-primary-40 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-primary-70 text-[13px] sm:text-sm font-medium"
-                          >
-                            {blockText(block)}
-                          </div>
-                        );
-                      }
-                      if (block.type === "warn-box") {
-                        return (
-                          <div
-                            key={i}
-                            className="bg-point-50/10 border-l-4 border-point-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-point-60 text-[13px] sm:text-sm font-medium"
-                          >
-                            {blockText(block)}
-                          </div>
-                        );
-                      }
-                      if (block.type === "chart-data") {
-                        return (
-                          <div
-                            key={i}
-                            className="my-4 sm:my-6 bg-gray-5 rounded-xl border border-gray-10 p-4 sm:p-5"
-                          >
-                            {block.title && (
-                              <h4 className="text-[13px] sm:text-sm font-bold text-gray-80 mb-3 sm:mb-4">
-                                {block.title}
-                              </h4>
-                            )}
-                            {block.chartType === "bar" && block.data && (
-                              <div className="space-y-2.5 sm:space-y-3">
-                                {block.data.map((d, di) => {
-                                  const maxVal = Math.max(
-                                    ...(block.data || []).map((x) => x.value),
-                                  );
-                                  return (
-                                    <div key={di}>
-                                      <div className="flex justify-between text-[11px] sm:text-xs mb-1">
-                                        <span className="text-gray-60">
-                                          {d.name}
-                                        </span>
-                                        <span className="font-semibold text-gray-80">
-                                          {d.value.toLocaleString()}
-                                        </span>
+                    {(() => {
+                      // card 블록들을 2열 그리드로 묶기
+                      const elements: React.ReactNode[] = [];
+                      let cardBuffer: { block: ContentBlock; index: number }[] =
+                        [];
+
+                      const flushCards = () => {
+                        if (cardBuffer.length > 0) {
+                          elements.push(
+                            <div
+                              key={`card-grid-${cardBuffer[0].index}`}
+                              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                            >
+                              {cardBuffer.map(({ block: cb, index: ci }) =>
+                                renderBlock(cb, ci),
+                              )}
+                            </div>,
+                          );
+                          cardBuffer = [];
+                        }
+                      };
+
+                      const renderBlock = (
+                        block: ContentBlock,
+                        i: number,
+                      ): React.ReactNode => {
+                        if (block.type === "h2") {
+                          return (
+                            <h2
+                              key={i}
+                              className="text-base sm:text-lg font-bold text-gray-90 mt-6 sm:mt-8 mb-2 sm:mb-3 flex items-center gap-2"
+                            >
+                              <span className="w-1 h-5 bg-primary-60 rounded-full" />
+                              {blockText(block)}
+                            </h2>
+                          );
+                        }
+                        if (block.type === "h3") {
+                          return (
+                            <h3
+                              key={i}
+                              className="text-[14px] sm:text-base font-semibold text-gray-80 mt-4 sm:mt-6 mb-1.5 sm:mb-2"
+                            >
+                              {blockText(block)}
+                            </h3>
+                          );
+                        }
+                        if (block.type === "p" || block.type === "text") {
+                          return (
+                            <p
+                              key={i}
+                              className="text-[13px] sm:text-base text-gray-60 leading-relaxed"
+                            >
+                              {blockText(block)}
+                            </p>
+                          );
+                        }
+                        if (block.type === "ul" && block.items) {
+                          return (
+                            <ul key={i} className="space-y-2">
+                              {block.items.map((item, j) => (
+                                <li
+                                  key={j}
+                                  className="flex items-start gap-2 text-[13px] sm:text-base text-gray-60"
+                                >
+                                  <span className="w-1.5 h-1.5 rounded-full bg-primary-40 mt-2 flex-shrink-0" />
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }
+                        if (block.type === "info-box") {
+                          return (
+                            <div
+                              key={i}
+                              className="bg-primary-5 border-l-4 border-primary-40 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-primary-70 text-[13px] sm:text-sm font-medium"
+                            >
+                              {blockText(block)}
+                            </div>
+                          );
+                        }
+                        if (block.type === "warn-box") {
+                          return (
+                            <div
+                              key={i}
+                              className="bg-point-50/10 border-l-4 border-point-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-point-60 text-[13px] sm:text-sm font-medium"
+                            >
+                              {blockText(block)}
+                            </div>
+                          );
+                        }
+                        if (block.type === "chart-data") {
+                          return (
+                            <div
+                              key={i}
+                              className="my-4 sm:my-6 bg-gray-5 rounded-xl border border-gray-10 p-4 sm:p-5"
+                            >
+                              {block.title && (
+                                <h4 className="text-[13px] sm:text-sm font-bold text-gray-80 mb-3 sm:mb-4">
+                                  {block.title}
+                                </h4>
+                              )}
+                              {block.chartType === "bar" && block.data && (
+                                <div className="space-y-2.5 sm:space-y-3">
+                                  {block.data.map((d, di) => {
+                                    const maxVal = Math.max(
+                                      ...(block.data || []).map((x) => x.value),
+                                    );
+                                    return (
+                                      <div key={di}>
+                                        <div className="flex justify-between text-[11px] sm:text-xs mb-1">
+                                          <span className="text-gray-60">
+                                            {d.name}
+                                          </span>
+                                          <span className="font-semibold text-gray-80">
+                                            {d.value.toLocaleString()}
+                                          </span>
+                                        </div>
+                                        <div className="h-2.5 sm:h-3 bg-gray-10 rounded-full overflow-hidden">
+                                          <div
+                                            className="h-full rounded-full transition-all duration-700"
+                                            style={{
+                                              width: `${(d.value / maxVal) * 100}%`,
+                                              backgroundColor:
+                                                d.color || "#0b50d0",
+                                            }}
+                                          />
+                                        </div>
                                       </div>
-                                      <div className="h-2.5 sm:h-3 bg-gray-10 rounded-full overflow-hidden">
-                                        <div
-                                          className="h-full rounded-full transition-all duration-700"
-                                          style={{
-                                            width: `${(d.value / maxVal) * 100}%`,
-                                            backgroundColor:
-                                              d.color || "#0b50d0",
-                                          }}
-                                        />
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                            {block.chartType === "compare" && block.data && (
-                              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
-                                {block.data.map((d, di) => (
-                                  <div
-                                    key={di}
-                                    className="text-center bg-white rounded-lg p-2 sm:p-3 border border-gray-10"
-                                  >
+                                    );
+                                  })}
+                                </div>
+                              )}
+                              {block.chartType === "compare" && block.data && (
+                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+                                  {block.data.map((d, di) => (
                                     <div
-                                      className="text-[15px] sm:text-2xl font-bold"
-                                      style={{ color: d.color || "#0b50d0" }}
+                                      key={di}
+                                      className="text-center bg-white rounded-lg p-2 sm:p-3 border border-gray-10"
                                     >
-                                      {d.value != null ? `${d.value}%` : "-"}
+                                      <div
+                                        className="text-[15px] sm:text-2xl font-bold"
+                                        style={{ color: d.color || "#0b50d0" }}
+                                      >
+                                        {d.value != null ? `${d.value}%` : "-"}
+                                      </div>
+                                      <div className="text-[9px] sm:text-[11px] text-gray-50 mt-0.5 sm:mt-1">
+                                        {d.name}
+                                      </div>
                                     </div>
-                                    <div className="text-[9px] sm:text-[11px] text-gray-50 mt-0.5 sm:mt-1">
-                                      {d.name}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            {block.chartType === "table" &&
-                              block.headers &&
-                              block.rows && (
-                                <>
-                                  {/* PC: 표 */}
-                                  <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-10">
-                                    <table className="w-full text-sm">
-                                      <thead>
-                                        <tr className="bg-primary-80 text-white">
-                                          {block.headers.map((h, hi) => (
-                                            <th
-                                              key={hi}
-                                              className="px-4 py-2 text-left font-semibold text-xs"
-                                            >
-                                              {h}
-                                            </th>
-                                          ))}
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {block.rows.map((row, ri) => (
-                                          <tr
-                                            key={ri}
-                                            className={
-                                              ri % 2 === 0
-                                                ? "bg-white"
-                                                : "bg-gray-5"
-                                            }
-                                          >
-                                            {row.map((cell, ci) => (
-                                              <td
-                                                key={ci}
-                                                className="px-4 py-2 text-xs text-gray-70"
+                                  ))}
+                                </div>
+                              )}
+                              {block.chartType === "table" &&
+                                block.headers &&
+                                block.rows && (
+                                  <>
+                                    {/* PC: 표 */}
+                                    <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-10">
+                                      <table className="w-full text-sm">
+                                        <thead>
+                                          <tr className="bg-primary-80 text-white">
+                                            {block.headers.map((h, hi) => (
+                                              <th
+                                                key={hi}
+                                                className="px-4 py-2 text-left font-semibold text-xs"
                                               >
-                                                {cell}
-                                              </td>
+                                                {h}
+                                              </th>
                                             ))}
                                           </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
+                                        </thead>
+                                        <tbody>
+                                          {block.rows.map((row, ri) => (
+                                            <tr
+                                              key={ri}
+                                              className={
+                                                ri % 2 === 0
+                                                  ? "bg-white"
+                                                  : "bg-gray-5"
+                                              }
+                                            >
+                                              {row.map((cell, ci) => (
+                                                <td
+                                                  key={ci}
+                                                  className="px-4 py-2 text-xs text-gray-70"
+                                                >
+                                                  {cell}
+                                                </td>
+                                              ))}
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                    {/* Mobile: 뱃지 카드형 */}
+                                    <MobileTableCards
+                                      headers={block.headers}
+                                      rows={block.rows}
+                                    />
+                                  </>
+                                )}
+                            </div>
+                          );
+                        }
+                        if (block.type === "card") {
+                          const catColors: Record<
+                            string,
+                            { bg: string; text: string; bar: string }
+                          > = {
+                            창업: {
+                              bg: "bg-blue-50",
+                              text: "text-blue-600",
+                              bar: "#3b82f6",
+                            },
+                            혁신: {
+                              bg: "bg-indigo-50",
+                              text: "text-indigo-600",
+                              bar: "#6366f1",
+                            },
+                            수출: {
+                              bg: "bg-emerald-50",
+                              text: "text-emerald-600",
+                              bar: "#10b981",
+                            },
+                            녹색: {
+                              bg: "bg-violet-50",
+                              text: "text-violet-600",
+                              bar: "#8b5cf6",
+                            },
+                            디지털: {
+                              bg: "bg-cyan-50",
+                              text: "text-cyan-600",
+                              bar: "#06b6d4",
+                            },
+                            고용: {
+                              bg: "bg-amber-50",
+                              text: "text-amber-600",
+                              bar: "#f59e0b",
+                            },
+                            지역: {
+                              bg: "bg-teal-50",
+                              text: "text-teal-600",
+                              bar: "#14b8a6",
+                            },
+                            금융: {
+                              bg: "bg-sky-50",
+                              text: "text-sky-600",
+                              bar: "#0ea5e9",
+                            },
+                            기타: {
+                              bg: "bg-gray-50",
+                              text: "text-gray-600",
+                              bar: "#6b7280",
+                            },
+                          };
+                          const cat = block.category || "기타";
+                          const colors = catColors[cat] || catColors["기타"];
+                          const isOpen = (block.deadline || "").includes(
+                            "상시",
+                          );
+                          const cardTags = (block.tags || "")
+                            .replace(/#/g, "")
+                            .split(",")
+                            .filter(Boolean)
+                            .slice(0, 3);
+
+                          const cardHref = block.id
+                            ? `/notice/${block.id}`
+                            : undefined;
+
+                          const cardInner = (
+                            <div className="relative bg-white rounded-xl overflow-hidden border border-gray-10 hover:shadow-md transition-all group">
+                              <div
+                                className="h-1"
+                                style={{
+                                  background: colors.bar,
+                                }}
+                              />
+                              <div className="p-4 sm:p-5">
+                                <div className="flex items-center justify-between mb-2.5">
+                                  <span
+                                    className="text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded"
+                                    style={{
+                                      backgroundColor: `${colors.bar}15`,
+                                      color: colors.bar,
+                                    }}
+                                  >
+                                    {cat}
+                                  </span>
+                                  <span
+                                    className={`text-[10px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded ${isOpen ? "bg-primary-5 text-primary-60" : "text-point-50"}`}
+                                  >
+                                    {isOpen ? "상시접수" : block.deadline || ""}
+                                  </span>
+                                </div>
+                                <h4 className="font-bold text-gray-90 text-[13px] sm:text-[15px] leading-snug mb-1.5 group-hover:text-primary-60 transition-colors">
+                                  {block.title}
+                                </h4>
+                                <p className="text-[11px] sm:text-xs text-gray-50 leading-relaxed mb-3 line-clamp-2">
+                                  {block.summary}
+                                </p>
+                                <div className="bg-gray-5 rounded-lg p-2.5 sm:p-3 flex items-center justify-between mb-2.5">
+                                  <div>
+                                    <div className="text-[9px] sm:text-[10px] text-gray-40 font-medium">
+                                      지원금액
+                                    </div>
+                                    <div
+                                      className="text-sm sm:text-base font-extrabold"
+                                      style={{ color: colors.bar }}
+                                    >
+                                      {block.amount || "-"}
+                                    </div>
                                   </div>
-                                  {/* Mobile: 뱃지 카드형 */}
-                                  <MobileTableCards
-                                    headers={block.headers}
-                                    rows={block.rows}
-                                  />
-                                </>
-                              )}
-                          </div>
-                        );
-                      }
-                      return null;
-                    })}
+                                  <div className="text-right">
+                                    <div className="text-[9px] sm:text-[10px] text-gray-40 font-medium">
+                                      지원대상
+                                    </div>
+                                    <div className="text-[11px] sm:text-xs font-semibold text-gray-70">
+                                      {block.target || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex gap-1 flex-wrap">
+                                    {cardTags.map((tag, ti) => (
+                                      <span
+                                        key={ti}
+                                        className="text-[9px] sm:text-[10px] bg-gray-5 text-gray-50 px-1.5 py-0.5 rounded"
+                                      >
+                                        {tag.trim()}
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <span className="text-[11px] sm:text-xs text-primary-60 font-semibold">
+                                    상세보기 &rsaquo;
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+
+                          return cardHref ? (
+                            <a
+                              key={i}
+                              href={cardHref}
+                              className="block no-underline"
+                            >
+                              {cardInner}
+                            </a>
+                          ) : (
+                            <div key={i}>{cardInner}</div>
+                          );
+                        }
+                        return null;
+                      };
+
+                      content.forEach((block, i) => {
+                        if (block.type === "card") {
+                          cardBuffer.push({ block, index: i });
+                        } else {
+                          flushCards();
+                          elements.push(renderBlock(block, i));
+                        }
+                      });
+                      flushCards();
+
+                      return elements;
+                    })()}
                   </div>
                 )}
 
@@ -523,7 +723,9 @@ export default function NoticeDetailPage() {
                     href="/contact"
                     className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-primary-60 text-white text-[13px] sm:text-sm font-semibold rounded-lg hover:bg-primary-70 transition-colors"
                   >
-                    이 공고로 상담신청
+                    {["뉴스", "분석"].includes(notice.category)
+                      ? "정책자금 상담신청"
+                      : "이 공고로 상담신청"}
                   </Link>
                   <Link
                     href="/diagnosis"
@@ -531,29 +733,30 @@ export default function NoticeDetailPage() {
                   >
                     자금적격 진단
                   </Link>
-                  {notice.originalUrl && (
-                    <a
-                      href={notice.originalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-20 text-gray-60 text-sm font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
-                    >
-                      공고 바로가기
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
+                  {notice.originalUrl &&
+                    !["뉴스", "분석"].includes(notice.category) && (
+                      <a
+                        href={notice.originalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-20 text-gray-60 text-sm font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                        />
-                      </svg>
-                    </a>
-                  )}
+                        공고 바로가기
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
+                        </svg>
+                      </a>
+                    )}
                 </div>
               </div>
 
@@ -591,15 +794,34 @@ export default function NoticeDetailPage() {
               {/* 공고 요약 카드 */}
               <div className="bg-white rounded-xl border border-gray-10 p-5">
                 <h3 className="font-bold text-gray-80 mb-3 text-sm">
-                  공고 요약
+                  {["뉴스", "분석"].includes(notice.category)
+                    ? "콘텐츠 정보"
+                    : "공고 요약"}
                 </h3>
                 <div className="space-y-3 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-40">주관기관</span>
-                    <span className="text-gray-70 font-medium">
-                      {notice.source}
-                    </span>
-                  </div>
+                  {["뉴스", "분석"].includes(notice.category) ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-40">제공</span>
+                        <span className="text-gray-70 font-medium">
+                          기업정책자금센터
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-40">원천</span>
+                        <span className="text-gray-70 font-medium">
+                          정부 기업마당
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="text-gray-40">주관기관</span>
+                      <span className="text-gray-70 font-medium">
+                        {notice.source}
+                      </span>
+                    </div>
+                  )}
                   {notice.applyPeriod && (
                     <div className="flex justify-between">
                       <span className="text-gray-40">접수기간</span>
@@ -627,7 +849,9 @@ export default function NoticeDetailPage() {
               <div className="bg-primary-80 rounded-xl p-6 text-center">
                 <p className="text-white font-bold mb-1">전문가 무료 상담</p>
                 <p className="text-white/60 text-xs mb-3">
-                  이 공고에 대해 상담받으세요
+                  {["뉴스", "분석"].includes(notice.category)
+                    ? "정책자금 활용에 대해 상담받으세요"
+                    : "이 공고에 대해 상담받으세요"}
                 </p>
                 <Link
                   href="/contact"

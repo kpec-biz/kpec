@@ -6,9 +6,6 @@ compatibility_date = "2024-12-01"
 [placement]
 mode = "smart"
 
-[triggers]
-crons = ["57 22 * * *"]  # UTC 22:57 = KST 07:57 (매일 08시)
-
 [vars]
 ADMIN_EMAIL = "kjs010zzz@gmail.com"
 
