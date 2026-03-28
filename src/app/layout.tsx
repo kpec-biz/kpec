@@ -7,8 +7,8 @@ const SITE_URL = "https://jsbizfunding.kr";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "KPEC 기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
-    template: "%s | KPEC 기업정책자금센터",
+    default: "기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
+    template: "%s | 기업정책자금센터",
   },
   description:
     "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 맞춤 자금설계, 후불 성공보수제. 무료상담 010-8417-6800",
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: SITE_URL,
-    siteName: "KPEC 기업정책자금센터",
-    title: "KPEC 기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
+    siteName: "기업정책자금센터",
+    title: "기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
     description:
       "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 후불 성공보수제. 무료상담 010-8417-6800",
     images: [
@@ -52,13 +52,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "KPEC 기업정책자금센터",
+        alt: "기업정책자금센터",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "KPEC 기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
+    title: "기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
     description:
       "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 후불 성공보수제.",
     images: ["/og-image.png"],
@@ -93,11 +93,13 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
-      name: "KPEC 기업정책자금센터",
+      name: "기업정책자금센터",
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
       },
       contactPoint: {
         "@type": "ContactPoint",
@@ -109,13 +111,25 @@ const jsonLd = {
       sameAs: ["https://www.instagram.com/kpec77/"],
       description:
         "중소기업 정책자금 전문 컨설팅 기업. 운전자금, 시설자금, 기업인증 컨설팅 서비스 제공.",
+      knowsAbout: [
+        "중소기업 정책자금",
+        "운전자금",
+        "시설자금",
+        "기업인증",
+        "벤처인증",
+        "이노비즈",
+        "메인비즈",
+        "특례보증",
+        "정부지원금",
+        "중소기업 대출",
+      ],
     },
     // 2. WebSite — 사이트 검색 기능 (GEO/AEO)
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
-      name: "KPEC 기업정책자금센터",
+      name: "기업정책자금센터",
       publisher: { "@id": `${SITE_URL}/#organization` },
       inLanguage: "ko-KR",
     },
@@ -123,7 +137,7 @@ const jsonLd = {
     {
       "@type": "ProfessionalService",
       "@id": `${SITE_URL}/#service`,
-      name: "KPEC 기업정책자금센터",
+      name: "기업정책자금센터",
       url: SITE_URL,
       telephone: "+82-10-8417-6800",
       priceRange: "후불 성공보수제",
@@ -133,7 +147,7 @@ const jsonLd = {
       },
       serviceType: "정책자금 컨설팅",
       description:
-        "중소기업·소상공인 대상 정부 정책자금 신청 대행 및 컨설팅. 운전자금, 시설자금, 특례보증, 기업인증(벤처·이노비즈·메인비즈) 전문.",
+        "중소기업·소상공인 대상 정부 정책자금 신청 지원 및 컨설팅. 운전자금, 시설자금, 특례보증, 기업인증(벤처·이노비즈·메인비즈) 전문.",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "정책자금 서비스",
@@ -194,7 +208,7 @@ const jsonLd = {
           name: "정책자금 컨설팅 비용은 얼마인가요?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "KPEC는 후불 성공보수제로 운영됩니다. 자금 승인 전까지 비용이 없으며, 자금 실행 이후에만 수수료가 발생합니다.",
+            text: "기업정책자금센터는 후불 성공보수제로 운영됩니다. 자금 승인 전까지 비용이 없으며, 자금 실행 이후에만 수수료가 발생합니다.",
           },
         },
         {
