@@ -126,7 +126,10 @@ export default function NoticeDetailPage() {
     ])
       .then(async ([noticeRes, recentRes]) => {
         const item = noticeRes.records?.[0];
-        if (!item) return;
+        if (!item) {
+          setLoading(false);
+          return;
+        }
 
         setNotice(item);
         setRecentPosts(
@@ -149,9 +152,9 @@ export default function NoticeDetailPage() {
             // contentUrl이 없거나 실패 시 빈 배열
           }
         }
+        setLoading(false);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => setLoading(false));
   }, [id]);
 
   if (loading) {
