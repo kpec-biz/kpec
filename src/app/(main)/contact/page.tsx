@@ -148,7 +148,7 @@ export default function ContactPage() {
                 영업일 기준 1~2일 내 연락드리겠습니다.
               </p>
               <p className="mt-4 text-sm text-primary-60 font-semibold">
-                📞 010-8417-6800
+                📞 010-2466-4800
               </p>
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function ContactPage() {
                     href="tel:01084176800"
                     className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 bg-point-50 text-white rounded-lg font-semibold text-sm hover:bg-point-60 transition-colors"
                   >
-                    전화상담 010-8417-6800
+                    전화상담 010-2466-4800
                   </a>
                   <p className="text-xs text-gray-40 text-center mt-2">
                     평일 09:00 ~ 18:00
@@ -676,7 +676,7 @@ export default function ContactPage() {
               {/* 미니 통계 */}
               <div className="bg-white rounded-xl border border-gray-10 p-5">
                 <h3 className="font-bold text-gray-80 mb-3 text-sm">
-                  KPEC 실적
+                  기업정책자금센터 실적
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   {[

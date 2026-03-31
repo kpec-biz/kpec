@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | 기업정책자금센터",
   },
   description:
-    "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 맞춤 자금설계, 후불 성공보수제. 무료상담 010-8417-6800",
+    "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 맞춤 자금설계, 후불 성공보수제. 무료상담 010-2466-4800",
   keywords: [
     "정책자금",
     "중소기업 정책자금",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     siteName: "기업정책자금센터",
     title: "기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
     description:
-      "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 후불 성공보수제. 무료상담 010-8417-6800",
+      "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 후불 성공보수제. 무료상담 010-2466-4800",
     images: [
       {
         url: "/og-image.png",
@@ -103,7 +103,7 @@ const jsonLd = {
       },
       contactPoint: {
         "@type": "ContactPoint",
-        telephone: "+82-10-8417-6800",
+        telephone: "+82-10-2466-4800",
         contactType: "customer service",
         availableLanguage: "Korean",
         areaServed: "KR",
@@ -139,7 +139,7 @@ const jsonLd = {
       "@id": `${SITE_URL}/#service`,
       name: "기업정책자금센터",
       url: SITE_URL,
-      telephone: "+82-10-8417-6800",
+      telephone: "+82-10-2466-4800",
       priceRange: "후불 성공보수제",
       areaServed: {
         "@type": "Country",

@@ -22,7 +22,7 @@ export default function Footer() {
               style={{ color: "rgba(255,255,255,0.6)" }}
             >
               <p>인천 연수구 인천타워대로 301 센텀하이브 A동</p>
-              <p>연락처: 010-8417-6800</p>
+              <p>연락처: 010-2466-4800</p>
             </div>
           </div>
 

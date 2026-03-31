@@ -4,7 +4,7 @@ import HeroVideo from "@/components/HeroVideo";
 export const metadata: Metadata = {
   title: "기업정책자금센터 | 중소기업 정책자금 맞춤 설계",
   description:
-    "업종·재무 현황 분석 기반 정책자금 맞춤 설계. 운전자금·시설자금·기업인증 컨설팅. 후불 성공보수제, 승인 전 비용 0원. 무료상담 010-8417-6800",
+    "업종·재무 현황 분석 기반 정책자금 맞춤 설계. 운전자금·시설자금·기업인증 컨설팅. 후불 성공보수제, 승인 전 비용 0원. 무료상담 010-2466-4800",
   alternates: { canonical: "https://jsbizfunding.kr" },
 };
 import QuickService from "@/components/QuickService";
