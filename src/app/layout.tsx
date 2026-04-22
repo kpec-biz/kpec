@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { homeFaqs } from "@/data/faq";
 import "./globals.css";
 
 const SITE_URL = "https://jsbizfunding.kr";
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     template: "%s | 기업정책자금센터",
   },
   description:
-    "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 맞춤 자금설계, 후불 성공보수제. 무료상담 010-2466-4800",
+    "중소기업 정책자금 전문 컨설팅. 업종·재무 분석 기반 맞춤 자금설계. 운전자금·시설자금·벤처·이노비즈·메인비즈 인증 통합 지원. 무료 초기상담 010-2466-4800",
   keywords: [
     "정책자금",
     "중소기업 정책자금",
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     siteName: "기업정책자금센터",
     title: "기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
     description:
-      "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 후불 성공보수제. 무료상담 010-2466-4800",
+      "업종·재무 분석 기반 정책자금 맞춤 설계. 운전자금·시설자금·기업인증 통합 컨설팅. 무료 초기상담 010-2466-4800",
     images: [
       {
         url: "/og-image.png",
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "기업정책자금센터 | 중소기업 정책자금 전문 컨설팅",
     description:
-      "중소기업 정책자금 전문 컨설팅. 운전자금·시설자금·기업인증. 후불 성공보수제.",
+      "업종·재무 분석 기반 정책자금 맞춤 설계. 운전자금·시설자금·기업인증 통합 컨설팅.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -140,7 +141,7 @@ const jsonLd = {
       name: "기업정책자금센터",
       url: SITE_URL,
       telephone: "+82-10-2466-4800",
-      priceRange: "후불 성공보수제",
+      priceRange: "초기상담 무료",
       areaServed: {
         "@type": "Country",
         name: "대한민국",
@@ -186,48 +187,14 @@ const jsonLd = {
     {
       "@type": "FAQPage",
       "@id": `${SITE_URL}/#faq`,
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "정책자금은 누가 신청할 수 있나요?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "중소기업기본법 제2조에 따른 중소기업이면 신청 가능합니다. 상장사, 자본금 200억원 초과 기업, 세금 체납 기업, 휴·폐업 기업 등은 제외됩니다.",
-          },
+      mainEntity: homeFaqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
         },
-        {
-          "@type": "Question",
-          name: "정책자금 신청에서 자금 실행까지 얼마나 걸리나요?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "일반적으로 신청 후 2~4주 내 심사 결과가 통보되며, 승인 후 약정·실행까지 3~5 영업일이 소요됩니다.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "정책자금 컨설팅 비용은 얼마인가요?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "기업정책자금센터는 후불 성공보수제로 운영됩니다. 자금 승인 전까지 비용이 없으며, 자금 실행 이후에만 수수료가 발생합니다.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "운전자금과 시설자금을 동시에 신청할 수 있나요?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "가능합니다. 기업당 운전+시설자금 합산 융자한도는 60억원 이내입니다. AI 기업(AX 스프린트) 선정 시 100억원까지 확대됩니다.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "특례보증이란 무엇인가요?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "특례보증은 신용등급이 낮은 중소기업·소상공인도 정부 보증을 통해 저금리로 자금을 조달할 수 있는 제도입니다. 중저신용자 지원을 위해 운영됩니다.",
-          },
-        },
-      ],
+      })),
     },
   ],
 };

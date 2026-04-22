@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "진행절차 | 8단계 정책자금 지원 프로세스",
   description:
-    "무료상담부터 사후관리까지 8단계 정책자금 지원 프로세스. 후불 성공보수제, 승인 전 비용 0원. 기업정책자금센터가 전 과정을 책임집니다.",
+    "무료상담부터 사후관리까지 8단계 정책자금 지원 프로세스. 서류 작성·심사 대응·실행까지 전 과정 원스톱 지원. 기업정책자금센터가 책임집니다.",
   alternates: { canonical: "https://jsbizfunding.kr/process" },
 };
 

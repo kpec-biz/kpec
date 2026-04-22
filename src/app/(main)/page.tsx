@@ -4,7 +4,7 @@ import HeroVideo from "@/components/HeroVideo";
 export const metadata: Metadata = {
   title: "기업정책자금센터 | 중소기업 정책자금 맞춤 설계",
   description:
-    "업종·재무 현황 분석 기반 정책자금 맞춤 설계. 운전자금·시설자금·기업인증 컨설팅. 후불 성공보수제, 승인 전 비용 0원. 무료상담 010-2466-4800",
+    "업종·재무 현황 분석으로 승인 가능성 높은 자금을 선별해 드립니다. 운전자금·시설자금·벤처·이노비즈·메인비즈 인증 통합 컨설팅. 무료 초기상담 010-2466-4800",
   alternates: { canonical: "https://jsbizfunding.kr" },
 };
 import QuickService from "@/components/QuickService";
@@ -18,6 +18,7 @@ import CaseCards from "@/components/CaseCards";
 import ProcessSteps from "@/components/ProcessSteps";
 import CtaSection from "@/components/CtaSection";
 import HomeSidebar from "@/components/HomeSidebar";
+import HomeFaq from "@/components/HomeFaq";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export default function Home() {
@@ -54,6 +55,9 @@ export default function Home() {
         </ScrollReveal>
         <ScrollReveal>
           <ProcessSteps />
+        </ScrollReveal>
+        <ScrollReveal>
+          <HomeFaq />
         </ScrollReveal>
         <ScrollReveal>
           <CtaSection />

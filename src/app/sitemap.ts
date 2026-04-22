@@ -1,14 +1,15 @@
 import type { MetadataRoute } from "next";
+import { fetchNotices } from "@/lib/notices";
 
 const BASE = "https://jsbizfunding.kr";
 
-// NOTE: 공고 개별 페이지는 핵심 페이지 색인 완료 후 점진적으로 추가 예정
-// 신규 도메인에 대량 URL 제출 시 Google이 크롤링을 보류하는 문제 방지
+// 공고 상세는 최근 30건만 포함 (한 번에 대량 추가 시 Google이 크롤링을 보류하는 문제 방지)
+const NOTICE_DETAIL_LIMIT = 30;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date().toISOString();
 
-  return [
+  const staticEntries: MetadataRoute.Sitemap = [
     {
       url: BASE,
       lastModified: now,
@@ -64,4 +65,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     },
   ];
+
+  // 최근 공고 상세 (Airtable에서 최신 30건)
+  let noticeEntries: MetadataRoute.Sitemap = [];
+  try {
+    const { records } = await fetchNotices({
+      limit: NOTICE_DETAIL_LIMIT,
+      revalidate: 3600, // 1시간 캐시
+    });
+    noticeEntries = records
+      .filter((r) => r.pblancId)
+      .map((r) => ({
+        url: `${BASE}/notice/${r.pblancId}`,
+        lastModified: r.publishDate
+          ? new Date(r.publishDate).toISOString()
+          : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      }));
+  } catch {
+    noticeEntries = [];
+  }
+
+  return [...staticEntries, ...noticeEntries];
 }

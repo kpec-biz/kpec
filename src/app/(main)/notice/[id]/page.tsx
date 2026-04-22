@@ -1,76 +1,16 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { notFound } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
-import DocumentScanner from "@/components/DocumentScanner";
+import MobileTableCards from "@/components/MobileTableCards";
+import {
+  fetchNoticeById,
+  fetchNoticeContent,
+  fetchNotices,
+  type NoticeItem,
+} from "@/lib/notices";
 
-/* Mobile: 표 → 뱃지 카드형 (첫 번째 컬럼이 행 라벨) */
-function MobileTableCards({
-  headers,
-  rows,
-}: {
-  headers: string[];
-  rows: string[][];
-}) {
-  const [active, setActive] = useState(0);
-  const row = rows[active];
-
-  return (
-    <div className="sm:hidden">
-      {/* 뱃지 그리드 - flex-wrap, 선택 상태 강조 + 그림자 */}
-      <div className="flex flex-wrap gap-1.5 mb-0">
-        {rows.map((r, i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            className={`px-3 py-2 rounded-t-lg text-[11px] font-semibold transition-all ${
-              active === i
-                ? "bg-primary-60 text-white shadow-md relative z-10 -mb-px"
-                : "bg-gray-5 border border-gray-10 border-b-0 text-gray-50 hover:bg-gray-10"
-            }`}
-          >
-            {r[0]}
-          </button>
-        ))}
-      </div>
-
-      {/* 상세 카드 - 선택된 탭과 연결 */}
-      <div className="bg-white border border-gray-10 rounded-b-xl rounded-tr-xl overflow-hidden shadow-sm">
-        {headers.slice(1).map((h, hi) => (
-          <div
-            key={hi}
-            className={`flex items-start gap-2 px-3.5 py-2 ${hi % 2 === 1 ? "bg-gray-5" : ""}`}
-          >
-            <span className="text-[10px] font-semibold text-gray-50 w-14 flex-shrink-0 pt-0.5">
-              {h}
-            </span>
-            <span className="text-[12px] text-gray-80">
-              {row[hi + 1] || "-"}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-interface NoticeItem {
-  pblancId: string;
-  title: string;
-  originalTitle: string;
-  summary: string;
-  contentUrl: string;
-  category: string;
-  source: string;
-  applyPeriod: string;
-  originalUrl: string;
-  publishDate: string;
-  status: string;
-  tags: string;
-}
+const SITE_URL = "https://jsbizfunding.kr";
 
 interface ContentBlock {
   type:
@@ -91,7 +31,6 @@ interface ContentBlock {
   data?: Array<{ name: string; value: number; color?: string }>;
   headers?: string[];
   rows?: string[][];
-  // card 타입 전용 필드
   id?: string;
   category?: string;
   target?: string;
@@ -101,98 +40,84 @@ interface ContentBlock {
   tags?: string;
 }
 
-// Gemini 모델마다 text 또는 children 구조로 출력 — 둘 다 처리
 function blockText(block: ContentBlock): string {
   if (block.text) return block.text;
   if (block.children) return block.children.map((c) => c.text || "").join("");
   return "";
 }
 
-export default function NoticeDetailPage() {
-  const params = useParams();
-  const id = params.id as string;
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-  const [notice, setNotice] = useState<NoticeItem | null>(null);
-  const [content, setContent] = useState<ContentBlock[]>([]);
-  const [recentPosts, setRecentPosts] = useState<NoticeItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!id) return;
-
-    Promise.all([
-      fetch(`/api/notices?id=${id}`).then((r) => r.json()),
-      fetch("/api/notices?limit=5").then((r) => r.json()),
-    ])
-      .then(async ([noticeRes, recentRes]) => {
-        const item = noticeRes.records?.[0];
-        if (!item) {
-          setLoading(false);
-          return;
-        }
-
-        setNotice(item);
-        setRecentPosts(
-          (recentRes.records || [])
-            .filter((r: NoticeItem) => r.pblancId !== item.pblancId)
-            .slice(0, 3),
-        );
-
-        // 서버 프록시를 통해 R2 본문 JSON fetch (CORS 우회)
-        if (item.contentUrl) {
-          try {
-            const contentRes = await fetch(
-              `/api/notices/content?url=${encodeURIComponent(item.contentUrl)}`,
-            );
-            const contentJson = await contentRes.json();
-            if (Array.isArray(contentJson)) {
-              setContent(contentJson);
-            }
-          } catch {
-            // contentUrl이 없거나 실패 시 빈 배열
-          }
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="animate-fade-in">
-        <PageHeader
-          bgImage="/images/headers/notice.png"
-          title="알림·자료"
-          subtitle=""
-        />
-        <DocumentScanner text="공고 내용을 불러오고 있습니다..." />
-      </div>
-    );
-  }
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const notice = await fetchNoticeById(id);
 
   if (!notice) {
-    return (
-      <>
-        <PageHeader
-          bgImage="/images/headers/notice.png"
-          title="알림·자료"
-          subtitle=""
-        />
-        <div className="py-20 text-center text-gray-40">
-          <p className="mb-4">공고를 찾을 수 없습니다</p>
-          <Link href="/notice" className="text-primary-60 underline">
-            목록으로 돌아가기
-          </Link>
-        </div>
-      </>
-    );
+    return {
+      title: "공고를 찾을 수 없습니다",
+      robots: { index: false, follow: false },
+    };
   }
 
+  const isContent = ["뉴스", "분석"].includes(notice.category);
+  const descBase =
+    notice.summary?.replace(/\s+/g, " ").trim().slice(0, 150) ||
+    `${notice.title} ${isContent ? "상세" : "공고"} 정보. 기업정책자금센터.`;
+
+  const ogImage = notice.originalUrl?.includes("r2.dev/thumbnails")
+    ? notice.originalUrl
+    : `${SITE_URL}/og-image.png`;
+
+  return {
+    title: `${notice.title} | ${isContent ? "정책자금 " + notice.category : "정책자금 공고"}`,
+    description: descBase,
+    alternates: { canonical: `${SITE_URL}/notice/${notice.pblancId}` },
+    openGraph: {
+      type: "article",
+      title: notice.title,
+      description: descBase,
+      url: `${SITE_URL}/notice/${notice.pblancId}`,
+      images: [{ url: ogImage }],
+      locale: "ko_KR",
+      siteName: "기업정책자금센터",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: notice.title,
+      description: descBase,
+      images: [ogImage],
+    },
+  };
+}
+
+export default async function NoticeDetailPage({ params }: PageProps) {
+  const { id } = await params;
+
+  const [notice, recentRes] = await Promise.all([
+    fetchNoticeById(id),
+    fetchNotices({ limit: 5, exclude: [] }),
+  ]);
+
+  if (!notice) {
+    notFound();
+  }
+
+  const recentPosts: NoticeItem[] = recentRes.records
+    .filter((r) => r.pblancId !== notice.pblancId)
+    .slice(0, 3);
+
+  const content = await fetchNoticeContent<ContentBlock[]>(notice.contentUrl);
+  const blocks: ContentBlock[] = Array.isArray(content) ? content : [];
+
   // 접수 상태 판단
+  const deadlineStr = notice.applyPeriod?.split("~")[1]?.trim() || "";
   const isAccepting =
     notice.applyPeriod?.includes("상시") ||
-    (notice.applyPeriod &&
-      new Date(notice.applyPeriod.split("~")[1]?.trim() || "") >= new Date());
+    (deadlineStr && new Date(deadlineStr) >= new Date());
 
   const categoryColor: Record<string, string> = {
     기술: "bg-blue-50 text-blue-600",
@@ -204,8 +129,44 @@ export default function NoticeDetailPage() {
     뉴스: "bg-success/10 text-success",
   };
 
+  const isContent = ["뉴스", "분석"].includes(notice.category);
+
+  // Article JSON-LD (뉴스/분석)
+  const articleJsonLd = isContent
+    ? {
+        "@context": "https://schema.org",
+        "@type": notice.category === "뉴스" ? "NewsArticle" : "Article",
+        headline: notice.title,
+        description: notice.summary,
+        datePublished: notice.publishDate,
+        author: {
+          "@type": "Organization",
+          name: "기업정책자금센터",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "기업정책자금센터",
+          logo: {
+            "@type": "ImageObject",
+            url: `${SITE_URL}/og-image.png`,
+          },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/notice/${notice.pblancId}`,
+        },
+      }
+    : null;
+
   return (
     <>
+      {articleJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        />
+      )}
+
       <PageHeader
         bgImage="/images/headers/notice.png"
         title="알림·자료"
@@ -241,7 +202,6 @@ export default function NoticeDetailPage() {
             >
               알림·자료
             </Link>
-            {/* 제목은 PC에서만 브레드크럼에 표시 */}
             <svg
               className="w-3 h-3 flex-shrink-0 hidden sm:block"
               fill="none"
@@ -262,12 +222,7 @@ export default function NoticeDetailPage() {
 
           <div className="grid lg:grid-cols-[1fr_300px] gap-8">
             {/* 메인 콘텐츠 */}
-            <motion.article
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-xl border border-gray-10 overflow-hidden"
-            >
+            <article className="bg-white rounded-xl border border-gray-10 overflow-hidden">
               <div className="p-5 sm:p-8">
                 {/* 카테고리 + 접수 상태 */}
                 <div className="flex items-center gap-2 mb-4">
@@ -283,7 +238,7 @@ export default function NoticeDetailPage() {
                   )}
                 </div>
 
-                {/* 배너 이미지 (뉴스/분석) */}
+                {/* 배너 이미지 */}
                 {notice.originalUrl &&
                   notice.originalUrl.includes("r2.dev/thumbnails") && (
                     <div className="relative rounded-xl overflow-hidden mb-5 border border-gray-10">
@@ -305,7 +260,7 @@ export default function NoticeDetailPage() {
 
                 {/* 메타 정보 */}
                 <div className="flex flex-wrap gap-2 sm:gap-4 text-[12px] sm:text-sm text-gray-50 pb-4 sm:pb-5 border-b border-gray-10 mb-4 sm:mb-6">
-                  {["뉴스", "분석"].includes(notice.category) ? (
+                  {isContent ? (
                     <span>제공: 기업정책자금센터</span>
                   ) : (
                     <span>주관: {notice.source}</span>
@@ -317,392 +272,18 @@ export default function NoticeDetailPage() {
                 </div>
 
                 {/* 요약 박스 */}
-                <div className="bg-primary-5 border-l-4 border-primary-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 mb-6 sm:mb-8">
-                  <p className="text-[13px] sm:text-sm text-primary-70 leading-relaxed">
-                    {notice.summary.split(/(?<=\.\s)/).map((sentence, si) => (
-                      <span key={si}>
-                        {sentence}
-                        {si < notice.summary.split(/(?<=\.\s)/).length - 1 && (
-                          <br className="hidden md:block" />
-                        )}
-                      </span>
-                    ))}
-                  </p>
-                </div>
+                {notice.summary && (
+                  <div className="bg-primary-5 border-l-4 border-primary-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 mb-6 sm:mb-8">
+                    <p className="text-[13px] sm:text-sm text-primary-70 leading-relaxed whitespace-pre-line">
+                      {notice.summary}
+                    </p>
+                  </div>
+                )}
 
-                {/* 본문 렌더링 (R2 JSON) */}
-                {content.length > 0 && (
+                {/* 본문 렌더링 */}
+                {blocks.length > 0 && (
                   <div className="prose-content space-y-5">
-                    {(() => {
-                      // card 블록들을 2열 그리드로 묶기
-                      const elements: React.ReactNode[] = [];
-                      let cardBuffer: { block: ContentBlock; index: number }[] =
-                        [];
-
-                      const flushCards = () => {
-                        if (cardBuffer.length > 0) {
-                          elements.push(
-                            <div
-                              key={`card-grid-${cardBuffer[0].index}`}
-                              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                            >
-                              {cardBuffer.map(({ block: cb, index: ci }) =>
-                                renderBlock(cb, ci),
-                              )}
-                            </div>,
-                          );
-                          cardBuffer = [];
-                        }
-                      };
-
-                      const renderBlock = (
-                        block: ContentBlock,
-                        i: number,
-                      ): React.ReactNode => {
-                        if (block.type === "h2") {
-                          return (
-                            <h2
-                              key={i}
-                              className="text-base sm:text-lg font-bold text-gray-90 mt-6 sm:mt-8 mb-2 sm:mb-3 flex items-center gap-2"
-                            >
-                              <span className="w-1 h-5 bg-primary-60 rounded-full" />
-                              {blockText(block)}
-                            </h2>
-                          );
-                        }
-                        if (block.type === "h3") {
-                          return (
-                            <h3
-                              key={i}
-                              className="text-[14px] sm:text-base font-semibold text-gray-80 mt-4 sm:mt-6 mb-1.5 sm:mb-2"
-                            >
-                              {blockText(block)}
-                            </h3>
-                          );
-                        }
-                        if (block.type === "p" || block.type === "text") {
-                          return (
-                            <p
-                              key={i}
-                              className="text-[13px] sm:text-base text-gray-60 leading-relaxed"
-                            >
-                              {blockText(block)}
-                            </p>
-                          );
-                        }
-                        if (block.type === "ul" && block.items) {
-                          return (
-                            <ul key={i} className="space-y-2">
-                              {block.items.map((item, j) => (
-                                <li
-                                  key={j}
-                                  className="flex items-start gap-2 text-[13px] sm:text-base text-gray-60"
-                                >
-                                  <span className="w-1.5 h-1.5 rounded-full bg-primary-40 mt-2 flex-shrink-0" />
-                                  {item}
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }
-                        if (block.type === "info-box") {
-                          return (
-                            <div
-                              key={i}
-                              className="bg-primary-5 border-l-4 border-primary-40 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-primary-70 text-[13px] sm:text-sm font-medium"
-                            >
-                              {blockText(block)}
-                            </div>
-                          );
-                        }
-                        if (block.type === "warn-box") {
-                          return (
-                            <div
-                              key={i}
-                              className="bg-point-50/10 border-l-4 border-point-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-point-60 text-[13px] sm:text-sm font-medium"
-                            >
-                              {blockText(block)}
-                            </div>
-                          );
-                        }
-                        if (block.type === "chart-data") {
-                          return (
-                            <div
-                              key={i}
-                              className="my-4 sm:my-6 bg-gray-5 rounded-xl border border-gray-10 p-4 sm:p-5"
-                            >
-                              {block.title && (
-                                <h4 className="text-[13px] sm:text-sm font-bold text-gray-80 mb-3 sm:mb-4">
-                                  {block.title}
-                                </h4>
-                              )}
-                              {block.chartType === "bar" && block.data && (
-                                <div className="space-y-2.5 sm:space-y-3">
-                                  {block.data.map((d, di) => {
-                                    const maxVal = Math.max(
-                                      ...(block.data || []).map((x) => x.value),
-                                    );
-                                    return (
-                                      <div key={di}>
-                                        <div className="flex justify-between text-[11px] sm:text-xs mb-1">
-                                          <span className="text-gray-60">
-                                            {d.name}
-                                          </span>
-                                          <span className="font-semibold text-gray-80">
-                                            {d.value.toLocaleString()}
-                                          </span>
-                                        </div>
-                                        <div className="h-2.5 sm:h-3 bg-gray-10 rounded-full overflow-hidden">
-                                          <div
-                                            className="h-full rounded-full transition-all duration-700"
-                                            style={{
-                                              width: `${(d.value / maxVal) * 100}%`,
-                                              backgroundColor:
-                                                d.color || "#0b50d0",
-                                            }}
-                                          />
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                              {block.chartType === "compare" && block.data && (
-                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
-                                  {block.data.map((d, di) => (
-                                    <div
-                                      key={di}
-                                      className="text-center bg-white rounded-lg p-2 sm:p-3 border border-gray-10"
-                                    >
-                                      <div
-                                        className="text-[15px] sm:text-2xl font-bold"
-                                        style={{ color: d.color || "#0b50d0" }}
-                                      >
-                                        {d.value != null ? `${d.value}%` : "-"}
-                                      </div>
-                                      <div className="text-[9px] sm:text-[11px] text-gray-50 mt-0.5 sm:mt-1">
-                                        {d.name}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              {block.chartType === "table" &&
-                                block.headers &&
-                                block.rows && (
-                                  <>
-                                    {/* PC: 표 */}
-                                    <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-10">
-                                      <table className="w-full text-sm">
-                                        <thead>
-                                          <tr className="bg-primary-80 text-white">
-                                            {block.headers.map((h, hi) => (
-                                              <th
-                                                key={hi}
-                                                className="px-4 py-2 text-left font-semibold text-xs"
-                                              >
-                                                {h}
-                                              </th>
-                                            ))}
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {block.rows.map((row, ri) => (
-                                            <tr
-                                              key={ri}
-                                              className={
-                                                ri % 2 === 0
-                                                  ? "bg-white"
-                                                  : "bg-gray-5"
-                                              }
-                                            >
-                                              {row.map((cell, ci) => (
-                                                <td
-                                                  key={ci}
-                                                  className="px-4 py-2 text-xs text-gray-70"
-                                                >
-                                                  {cell}
-                                                </td>
-                                              ))}
-                                            </tr>
-                                          ))}
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                    {/* Mobile: 뱃지 카드형 */}
-                                    <MobileTableCards
-                                      headers={block.headers}
-                                      rows={block.rows}
-                                    />
-                                  </>
-                                )}
-                            </div>
-                          );
-                        }
-                        if (block.type === "card") {
-                          const catColors: Record<
-                            string,
-                            { bg: string; text: string; bar: string }
-                          > = {
-                            창업: {
-                              bg: "bg-blue-50",
-                              text: "text-blue-600",
-                              bar: "#3b82f6",
-                            },
-                            혁신: {
-                              bg: "bg-indigo-50",
-                              text: "text-indigo-600",
-                              bar: "#6366f1",
-                            },
-                            수출: {
-                              bg: "bg-emerald-50",
-                              text: "text-emerald-600",
-                              bar: "#10b981",
-                            },
-                            녹색: {
-                              bg: "bg-violet-50",
-                              text: "text-violet-600",
-                              bar: "#8b5cf6",
-                            },
-                            디지털: {
-                              bg: "bg-cyan-50",
-                              text: "text-cyan-600",
-                              bar: "#06b6d4",
-                            },
-                            고용: {
-                              bg: "bg-amber-50",
-                              text: "text-amber-600",
-                              bar: "#f59e0b",
-                            },
-                            지역: {
-                              bg: "bg-teal-50",
-                              text: "text-teal-600",
-                              bar: "#14b8a6",
-                            },
-                            금융: {
-                              bg: "bg-sky-50",
-                              text: "text-sky-600",
-                              bar: "#0ea5e9",
-                            },
-                            기타: {
-                              bg: "bg-gray-50",
-                              text: "text-gray-600",
-                              bar: "#6b7280",
-                            },
-                          };
-                          const cat = block.category || "기타";
-                          const colors = catColors[cat] || catColors["기타"];
-                          const isOpen = (block.deadline || "").includes(
-                            "상시",
-                          );
-                          const cardTags = (block.tags || "")
-                            .replace(/#/g, "")
-                            .split(",")
-                            .filter(Boolean)
-                            .slice(0, 3);
-
-                          const cardHref = block.id
-                            ? `/notice/${block.id}`
-                            : undefined;
-
-                          const cardInner = (
-                            <div className="relative bg-white rounded-xl overflow-hidden border border-gray-10 hover:shadow-md transition-all group">
-                              <div
-                                className="h-1"
-                                style={{
-                                  background: colors.bar,
-                                }}
-                              />
-                              <div className="p-4 sm:p-5">
-                                <div className="flex items-center justify-between mb-2.5">
-                                  <span
-                                    className="text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded"
-                                    style={{
-                                      backgroundColor: `${colors.bar}15`,
-                                      color: colors.bar,
-                                    }}
-                                  >
-                                    {cat}
-                                  </span>
-                                  <span
-                                    className={`text-[10px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded ${isOpen ? "bg-primary-5 text-primary-60" : "text-point-50"}`}
-                                  >
-                                    {isOpen ? "상시접수" : block.deadline || ""}
-                                  </span>
-                                </div>
-                                <h4 className="font-bold text-gray-90 text-[13px] sm:text-[15px] leading-snug mb-1.5 group-hover:text-primary-60 transition-colors">
-                                  {block.title}
-                                </h4>
-                                <p className="text-[11px] sm:text-xs text-gray-50 leading-relaxed mb-3 line-clamp-2">
-                                  {block.summary}
-                                </p>
-                                <div className="bg-gray-5 rounded-lg p-2.5 sm:p-3 flex items-center justify-between mb-2.5">
-                                  <div>
-                                    <div className="text-[9px] sm:text-[10px] text-gray-40 font-medium">
-                                      지원금액
-                                    </div>
-                                    <div
-                                      className="text-sm sm:text-base font-extrabold"
-                                      style={{ color: colors.bar }}
-                                    >
-                                      {block.amount || "-"}
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <div className="text-[9px] sm:text-[10px] text-gray-40 font-medium">
-                                      지원대상
-                                    </div>
-                                    <div className="text-[11px] sm:text-xs font-semibold text-gray-70">
-                                      {block.target || "-"}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <div className="flex gap-1 flex-wrap">
-                                    {cardTags.map((tag, ti) => (
-                                      <span
-                                        key={ti}
-                                        className="text-[9px] sm:text-[10px] bg-gray-5 text-gray-50 px-1.5 py-0.5 rounded"
-                                      >
-                                        {tag.trim()}
-                                      </span>
-                                    ))}
-                                  </div>
-                                  <span className="text-[11px] sm:text-xs text-primary-60 font-semibold">
-                                    상세보기 &rsaquo;
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          );
-
-                          return cardHref ? (
-                            <a
-                              key={i}
-                              href={cardHref}
-                              className="block no-underline"
-                            >
-                              {cardInner}
-                            </a>
-                          ) : (
-                            <div key={i}>{cardInner}</div>
-                          );
-                        }
-                        return null;
-                      };
-
-                      content.forEach((block, i) => {
-                        if (block.type === "card") {
-                          cardBuffer.push({ block, index: i });
-                        } else {
-                          flushCards();
-                          elements.push(renderBlock(block, i));
-                        }
-                      });
-                      flushCards();
-
-                      return elements;
-                    })()}
+                    <NoticeBodyBlocks blocks={blocks} />
                   </div>
                 )}
 
@@ -726,9 +307,7 @@ export default function NoticeDetailPage() {
                     href="/contact"
                     className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-primary-60 text-white text-[13px] sm:text-sm font-semibold rounded-lg hover:bg-primary-70 transition-colors"
                   >
-                    {["뉴스", "분석"].includes(notice.category)
-                      ? "정책자금 상담신청"
-                      : "이 공고로 상담신청"}
+                    {isContent ? "정책자금 상담신청" : "이 공고로 상담신청"}
                   </Link>
                   <Link
                     href="/diagnosis"
@@ -736,30 +315,29 @@ export default function NoticeDetailPage() {
                   >
                     자금적격 진단
                   </Link>
-                  {notice.originalUrl &&
-                    !["뉴스", "분석"].includes(notice.category) && (
-                      <a
-                        href={notice.originalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-20 text-gray-60 text-sm font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
+                  {notice.originalUrl && !isContent && (
+                    <a
+                      href={notice.originalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-20 text-gray-60 text-sm font-semibold rounded-lg hover:border-primary-40 hover:text-primary-60 transition-colors"
+                    >
+                      공고 바로가기
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
                       >
-                        공고 바로가기
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                      </a>
-                    )}
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -785,24 +363,17 @@ export default function NoticeDetailPage() {
                   목록으로
                 </Link>
               </div>
-            </motion.article>
+            </article>
 
             {/* 사이드바 */}
-            <motion.aside
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="space-y-6"
-            >
+            <aside className="space-y-6">
               {/* 공고 요약 카드 */}
               <div className="bg-white rounded-xl border border-gray-10 p-5">
-                <h3 className="font-bold text-gray-80 mb-3 text-sm">
-                  {["뉴스", "분석"].includes(notice.category)
-                    ? "콘텐츠 정보"
-                    : "공고 요약"}
-                </h3>
+                <h2 className="font-bold text-gray-80 mb-3 text-sm">
+                  {isContent ? "콘텐츠 정보" : "공고 요약"}
+                </h2>
                 <div className="space-y-3 text-xs">
-                  {["뉴스", "분석"].includes(notice.category) ? (
+                  {isContent ? (
                     <>
                       <div className="flex justify-between">
                         <span className="text-gray-40">제공</span>
@@ -852,7 +423,7 @@ export default function NoticeDetailPage() {
               <div className="bg-primary-80 rounded-xl p-6 text-center">
                 <p className="text-white font-bold mb-1">전문가 무료 상담</p>
                 <p className="text-white/60 text-xs mb-3">
-                  {["뉴스", "분석"].includes(notice.category)
+                  {isContent
                     ? "정책자금 활용에 대해 상담받으세요"
                     : "이 공고에 대해 상담받으세요"}
                 </p>
@@ -863,7 +434,7 @@ export default function NoticeDetailPage() {
                   무료상담 신청
                 </Link>
                 <a
-                  href="tel:01084176800"
+                  href="tel:01024664800"
                   className="block w-full mt-2 border border-white/30 text-white font-semibold py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"
                 >
                   전화상담
@@ -871,30 +442,32 @@ export default function NoticeDetailPage() {
               </div>
 
               {/* 최근 공고 */}
-              <div className="bg-white rounded-xl border border-gray-10 p-5">
-                <h3 className="font-bold text-gray-80 mb-4">최근 공고</h3>
-                <ul className="space-y-3">
-                  {recentPosts.map((p) => (
-                    <li key={p.pblancId}>
-                      <Link
-                        href={`/notice/${p.pblancId}`}
-                        className="flex flex-col gap-0.5 hover:text-primary-60 transition-colors"
-                      >
-                        <span className="text-sm text-gray-70 hover:text-primary-60 line-clamp-2 leading-snug">
-                          {p.title}
-                        </span>
-                        <span className="text-xs text-gray-40">
-                          {p.publishDate}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {recentPosts.length > 0 && (
+                <div className="bg-white rounded-xl border border-gray-10 p-5">
+                  <h2 className="font-bold text-gray-80 mb-4">최근 공고</h2>
+                  <ul className="space-y-3">
+                    {recentPosts.map((p) => (
+                      <li key={p.pblancId}>
+                        <Link
+                          href={`/notice/${p.pblancId}`}
+                          className="flex flex-col gap-0.5 hover:text-primary-60 transition-colors"
+                        >
+                          <span className="text-sm text-gray-70 hover:text-primary-60 line-clamp-2 leading-snug">
+                            {p.title}
+                          </span>
+                          <span className="text-xs text-gray-40">
+                            {p.publishDate}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* 관련 서비스 */}
               <div className="bg-white rounded-xl border border-gray-10 p-5">
-                <h3 className="font-bold text-gray-80 mb-4">관련 서비스</h3>
+                <h2 className="font-bold text-gray-80 mb-4">관련 서비스</h2>
                 <div className="space-y-2">
                   {[
                     { label: "운전자금", href: "/services" },
@@ -925,10 +498,310 @@ export default function NoticeDetailPage() {
                   ))}
                 </div>
               </div>
-            </motion.aside>
+            </aside>
           </div>
         </div>
       </section>
     </>
   );
+}
+
+// ────────────────────────────────────────
+// 본문 블록 렌더러 (서버 컴포넌트)
+// ────────────────────────────────────────
+
+function NoticeBodyBlocks({ blocks }: { blocks: ContentBlock[] }) {
+  const elements: React.ReactNode[] = [];
+  let cardBuffer: { block: ContentBlock; index: number }[] = [];
+
+  const flushCards = () => {
+    if (cardBuffer.length > 0) {
+      elements.push(
+        <div
+          key={`card-grid-${cardBuffer[0].index}`}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        >
+          {cardBuffer.map(({ block: cb, index: ci }) => renderBlock(cb, ci))}
+        </div>,
+      );
+      cardBuffer = [];
+    }
+  };
+
+  blocks.forEach((block, i) => {
+    if (block.type === "card") {
+      cardBuffer.push({ block, index: i });
+    } else {
+      flushCards();
+      elements.push(renderBlock(block, i));
+    }
+  });
+  flushCards();
+
+  return <>{elements}</>;
+}
+
+function renderBlock(block: ContentBlock, i: number): React.ReactNode {
+  if (block.type === "h2") {
+    return (
+      <h2
+        key={i}
+        className="text-base sm:text-lg font-bold text-gray-90 mt-6 sm:mt-8 mb-2 sm:mb-3 flex items-center gap-2"
+      >
+        <span className="w-1 h-5 bg-primary-60 rounded-full" />
+        {blockText(block)}
+      </h2>
+    );
+  }
+  if (block.type === "h3") {
+    return (
+      <h3
+        key={i}
+        className="text-[14px] sm:text-base font-semibold text-gray-80 mt-4 sm:mt-6 mb-1.5 sm:mb-2"
+      >
+        {blockText(block)}
+      </h3>
+    );
+  }
+  if (block.type === "p" || block.type === "text") {
+    return (
+      <p
+        key={i}
+        className="text-[13px] sm:text-base text-gray-60 leading-relaxed"
+      >
+        {blockText(block)}
+      </p>
+    );
+  }
+  if (block.type === "ul" && block.items) {
+    return (
+      <ul key={i} className="space-y-2">
+        {block.items.map((item, j) => (
+          <li
+            key={j}
+            className="flex items-start gap-2 text-[13px] sm:text-base text-gray-60"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-primary-40 mt-2 flex-shrink-0" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (block.type === "info-box") {
+    return (
+      <div
+        key={i}
+        className="bg-primary-5 border-l-4 border-primary-40 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-primary-70 text-[13px] sm:text-sm font-medium"
+      >
+        {blockText(block)}
+      </div>
+    );
+  }
+  if (block.type === "warn-box") {
+    return (
+      <div
+        key={i}
+        className="bg-point-50/10 border-l-4 border-point-50 rounded-r-lg px-4 sm:px-5 py-3 sm:py-4 text-point-60 text-[13px] sm:text-sm font-medium"
+      >
+        {blockText(block)}
+      </div>
+    );
+  }
+  if (block.type === "chart-data") {
+    return (
+      <div
+        key={i}
+        className="my-4 sm:my-6 bg-gray-5 rounded-xl border border-gray-10 p-4 sm:p-5"
+      >
+        {block.title && (
+          <h4 className="text-[13px] sm:text-sm font-bold text-gray-80 mb-3 sm:mb-4">
+            {block.title}
+          </h4>
+        )}
+        {block.chartType === "bar" && block.data && (
+          <div className="space-y-2.5 sm:space-y-3">
+            {block.data.map((d, di) => {
+              const maxVal = Math.max(
+                ...(block.data || []).map((x) => x.value),
+              );
+              return (
+                <div key={di}>
+                  <div className="flex justify-between text-[11px] sm:text-xs mb-1">
+                    <span className="text-gray-60">{d.name}</span>
+                    <span className="font-semibold text-gray-80">
+                      {d.value.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="h-2.5 sm:h-3 bg-gray-10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${(d.value / maxVal) * 100}%`,
+                        backgroundColor: d.color || "#0b50d0",
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {block.chartType === "compare" && block.data && (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+            {block.data.map((d, di) => (
+              <div
+                key={di}
+                className="text-center bg-white rounded-lg p-2 sm:p-3 border border-gray-10"
+              >
+                <div
+                  className="text-[15px] sm:text-2xl font-bold"
+                  style={{ color: d.color || "#0b50d0" }}
+                >
+                  {d.value != null ? `${d.value}%` : "-"}
+                </div>
+                <div className="text-[9px] sm:text-[11px] text-gray-50 mt-0.5 sm:mt-1">
+                  {d.name}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {block.chartType === "table" && block.headers && block.rows && (
+          <>
+            <div className="hidden sm:block overflow-x-auto rounded-lg border border-gray-10">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-primary-80 text-white">
+                    {block.headers.map((h, hi) => (
+                      <th
+                        key={hi}
+                        className="px-4 py-2 text-left font-semibold text-xs"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {block.rows.map((row, ri) => (
+                    <tr
+                      key={ri}
+                      className={ri % 2 === 0 ? "bg-white" : "bg-gray-5"}
+                    >
+                      {row.map((cell, ci) => (
+                        <td key={ci} className="px-4 py-2 text-xs text-gray-70">
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <MobileTableCards headers={block.headers} rows={block.rows} />
+          </>
+        )}
+      </div>
+    );
+  }
+  if (block.type === "card") {
+    const catColors: Record<string, { bg: string; text: string; bar: string }> =
+      {
+        창업: { bg: "bg-blue-50", text: "text-blue-600", bar: "#3b82f6" },
+        혁신: { bg: "bg-indigo-50", text: "text-indigo-600", bar: "#6366f1" },
+        수출: { bg: "bg-emerald-50", text: "text-emerald-600", bar: "#10b981" },
+        녹색: { bg: "bg-violet-50", text: "text-violet-600", bar: "#8b5cf6" },
+        디지털: { bg: "bg-cyan-50", text: "text-cyan-600", bar: "#06b6d4" },
+        고용: { bg: "bg-amber-50", text: "text-amber-600", bar: "#f59e0b" },
+        지역: { bg: "bg-teal-50", text: "text-teal-600", bar: "#14b8a6" },
+        금융: { bg: "bg-sky-50", text: "text-sky-600", bar: "#0ea5e9" },
+        기타: { bg: "bg-gray-50", text: "text-gray-600", bar: "#6b7280" },
+      };
+    const cat = block.category || "기타";
+    const colors = catColors[cat] || catColors["기타"];
+    const isOpen = (block.deadline || "").includes("상시");
+    const cardTags = (block.tags || "")
+      .replace(/#/g, "")
+      .split(",")
+      .filter(Boolean)
+      .slice(0, 3);
+
+    const cardHref = block.id ? `/notice/${block.id}` : undefined;
+
+    const cardInner = (
+      <div className="relative bg-white rounded-xl overflow-hidden border border-gray-10 hover:shadow-md transition-all group">
+        <div className="h-1" style={{ background: colors.bar }} />
+        <div className="p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-2.5">
+            <span
+              className="text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded"
+              style={{
+                backgroundColor: `${colors.bar}15`,
+                color: colors.bar,
+              }}
+            >
+              {cat}
+            </span>
+            <span
+              className={`text-[10px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded ${isOpen ? "bg-primary-5 text-primary-60" : "text-point-50"}`}
+            >
+              {isOpen ? "상시접수" : block.deadline || ""}
+            </span>
+          </div>
+          <h4 className="font-bold text-gray-90 text-[13px] sm:text-[15px] leading-snug mb-1.5 group-hover:text-primary-60 transition-colors">
+            {block.title}
+          </h4>
+          <p className="text-[11px] sm:text-xs text-gray-50 leading-relaxed mb-3 line-clamp-2">
+            {block.summary}
+          </p>
+          <div className="bg-gray-5 rounded-lg p-2.5 sm:p-3 flex items-center justify-between mb-2.5">
+            <div>
+              <div className="text-[9px] sm:text-[10px] text-gray-40 font-medium">
+                지원금액
+              </div>
+              <div
+                className="text-sm sm:text-base font-extrabold"
+                style={{ color: colors.bar }}
+              >
+                {block.amount || "-"}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[9px] sm:text-[10px] text-gray-40 font-medium">
+                지원대상
+              </div>
+              <div className="text-[11px] sm:text-xs font-semibold text-gray-70">
+                {block.target || "-"}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1 flex-wrap">
+              {cardTags.map((tag, ti) => (
+                <span
+                  key={ti}
+                  className="text-[9px] sm:text-[10px] bg-gray-5 text-gray-50 px-1.5 py-0.5 rounded"
+                >
+                  {tag.trim()}
+                </span>
+              ))}
+            </div>
+            <span className="text-[11px] sm:text-xs text-primary-60 font-semibold">
+              상세보기 &rsaquo;
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+
+    return cardHref ? (
+      <a key={i} href={cardHref} className="block no-underline">
+        {cardInner}
+      </a>
+    ) : (
+      <div key={i}>{cardInner}</div>
+    );
+  }
+  return null;
 }

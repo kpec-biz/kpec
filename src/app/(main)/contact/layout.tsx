@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "무료상담 신청 | 기업정책자금센터",
   description:
-    "전문 컨설턴트가 기업 맞춤형 정책자금을 무료로 안내합니다. 후불 성공보수제. 010-2466-4800",
+    "전문 컨설턴트가 기업 맞춤형 정책자금을 무료로 안내합니다. 업종·규모·자금용도 분석 기반 초기상담. 010-2466-4800",
   alternates: { canonical: "https://jsbizfunding.kr/contact" },
 };
 
