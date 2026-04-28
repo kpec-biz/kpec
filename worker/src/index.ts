@@ -4,6 +4,7 @@ import { handleAnalytics } from "./analytics";
 import { handleInquiry } from "./inquiry";
 import { handleDailyReport, handleDailyReportHTTP } from "./daily-report";
 import { handleNoticesList, handleNoticeById } from "./notices";
+import { handleCronAnalytics, handleCronAnalyticsHTTP } from "./cron-analytics";
 
 function resolveAllowedOrigin(request: Request, env: Env): string | null {
   const origin = request.headers.get("Origin");
@@ -52,8 +53,33 @@ function withCors(response: Response, request: Request, env: Env): Response {
 }
 
 export default {
-  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext) {
-    await handleDailyReport(env);
+  async scheduled(event: ScheduledEvent, env: Env, _ctx: ExecutionContext) {
+    // KST 08:00 (UTC 23:00) — 일일 통계 텔레그램 리포트
+    if (event.cron === "0 23 * * *") {
+      await handleDailyReport(env);
+      return;
+    }
+    // KST 08:30 (UTC 23:30) — GA4 → D1 누적 (4 period + daily snapshot)
+    if (event.cron === "30 23 * * *") {
+      try {
+        const result = await handleCronAnalytics(env);
+        console.log("[cron-analytics]", JSON.stringify(result));
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "unknown";
+        console.error("[cron-analytics] failed:", message);
+        await fetch(
+          `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: env.TELEGRAM_CHAT_ID,
+              text: `⚠️ [KPEC/cron-analytics] 실패\n${message.slice(0, 200)}`,
+            }),
+          },
+        );
+      }
+    }
   },
 
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -86,6 +112,8 @@ export default {
         response = await handleAnalytics(request, env);
       } else if (path === "/api/daily-report") {
         response = await handleDailyReportHTTP(request, env);
+      } else if (path === "/api/cron-analytics") {
+        response = await handleCronAnalyticsHTTP(request, env);
       } else if (path === "/api/health") {
         response = Response.json({
           status: "ok",

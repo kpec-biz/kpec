@@ -14,6 +14,9 @@ export interface Env {
   R2_PUBLIC_URL: string;
   R2: R2Bucket;
   DB: D1Database;
+  GA4_PROPERTY_ID: string;
+  GOOGLE_SERVICE_ACCOUNT_EMAIL: string;
+  GOOGLE_PRIVATE_KEY: string;
 }
 
 const AIRTABLE_API = "https://api.airtable.com/v0";

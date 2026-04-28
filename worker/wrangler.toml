@@ -20,6 +20,7 @@ binding = "DB"
 database_name = "kpec"
 database_id = "4163afb5-2ffd-4688-9360-d8f8e3a57748"
 
-# 매일 오전 8시(KST) = UTC 23:00 전날
+# 매일 KST 08:00 (UTC 23:00) — daily-report 텔레그램 발송
+# 매일 KST 08:30 (UTC 23:30) — GA4 → D1 누적 (4 period + 어제 daily 스냅샷)
 [triggers]
-crons = ["0 23 * * *"]
+crons = ["0 23 * * *", "30 23 * * *"]
