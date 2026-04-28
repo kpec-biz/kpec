@@ -4,6 +4,7 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHAT_ID: string;
   ADMIN_EMAIL: string;
+  ADMIN_OTP_SECRET: string;
   CORS_ORIGIN: string;
   CRON_SECRET: string;
   GMAIL_CLIENT_ID: string;

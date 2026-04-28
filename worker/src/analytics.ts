@@ -7,7 +7,7 @@ export async function handleAnalytics(
   request: Request,
   env: Env,
 ): Promise<Response> {
-  if (!verifyToken(request, env)) {
+  if (!(await verifyToken(request, env))) {
     return Response.json({ error: "인증이 필요합니다." }, { status: 401 });
   }
 
