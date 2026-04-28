@@ -1,86 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const AIRTABLE_API = "https://api.airtable.com/v0";
-const TABLE_ID = "tblqm10vZyVADXMKQ";
+const WORKER_URL =
+  process.env.NEXT_PUBLIC_WORKER_URL || "https://kpec.kjs010zzz.workers.dev";
 
 export async function GET(req: NextRequest) {
   try {
-    const pat = process.env.AIRTABLE_PAT;
-    const baseId = process.env.AIRTABLE_BASE_ID;
-
-    if (!pat || !baseId) {
-      return NextResponse.json(
-        { error: "Airtable 설정이 없습니다." },
-        { status: 500 },
-      );
-    }
-
     const { searchParams } = new URL(req.url);
-    const limit = searchParams.get("limit") || "20";
-    const id = searchParams.get("id"); // pblancId 단일 조회
-    const category = searchParams.get("category"); // 분석, 뉴스
-    const exclude = searchParams.get("exclude"); // 뉴스,분석
-    const popup = searchParams.get("popup"); // 팝업 배너 조회
-    const offset = searchParams.get("offset"); // 페이지네이션 커서
+    const id = searchParams.get("id");
 
-    let url = `${AIRTABLE_API}/${baseId}/${TABLE_ID}`;
-    const params = new URLSearchParams();
-
-    if (popup === "true") {
-      // 팝업 전용: status="팝업" 레코드만 반환
-      params.set("filterByFormula", `{status}="팝업"`);
-      params.set("maxRecords", "1");
-      params.set("sort[0][field]", "publishDate");
-      params.set("sort[0][direction]", "desc");
-    } else if (id) {
-      params.set("filterByFormula", `{pblancId}="${id}"`);
-      params.set("maxRecords", "1");
-    } else {
-      const filters = [`OR({status}="리라이팅완료",{status}="게시중")`];
-      if (category) {
-        filters.push(`{category}="${category}"`);
-      } else {
-        // 기본: 인스타 제외 (인스타는 category=인스타로 명시 조회)
-        filters.push(`{category}!="인스타"`);
-      }
-      if (exclude) {
-        const cats = exclude.split(",").map((c) => c.trim());
-        cats.forEach((c) => filters.push(`{category}!="${c}"`));
-      }
-      params.set(
-        "filterByFormula",
-        filters.length > 1 ? `AND(${filters.join(",")})` : filters[0],
+    // 단건 조회 (?id=PBLN_xxx) → Worker /api/notices/{pblancId}
+    if (id) {
+      const res = await fetch(
+        `${WORKER_URL}/api/notices/${encodeURIComponent(id)}`,
+        { next: { revalidate: 300 } },
       );
-      params.set("pageSize", limit);
-      params.set("sort[0][field]", "publishDate");
-      params.set("sort[0][direction]", "desc");
-      if (offset) {
-        params.set("offset", offset);
+      if (!res.ok) {
+        return NextResponse.json(
+          { error: "공고 데이터를 불러오지 못했습니다." },
+          { status: res.status },
+        );
       }
+      const data = await res.json();
+      return NextResponse.json({
+        records: data.records || [],
+        total: data.total ?? (data.records?.length || 0),
+      });
     }
 
-    url += `?${params.toString()}`;
+    // 목록 조회 → Worker /api/notices?limit=&category=&exclude=&offset=&popup=
+    const qs = new URLSearchParams();
+    const passThrough = ["limit", "category", "exclude", "offset", "popup"];
+    for (const key of passThrough) {
+      const v = searchParams.get(key);
+      if (v != null) qs.set(key, v);
+    }
+    if (!qs.has("limit")) qs.set("limit", "20");
 
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${pat}` },
-      next: { revalidate: 300 }, // 5분 캐시
+    const res = await fetch(`${WORKER_URL}/api/notices?${qs.toString()}`, {
+      next: { revalidate: 300 },
     });
-
     if (!res.ok) {
-      throw new Error(`Airtable error: ${res.status}`);
+      return NextResponse.json(
+        { error: "공고 데이터를 불러오지 못했습니다." },
+        { status: res.status },
+      );
     }
-
     const data = await res.json();
-    const records = (data.records || []).map(
-      (r: { id: string; fields: Record<string, unknown> }) => ({
-        id: r.id,
-        ...r.fields,
-      }),
-    );
-
     return NextResponse.json({
-      records,
-      total: records.length,
+      records: data.records || [],
+      total: data.total ?? (data.records?.length || 0),
       ...(data.offset ? { offset: data.offset } : {}),
     });
   } catch {

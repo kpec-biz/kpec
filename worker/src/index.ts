@@ -1,9 +1,9 @@
 import { Env } from "./airtable";
 import { handleAuthRequest, handleAuthVerify } from "./auth";
-import { handleBoard } from "./board";
 import { handleAnalytics } from "./analytics";
 import { handleInquiry } from "./inquiry";
 import { handleDailyReport, handleDailyReportHTTP } from "./daily-report";
+import { handleNoticesList, handleNoticeById } from "./notices";
 
 function resolveAllowedOrigin(request: Request, env: Env): string | null {
   const origin = request.headers.get("Origin");
@@ -75,8 +75,11 @@ export default {
         response = await handleAuthRequest(request, env);
       } else if (path === "/api/admin-verify" && request.method === "POST") {
         response = await handleAuthVerify(request, env);
-      } else if (path.startsWith("/api/board")) {
-        response = await handleBoard(request, env);
+      } else if (path === "/api/notices" && request.method === "GET") {
+        response = await handleNoticesList(request, env);
+      } else if (path.startsWith("/api/notices/") && request.method === "GET") {
+        const pblancId = decodeURIComponent(path.slice("/api/notices/".length));
+        response = await handleNoticeById(pblancId, env);
       } else if (path === "/api/inquiry") {
         response = await handleInquiry(request, env);
       } else if (path === "/api/analytics") {

@@ -13,6 +13,7 @@ export interface Env {
   GMAIL_SENDER: string;
   R2_PUBLIC_URL: string;
   R2: R2Bucket;
+  DB: D1Database;
 }
 
 const AIRTABLE_API = "https://api.airtable.com/v0";

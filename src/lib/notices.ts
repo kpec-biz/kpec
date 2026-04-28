@@ -1,10 +1,11 @@
 /**
- * Airtable 공고 데이터 서버 fetch 유틸.
- * 서버 컴포넌트/generateMetadata/sitemap 등에서 직접 호출.
+ * KPEC 콘텐츠(공고/뉴스/분석/인스타) fetch 유틸.
+ * 백엔드: Cloudflare Worker `/api/notices` (D1 SoT)
+ * 서버 컴포넌트/generateMetadata/sitemap/route handler에서 직접 호출.
  */
 
-const AIRTABLE_API = "https://api.airtable.com/v0";
-const TABLE_ID = "tblqm10vZyVADXMKQ";
+const WORKER_URL =
+  process.env.NEXT_PUBLIC_WORKER_URL || "https://kpec.kjs010zzz.workers.dev";
 
 export interface NoticeItem {
   id: string;
@@ -36,62 +37,27 @@ interface FetchNoticesOptions {
   revalidate?: number;
 }
 
-function buildFilter({
-  category,
-  exclude,
-}: {
-  category?: string;
-  exclude?: string[];
-}): string {
-  const filters = [`OR({status}="리라이팅완료",{status}="게시중")`];
-  if (category) {
-    filters.push(`{category}="${category}"`);
-  } else {
-    filters.push(`{category}!="인스타"`);
-  }
-  if (exclude && exclude.length) {
-    exclude.forEach((c) => filters.push(`{category}!="${c}"`));
-  }
-  return filters.length > 1 ? `AND(${filters.join(",")})` : filters[0];
-}
-
 export async function fetchNotices(
   options: FetchNoticesOptions = {},
 ): Promise<NoticeListResult> {
-  const pat = process.env.AIRTABLE_PAT;
-  const baseId = process.env.AIRTABLE_BASE_ID;
-
-  if (!pat || !baseId) {
-    return { records: [], offset: null };
-  }
-
   const { limit = 20, category, exclude, offset, revalidate = 300 } = options;
 
   const params = new URLSearchParams();
-  params.set("filterByFormula", buildFilter({ category, exclude }));
-  params.set("pageSize", String(limit));
-  params.set("sort[0][field]", "publishDate");
-  params.set("sort[0][direction]", "desc");
+  params.set("limit", String(limit));
+  if (category) params.set("category", category);
+  if (exclude && exclude.length) params.set("exclude", exclude.join(","));
   if (offset) params.set("offset", offset);
 
-  const url = `${AIRTABLE_API}/${baseId}/${TABLE_ID}?${params.toString()}`;
-
   try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${pat}` },
+    const res = await fetch(`${WORKER_URL}/api/notices?${params.toString()}`, {
       next: { revalidate },
     });
-    if (!res.ok) {
-      return { records: [], offset: null };
-    }
+    if (!res.ok) return { records: [], offset: null };
     const data = await res.json();
-    const records: NoticeItem[] = (data.records || []).map(
-      (r: { id: string; fields: Record<string, unknown> }) => ({
-        id: r.id,
-        ...(r.fields as Omit<NoticeItem, "id">),
-      }),
-    );
-    return { records, offset: data.offset || null };
+    return {
+      records: (data.records || []) as NoticeItem[],
+      offset: (data.offset as string | undefined) || null,
+    };
   } catch {
     return { records: [], offset: null };
   }
@@ -117,26 +83,15 @@ export async function fetchNoticeById(
   pblancId: string,
   revalidate = 300,
 ): Promise<NoticeItem | null> {
-  const pat = process.env.AIRTABLE_PAT;
-  const baseId = process.env.AIRTABLE_BASE_ID;
-  if (!pat || !baseId) return null;
-
-  const params = new URLSearchParams();
-  params.set("filterByFormula", `{pblancId}="${pblancId}"`);
-  params.set("maxRecords", "1");
-
-  const url = `${AIRTABLE_API}/${baseId}/${TABLE_ID}?${params.toString()}`;
-
   try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${pat}` },
-      next: { revalidate },
-    });
+    const res = await fetch(
+      `${WORKER_URL}/api/notices/${encodeURIComponent(pblancId)}`,
+      { next: { revalidate } },
+    );
     if (!res.ok) return null;
     const data = await res.json();
-    const record = (data.records || [])[0];
-    if (!record) return null;
-    return { id: record.id, ...(record.fields as Omit<NoticeItem, "id">) };
+    const record = (data.records || [])[0] as NoticeItem | undefined;
+    return record || null;
   } catch {
     return null;
   }
