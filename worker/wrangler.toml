@@ -12,3 +12,7 @@ ADMIN_EMAIL = "kjs010zzz@gmail.com"
 [[r2_buckets]]
 binding = "R2"
 bucket_name = "kpecr2"
+
+# 매일 오전 8시(KST) = UTC 23:00 전날
+[triggers]
+crons = ["0 23 * * *"]
