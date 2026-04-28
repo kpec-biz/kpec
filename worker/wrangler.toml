@@ -13,6 +13,13 @@ ADMIN_EMAIL = "kjs010zzz@gmail.com"
 binding = "R2"
 bucket_name = "kpecr2"
 
+# D1: KPEC 콘텐츠 SoT (Airtable 대체)
+# database_id는 `wrangler d1 create kpec` 실행 후 채움
+[[d1_databases]]
+binding = "DB"
+database_name = "kpec"
+database_id = "4163afb5-2ffd-4688-9360-d8f8e3a57748"
+
 # 매일 오전 8시(KST) = UTC 23:00 전날
 [triggers]
 crons = ["0 23 * * *"]
