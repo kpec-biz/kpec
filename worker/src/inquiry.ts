@@ -72,10 +72,59 @@ export async function handleInquiry(
       source: body.source || "homepage",
     };
 
+    // 1) D1 INSERT (Phase 2 신규 SoT)
+    let d1Id: number | null = null;
+    try {
+      const d1Res = await env.DB.prepare(
+        `INSERT INTO inquiries (
+           company, name, phone, email, industry, revenue, operation_year,
+           location, fund_types, amount, situations, message,
+           type, status, credit_score, source
+         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      )
+        .bind(
+          fields.company || null,
+          fields.name || null,
+          fields.phone || null,
+          fields.email || null,
+          fields.industry || null,
+          fields.revenue || null,
+          fields.operationYear || null,
+          fields.location || null,
+          fields.fundTypes || null,
+          fields.amount || null,
+          fields.situations || null,
+          fields.message || null,
+          fields.type,
+          fields.status,
+          fields.creditScore || null,
+          fields.source,
+        )
+        .run();
+      d1Id = (d1Res.meta as { last_row_id?: number })?.last_row_id ?? null;
+    } catch (err) {
+      console.error("D1 inquiry insert failed", err);
+    }
+
+    // 2) Airtable INSERT (legacy, Phase 3에서 제거 예정)
+    // operation_year/fund_types 등 Airtable 필드명은 camelCase 유지
     const result = await airtableFetch(env, TABLE, {
       method: "POST",
       body: { fields },
     });
+
+    // 3) D1 row의 airtable_id 업데이트 (Phase 3 컷오버 매칭용)
+    if (d1Id && result?.id) {
+      try {
+        await env.DB.prepare(
+          `UPDATE inquiries SET airtable_id = ? WHERE id = ?`,
+        )
+          .bind(result.id, d1Id)
+          .run();
+      } catch (err) {
+        console.error("D1 airtable_id update failed", err);
+      }
+    }
 
     // 텔레그램 알림
     try {
