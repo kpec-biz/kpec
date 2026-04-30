@@ -60,6 +60,8 @@ export default {
       return;
     }
     // KST 08:30 (UTC 23:30) — GA4 → D1 누적 (4 period + daily snapshot)
+    // Worker IP는 GA4 anti-abuse에 차단되므로 GA4 호출은 Vercel /api/analytics?mode=...
+    // 로 위임. cron 스케줄과 D1 write는 Worker가 담당.
     if (event.cron === "30 23 * * *") {
       try {
         const result = await handleCronAnalytics(env);

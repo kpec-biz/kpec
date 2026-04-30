@@ -4,6 +4,13 @@ import { BetaAnalyticsDataClient } from "@google-analytics/data";
 const AIRTABLE_API = "https://api.airtable.com/v0";
 const TABLE_ID = "tbl5tWcWKXFuOhQmB";
 
+const PERIODS = [
+  { label: "7d", days: 7 },
+  { label: "14d", days: 14 },
+  { label: "30d", days: 30 },
+  { label: "90d", days: 90 },
+];
+
 function getGA4Client() {
   const serviceEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
@@ -13,9 +20,180 @@ function getGA4Client() {
   });
 }
 
+function isCronAuthorized(req: NextRequest): boolean {
+  const provided =
+    req.nextUrl.searchParams.get("secret") ||
+    req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
+    "";
+  const expected = process.env.CRON_SECRET || "";
+  if (!provided || !expected || provided.length !== expected.length)
+    return false;
+  let diff = 0;
+  for (let i = 0; i < provided.length; i++) {
+    diff |= provided.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const mode = searchParams.get("mode"); // "realtime" | "custom" | default (cached)
+  const mode = searchParams.get("mode");
+  // "realtime" | "custom" | "daily-snapshot" | "period-users" | default (cached)
+
+  // === [cron 전용] 어제 daily 1일치 6 reports 스냅샷 ===
+  // CF Worker가 cron-analytics에서 호출. Worker IP가 GA4 anti-abuse에 차단되어
+  // GA4 호출만 Vercel IP pool로 위임.
+  if (mode === "daily-snapshot") {
+    if (!isCronAuthorized(req)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const date = searchParams.get("date");
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return NextResponse.json(
+        { error: "date=YYYY-MM-DD required" },
+        { status: 400 },
+      );
+    }
+    const client = getGA4Client();
+    const propertyId = process.env.GA4_PROPERTY_ID;
+    if (!client || !propertyId) {
+      return NextResponse.json(
+        { error: "GA4 not configured" },
+        { status: 500 },
+      );
+    }
+    const property = `properties/${propertyId}`;
+    const dateRanges = [{ startDate: date, endDate: date }];
+    try {
+      const [metrics] = await client.runReport({
+        property,
+        dateRanges,
+        metrics: [
+          { name: "activeUsers" },
+          { name: "screenPageViews" },
+          { name: "averageSessionDuration" },
+          { name: "bounceRate" },
+        ],
+      });
+      const mv = metrics.rows?.[0]?.metricValues || [];
+
+      const [pages] = await client.runReport({
+        property,
+        dateRanges,
+        dimensions: [{ name: "pagePath" }],
+        metrics: [{ name: "screenPageViews" }],
+        orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
+        limit: 100,
+      });
+
+      const [sources] = await client.runReport({
+        property,
+        dateRanges,
+        dimensions: [{ name: "sessionDefaultChannelGroup" }],
+        metrics: [{ name: "sessions" }],
+        orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+        limit: 20,
+      });
+
+      const [devices] = await client.runReport({
+        property,
+        dateRanges,
+        dimensions: [{ name: "deviceCategory" }],
+        metrics: [{ name: "activeUsers" }],
+        orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+      });
+
+      const [refs] = await client.runReport({
+        property,
+        dateRanges,
+        dimensions: [{ name: "sessionSource" }],
+        metrics: [{ name: "sessions" }],
+        orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+        limit: 50,
+      });
+
+      const [geo] = await client.runReport({
+        property,
+        dateRanges,
+        dimensions: [{ name: "region" }],
+        metrics: [{ name: "activeUsers" }],
+        orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+        limit: 30,
+      });
+
+      return NextResponse.json({
+        date,
+        activeUsers: Number(mv[0]?.value || 0),
+        pageViews: Number(mv[1]?.value || 0),
+        avgDuration: Number(Number(mv[2]?.value || 0).toFixed(1)),
+        bounceRate: Number(Number(mv[3]?.value || 0).toFixed(4)),
+        topPages: (pages.rows || []).map((r) => ({
+          path: r.dimensionValues?.[0]?.value,
+          views: Number(r.metricValues?.[0]?.value || 0),
+        })),
+        trafficSources: (sources.rows || []).map((r) => ({
+          name: r.dimensionValues?.[0]?.value,
+          sessions: Number(r.metricValues?.[0]?.value || 0),
+        })),
+        devices: (devices.rows || []).map((r) => ({
+          name: r.dimensionValues?.[0]?.value,
+          users: Number(r.metricValues?.[0]?.value || 0),
+        })),
+        referrers: (refs.rows || []).map((r) => ({
+          name: r.dimensionValues?.[0]?.value,
+          sessions: Number(r.metricValues?.[0]?.value || 0),
+        })),
+        regions: (geo.rows || []).map((r) => ({
+          name: r.dimensionValues?.[0]?.value,
+          users: Number(r.metricValues?.[0]?.value || 0),
+        })),
+      });
+    } catch (err) {
+      return NextResponse.json(
+        { error: (err as Error).message },
+        { status: 500 },
+      );
+    }
+  }
+
+  // === [cron 전용] 4 period unique activeUsers ===
+  if (mode === "period-users") {
+    if (!isCronAuthorized(req)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const client = getGA4Client();
+    const propertyId = process.env.GA4_PROPERTY_ID;
+    if (!client || !propertyId) {
+      return NextResponse.json(
+        { error: "GA4 not configured" },
+        { status: 500 },
+      );
+    }
+    const property = `properties/${propertyId}`;
+    try {
+      const results = await Promise.all(
+        PERIODS.map((p) =>
+          client.runReport({
+            property,
+            dateRanges: [{ startDate: `${p.days}daysAgo`, endDate: "today" }],
+            metrics: [{ name: "activeUsers" }],
+          }),
+        ),
+      );
+      const out: Record<string, number> = {};
+      results.forEach((r, i) => {
+        out[PERIODS[i].label] = Number(
+          r[0].rows?.[0]?.metricValues?.[0]?.value || 0,
+        );
+      });
+      return NextResponse.json(out);
+    } catch (err) {
+      return NextResponse.json(
+        { error: (err as Error).message },
+        { status: 500 },
+      );
+    }
+  }
 
   // === 실시간 접속자 ===
   if (mode === "realtime") {
