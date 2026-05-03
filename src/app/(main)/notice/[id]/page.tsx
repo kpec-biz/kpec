@@ -37,13 +37,49 @@ interface ContentBlock {
   amount?: string;
   deadline?: string;
   summary?: string;
-  tags?: string;
+  tags?: string | string[];
 }
 
 function blockText(block: ContentBlock): string {
   if (block.text) return block.text;
   if (block.children) return block.children.map((c) => c.text || "").join("");
   return "";
+}
+
+const CHART_BAD_PATTERNS = [
+  "해당 없음",
+  "확인 필요",
+  "미정",
+  "정보 없음",
+  "별도 확인",
+  "공고 원문",
+  "N/A",
+];
+
+// 할루시네이션 차단: value=0 + name에 부정 키워드면 항목 제거.
+// 정제 후 데이터가 너무 적으면 차트 자체를 숨기도록 빈 배열 반환.
+function sanitizeChartData(
+  data: Array<{ name: string; value: number; color?: string }>,
+  chartType: "bar" | "compare" | "table" | undefined,
+): Array<{ name: string; value: number; color?: string }> {
+  const cleaned = data.filter((d) => {
+    const value = typeof d.value === "number" ? d.value : 0;
+    const name = d.name || "";
+    const isPlaceholder =
+      value === 0 && CHART_BAD_PATTERNS.some((p) => name.includes(p));
+    return !isPlaceholder;
+  });
+  const minRequired = chartType === "bar" ? 2 : 1;
+  return cleaned.length >= minRequired ? cleaned : [];
+}
+
+function blockTags(tags: ContentBlock["tags"]): string[] {
+  if (!tags) return [];
+  const values = Array.isArray(tags) ? tags : tags.split(",");
+  return values
+    .map((tag) => tag.replace(/#/g, "").trim())
+    .filter(Boolean)
+    .slice(0, 3);
 }
 
 interface PageProps {
@@ -609,6 +645,16 @@ function renderBlock(block: ContentBlock, i: number): React.ReactNode {
     );
   }
   if (block.type === "chart-data") {
+    const chartData = block.data
+      ? sanitizeChartData(block.data, block.chartType)
+      : [];
+    // 정제 후 데이터가 비고 표 형식도 아니면 차트 블록 자체 숨김
+    const hasTable = block.chartType === "table" && block.headers && block.rows;
+    if (chartData.length === 0 && !hasTable) {
+      return null;
+    }
+    const maxVal =
+      chartData.length > 0 ? Math.max(...chartData.map((x) => x.value)) : 0;
     return (
       <div
         key={i}
@@ -619,37 +665,32 @@ function renderBlock(block: ContentBlock, i: number): React.ReactNode {
             {block.title}
           </h4>
         )}
-        {block.chartType === "bar" && block.data && (
+        {block.chartType === "bar" && chartData.length > 0 && (
           <div className="space-y-2.5 sm:space-y-3">
-            {block.data.map((d, di) => {
-              const maxVal = Math.max(
-                ...(block.data || []).map((x) => x.value),
-              );
-              return (
-                <div key={di}>
-                  <div className="flex justify-between text-[11px] sm:text-xs mb-1">
-                    <span className="text-gray-60">{d.name}</span>
-                    <span className="font-semibold text-gray-80">
-                      {d.value.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="h-2.5 sm:h-3 bg-gray-10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${(d.value / maxVal) * 100}%`,
-                        backgroundColor: d.color || "#0b50d0",
-                      }}
-                    />
-                  </div>
+            {chartData.map((d, di) => (
+              <div key={di}>
+                <div className="flex justify-between text-[11px] sm:text-xs mb-1">
+                  <span className="text-gray-60">{d.name}</span>
+                  <span className="font-semibold text-gray-80">
+                    {d.value.toLocaleString()}
+                  </span>
                 </div>
-              );
-            })}
+                <div className="h-2.5 sm:h-3 bg-gray-10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: maxVal > 0 ? `${(d.value / maxVal) * 100}%` : "0%",
+                      backgroundColor: d.color || "#0b50d0",
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         )}
-        {block.chartType === "compare" && block.data && (
+        {block.chartType === "compare" && chartData.length > 0 && (
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
-            {block.data.map((d, di) => (
+            {chartData.map((d, di) => (
               <div
                 key={di}
                 className="text-center bg-white rounded-lg p-2 sm:p-3 border border-gray-10"
@@ -721,11 +762,7 @@ function renderBlock(block: ContentBlock, i: number): React.ReactNode {
     const cat = block.category || "기타";
     const colors = catColors[cat] || catColors["기타"];
     const isOpen = (block.deadline || "").includes("상시");
-    const cardTags = (block.tags || "")
-      .replace(/#/g, "")
-      .split(",")
-      .filter(Boolean)
-      .slice(0, 3);
+    const cardTags = blockTags(block.tags);
 
     const cardHref = block.id ? `/notice/${block.id}` : undefined;
 
